@@ -94,7 +94,7 @@ window.dash = (() => {
 .kd-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
 .kd-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
 .kd-lede { margin: 0; max-width: 70ch; font-size: var(--cds-font-size-body); line-height: 1.55; }
-.kd-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--cds-gap-md); }
+.kd-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--cds-gap-md); }
 .kd-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
 .kd-tile .kd-v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .kd-tile .kd-l { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.4; }
@@ -107,6 +107,7 @@ window.dash = (() => {
 .kd-sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
 .kd-chart { position: relative; min-height: 300px; }
 .kd-hbar { position: relative; min-height: 380px; }
+.kd-hbar.kd-drawn { min-height: 0 !important; }
 .kd-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 8px 10px; font-size: var(--cds-font-size-caption); line-height: 1.5; white-space: nowrap; z-index: 5; color: var(--color-fg); }
 .kd-tip .kd-tt { font-weight: var(--cds-font-weight-medium); margin-bottom: 2px; }
 .kd-tip .kd-tn { font-variant-numeric: tabular-nums; }
@@ -117,10 +118,16 @@ window.dash = (() => {
 .kd-chart .tick line { stroke: var(--cds-chart-grid); }
 .kd-fail { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: var(--cds-pad-md) 0; }
 .kd-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
-.kd-seg button { font: inherit; font-size: var(--cds-font-size-caption); background: transparent; color: var(--color-fg-muted); border: 0; padding: 6px 12px; cursor: pointer; }
+.kd-seg button { font: inherit; font-size: var(--cds-font-size-caption); background: transparent; color: var(--color-fg-muted); border: 0; padding: 6px 12px; min-height: 36px; cursor: pointer; touch-action: manipulation; }
 .kd-seg button[aria-pressed="true"] { background: var(--color-panel); color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
 .kd-seg button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: -2px; }
 .kd-about summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+@media (max-width: 520px) {
+  .kd-tiles { gap: var(--cds-gap-sm); }
+  .kd-tile { padding: var(--cds-pad-md); }
+  .kd-tile .kd-v { font-size: 1.6rem; }
+  .kd-tip { white-space: normal; max-width: 240px; }
+}
 .kd-about ul { margin: var(--cds-gap-sm) 0 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--cds-gap-xs); max-width: 76ch; line-height: 1.5; }
 </style>
 
@@ -236,7 +243,7 @@ window.dash = (() => {
       <li><span class="kd-sw" data-swatch="muted"></span>Unknown</li>
     </ul>
     <div class="kd-hbar" id="district-chart" data-draw="district-chart" data-source="district"></div>
-    <p class="kd-note">District taken from the permanent address given at registration, by place name or PIN code. "Outside Kerala" is an address in another state or country; about 6% of addresses could not be placed and are left out. Point at a bar for the estimated share of women.</p>
+    <p class="kd-note">District taken from the permanent address given at registration, by place name or PIN code. "Outside Kerala" is an address in another state or country; about 6% of addresses could not be placed and are left out. Point at or tap a bar for the estimated share of women.</p>
   </section>
 
   <details class="kd-about" id="method">
@@ -408,10 +415,14 @@ function kdFail(el, d) {
   return false;
 }
 
+document.addEventListener('pointerdown', (ev) => {
+  for (const t of document.querySelectorAll('.kd-tip:not([hidden])')) if (!t.parentNode.contains(ev.target)) t.setAttribute('hidden', '');
+});
+
 function kdTipAt(tip, el, ev, dy) {
   const [px, py] = d3.pointer(ev, el);
   const tw = tip.node().offsetWidth;
-  tip.style('left', Math.min(Math.max(0, px + 12), el.clientWidth - tw) + 'px').style('top', Math.max(0, py - dy) + 'px');
+  tip.style('left', Math.max(0, Math.min(px + 12, el.clientWidth - tw)) + 'px').style('top', Math.max(0, py - dy) + 'px');
 }
 
 // Stacked bars by year. series: [{key, label, color}]
@@ -481,7 +492,7 @@ window.kdStacked = function (el, rows, opts) {
       }
       kdTipAt(tip, el, ev, 70);
     })
-    .on('pointerleave', () => tip.attr('hidden', ''));
+    .on('pointerleave', (ev) => { if (ev.pointerType !== 'touch') tip.attr('hidden', ''); });
 };
 
 // Horizontal bars. rows: [{label, parts: {key: n}, tip: [..lines]}], series as above
@@ -499,6 +510,7 @@ window.kdHBars = function (el, rows, opts) {
   probe.remove();
   m.l = Math.ceil(lw) + 10; m.r = Math.ceil(vw) + 10;
   const H = m.t + m.b + rowH * rows.length;
+  el.classList.add('kd-drawn');
   const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.total) || 1]).range([m.l, W - m.r]);
   const y = d3.scaleBand().domain(rows.map((r) => r.label)).range([m.t, H - m.b]).paddingInner(0.25);
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
@@ -539,7 +551,7 @@ window.kdHBars = function (el, rows, opts) {
       }
       kdTipAt(tip, el, ev, 56);
     })
-    .on('pointerleave', () => tip.attr('hidden', ''));
+    .on('pointerleave', (ev) => { if (ev.pointerType !== 'touch') tip.attr('hidden', ''); });
 };
 
 const GENDER = [
