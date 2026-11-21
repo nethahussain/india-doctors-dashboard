@@ -211,7 +211,7 @@ window.dash = (() => {
     <p class="kd-note">Approximate age today = 2026 − year of registration + 25. Among the 46,000 doctors with a birth date on the register, the median age at registration is 25 (most register at 24–30), so a band can be off by a few years for a given doctor. Birth dates are missing for nearly everyone registered before 1986, so they can't be used directly. Older bands lean male because few women entered medicine before the 1990s.</p>
 
     <h2>Kerala next to India and the world</h2>
-    <p class="kd-say">Kerala's entries on the national register stop in 2019, so the register alone shows only <b data-draw="d-work" data-source="age_summary" data-field="per10k_working" data-row="0">—</b> doctors under 65 per 10,000 people. Carrying the 2010–2019 trend forward adds an estimated <b data-draw="p-added" data-source="projection" data-field="added" data-row="0">—</b> doctors registered in 2020–2026, for about <b data-draw="p-rate" data-source="projection" data-field="per10k_2026" data-row="0">—</b> per 10,000 people in 2026: above the world figure of <span data-draw="d-world" data-source="who_ref" data-field="world" data-row="0">—</span> and more than double India's <span data-draw="d-india" data-source="who_ref" data-field="india" data-row="0">—</span>.</p>
+    <p class="kd-say">Kerala's entries on the national register stop in 2019, so the register alone shows only <b data-draw="d-work" data-source="age_summary" data-field="per10k_working" data-row="0">—</b> doctors under 65 per 10,000 people. Carrying the 2010–2019 trend forward adds an estimated <b data-draw="p-added" data-source="projection" data-field="added" data-row="0">—</b> doctors registered in 2020–2026, for about <b data-draw="p-rate" data-source="projection" data-field="per10k_2026" data-row="0">—</b> per 10,000 people in 2026: above the world figure of <span data-draw="d-world" data-source="who_ref" data-field="world" data-row="0">—</span> (WHO, <span data-draw="d-wyear" data-source="who_ref" data-field="world_year" data-row="0">—</span>) and more than double India's <span data-draw="d-india" data-source="who_ref" data-field="india" data-row="0">—</span> (<span data-draw="d-iyear" data-source="who_ref" data-field="india_year" data-row="0">—</span>).</p>
     <ul class="kd-legend" aria-label="Legend">
       <li><span class="kd-sw" data-swatch="0"></span>On the register</li>
       <li><span class="kd-sw kd-sw-proj"></span>Projected</li>
@@ -220,11 +220,11 @@ window.dash = (() => {
     <p class="kd-note">New registrations per year. Projected years (2020–2026) follow a straight line fitted to 2010–2019, rising by about <span data-draw="p-slope" data-source="projection" data-field="slope" data-row="0">—</span> a year. If registrations had instead stayed at their 2015–2019 average, 2020–2026 would add <span data-draw="p-addlow" data-source="projection" data-field="added_low" data-row="0">—</span> and the 2026 figure would be <span data-draw="p-ratelow" data-source="projection" data-field="per10k_2026_low" data-row="0">—</span> per 10,000. The few dozen real entries for 2020–2023 are replaced by the projection.</p>
     <ul class="kd-legend" aria-label="Legend">
       <li><span class="kd-sw" data-swatch="0"></span>Kerala 2026, projected</li>
-      <li><span class="kd-sw kd-sw-proj"></span>Kerala, register to 2019 only</li>
+      <li><span class="kd-sw kd-sw-proj"></span>Kerala, register only (entries to 2019)</li>
       <li><span class="kd-sw" data-swatch="muted"></span>WHO figure</li>
     </ul>
     <div class="kd-hbar" id="density-chart" data-draw="density-chart" data-source="density" style="min-height: 290px"></div>
-    <p class="kd-note">Doctors (modern medicine) under 65 per 10,000 people. WHO figures are its density-of-physicians indicator (SDG 3.c.1), latest year per place (2022–2024). Kerala uses a 2026 population of about 36 million (Government of India projection). The Kerala projection counts registrations only: it doesn't subtract doctors who emigrate, leave medicine or die before 65, nor add doctors registered in other states who work in Kerala, so treat it as an upper-end estimate of doctors available.</p>
+    <p class="kd-note">Doctors (modern medicine) per 10,000 people. WHO counts doctors of all ages, so "all ages" is the like-for-like Kerala figure; "under 65" allows for doctors who have probably retired. WHO figures are its density-of-physicians indicator (SDG 3.c.1), for the latest year WHO has published for each place, shown in brackets. They are not projected: WHO gives the world and regional figures for 2024 only, so there is no trend to extend, and at recent rates India would move only from 9.6 to about 9.8 by 2026. Kerala uses a 2026 population of about 36 million (Government of India projection). The Kerala projection counts registrations only: it doesn't subtract doctors who emigrate, leave medicine or die before 65, nor add doctors registered in other states who work in Kerala, so treat it as an upper-end estimate of doctors available.</p>
   </section>
 
   <section class="kd-sec" id="studied">
@@ -382,10 +382,10 @@ dash.calc('age_summary', {
 dash.calc('who_ref', {
   inputs: ['who_density'],
   title: 'World and India reference figures',
-  description: 'WHO doctors per 10,000 people for the world and for India.',
+  description: 'WHO doctors per 10,000 people for the world and for India, with the year of each figure.',
   fn: (who_density) => {
-    const get = (p) => { const r = who_density.find((x) => x.place === p); return r ? +r.per_10k : null; };
-    return [{ world: get('World'), india: get('India') }];
+    const row = (p) => who_density.find((x) => x.place === p) || {};
+    return [{ world: +row('World').per_10k, world_year: +row('World').year, india: +row('India').per_10k, india_year: +row('India').year }];
   }
 });
 
@@ -431,7 +431,7 @@ dash.calc('proj_years', {
 dash.calc('density', {
   inputs: ['age_band', 'who_density', 'per_year'],
   title: 'Doctors per 10,000 people',
-  description: 'Kerala in 2026 (doctors under 65 on the register plus projected 2020–2026 registrations), Kerala from the register alone, and WHO figures for the world, India, selected countries and WHO regions, highest first.',
+  description: 'Kerala in 2026 (all ages, and under 65: doctors on the register plus projected 2020–2026 registrations), Kerala under 65 from the register alone, and WHO figures for the world, India, selected countries and WHO regions, highest first.',
   fn: (age_band, who_density, per_year) => {
     const T = new Map(per_year.map((r) => [+r.year, +r.Total]));
     const xs = []; for (let y = 2010; y <= 2019; y++) xs.push(y);
@@ -439,14 +439,15 @@ dash.calc('density', {
     const slope = xs.reduce((a, x) => a + (x - mx) * (T.get(x) - my), 0) / xs.reduce((a, x) => a + (x - mx) ** 2, 0);
     const proj = (y) => Math.round(my + slope * (y - mx));
     const flat = Math.round([2015, 2016, 2017, 2018, 2019].reduce((a, y) => a + T.get(y), 0) / 5);
-    let working = 0, late = 0, added = 0;
-    for (const r of age_band) if (+r.working_age === 1) working += +r.Doctors;
+    let working = 0, total = 0, late = 0, added = 0;
+    for (const r of age_band) { total += +r.Doctors; if (+r.working_age === 1) working += +r.Doctors; }
     for (let y = 2020; y <= 2026; y++) { late += T.get(y) || 0; added += proj(y); }
     const per10k = (n) => Math.round(n / (KERALA_POP / 1e4) * 10) / 10;
     const rows = [
-      { label: 'Kerala 2026, projected', value: per10k(working - late + added), low: per10k(working - late + flat * 7), kind: 'kerala', year: 2026 },
-      { label: 'Kerala, register to 2019', value: per10k(working), kind: 'kerala_reg', year: 2026 },
-      ...who_density.map((r) => ({ label: r.place, value: +r.per_10k, kind: r.kind, year: +r.year })),
+      { label: 'Kerala 2026, all ages', value: per10k(total - late + added), low: per10k(total - late + flat * 7), kind: 'kerala', who: 'all', year: 2026 },
+      { label: 'Kerala 2026, under 65', value: per10k(working - late + added), low: per10k(working - late + flat * 7), kind: 'kerala', who: 'u65', year: 2026 },
+      { label: 'Kerala, under 65, register only', value: per10k(working), kind: 'kerala_reg', year: 2026 },
+      ...who_density.map((r) => ({ label: r.place.replace(/^WHO /, '') + ' (' + r.year + ')', value: +r.per_10k, kind: r.kind, year: +r.year })),
     ];
     return rows.sort((a, b) => b.value - a.value);
   }
@@ -536,6 +537,8 @@ kdNum('p-addlow', 'projection', 'added_low', (v) => 'about ' + d3.format(',')(Ma
 kdNum('p-ratelow', 'projection', 'per10k_2026_low', f1);
 kdNum('d-world', 'who_ref', 'world', f1);
 kdNum('d-india', 'who_ref', 'india', f1);
+kdNum('d-wyear', 'who_ref', 'world_year');
+kdNum('d-iyear', 'who_ref', 'india_year');
 
 function kdFail(el, d) {
   el.replaceChildren();
@@ -817,14 +820,15 @@ dash.draw('density-chart', (el) => {
   const rows = d.data.map((r) => {
     const key = r.kind === 'kerala' ? 'kerala' : r.kind === 'kerala_reg' ? 'reg' : 'who';
     const tip = [{ text: 'Doctors per 10,000 people', value: f1(r.value) }];
-    if (r.kind === 'kerala') tip.push({ text: 'Low case (registrations flat)', value: f1(r.low) }, { text: 'Register to 2019 + projected 2020–2026', value: '' });
+    if (r.kind === 'kerala') tip.push({ text: 'Low case (registrations flat)', value: f1(r.low) },
+      { text: r.who === 'all' ? 'Everyone on the register + projected 2020–2026' : 'Under 65 on the register + projected 2020–2026', value: '' });
     else if (r.kind === 'kerala_reg') tip.push({ text: 'Under 65 on the register; misses 2020–2026', value: '' });
     else tip.push({ text: 'Source: WHO, ' + r.year, value: '' });
     return { label: r.label, total: r.value, parts: { [key]: r.value }, tip };
   });
   window.kdHBars(el, rows, { fmt: f1,
     series: [{ key: 'kerala', color: window.kdSer(0) }, { key: 'reg', color: kdProjFill }, { key: 'who', color: window.kdSer('muted') }],
-    label: 'Bars of doctors per 10,000 people, highest first: WHO Europe region, Saudi Arabia, the UK, China and the US lead; Kerala in 2026, projected, comes next at about 23, above the world figure of 18.3; Kerala from the register alone is 14.7; India and the South-East Asia region are about 9.5; the Africa region is lowest.' });
+    label: 'Bars of doctors per 10,000 people, highest first: the Europe region, Saudi Arabia, the UK and China lead; Kerala in 2026, projected, is about 27 for all ages and 23 for doctors under 65, above the US and well above the world figure of 18.3 for 2024; Kerala from the register alone is 14.7; India and the South-East Asia region are about 9.5; the Africa region is lowest.' });
 });
 
 const KD_GEO = JSON.parse(document.getElementById('kd-geo').textContent);
