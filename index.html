@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kerala Doctors Register</title>
+<meta name="description" content="Kerala's 67,147 registered doctors on the NMC Indian Medical Register: new registrations by estimated gender, working age, doctors per 10,000 people against India and the world, where they studied, and home district.">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #fcfcfb; --color-fg: #0b0b0b; --color-fg-muted: #52514e; --cds-text-secondary: #52514e;
+  --color-panel: #f3f2ee; --color-border-line: #e2e1dc; --cds-border: #d6d5cf;
+  --cds-surface-popover: #ffffff; --cds-shadow-popover: 0 4px 16px rgba(0,0,0,.10);
+  --cds-chart-axis: #b9b8b1; --cds-chart-grid: #e2e1dc; --cds-chart-muted: #b4b3ac;
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100; --series-5: #e87ba4;
+  --font-anthropic-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-anthropic-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --cds-font-size-title: clamp(1.8rem, 4vw, 2.5rem); --cds-font-size-heading: 1.25rem;
+  --cds-font-size-body: 1rem; --cds-font-size-caption: 0.8125rem; --cds-font-weight-medium: 600;
+  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 16px; --cds-gap-xl: 40px;
+  --cds-pad-md: 12px; --cds-pad-lg: 16px; --cds-radius: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #1a1a19; --color-fg: #f0efec; --color-fg-muted: #c3c2b7; --cds-text-secondary: #c3c2b7;
+    --color-panel: #242423; --color-border-line: #383835; --cds-border: #45443f;
+    --cds-surface-popover: #2a2a28; --cds-shadow-popover: 0 4px 16px rgba(0,0,0,.45);
+    --cds-chart-axis: #5c5b55; --cds-chart-grid: #383835; --cds-chart-muted: #6e6d66;
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500; --series-5: #d55181;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #1a1a19; --color-fg: #f0efec; --color-fg-muted: #c3c2b7; --cds-text-secondary: #c3c2b7;
+  --color-panel: #242423; --color-border-line: #383835; --cds-border: #45443f;
+  --cds-surface-popover: #2a2a28; --cds-shadow-popover: 0 4px 16px rgba(0,0,0,.45);
+  --cds-chart-axis: #5c5b55; --cds-chart-grid: #383835; --cds-chart-muted: #6e6d66;
+  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500; --series-5: #d55181;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--color-fg); }
+body { font-family: var(--font-anthropic-sans); line-height: 1.5; }
+.site { max-width: 1040px; margin: 0 auto; padding: 32px 16px 48px; }
+.site-foot { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--color-border-line);
+  color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); display: flex; flex-direction: column; gap: 6px; }
+.site-foot a, .site a { color: inherit; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+// Minimal stand-in for the claude.ai dashboard runtime: loads the CSVs, runs the calcs, redraws.
+window.dash = (() => {
+  const SOURCES = {"per_year": "doctors_per_year_by_gender.csv", "study_region": "study_region_by_year.csv", "abroad_year": "abroad_by_year.csv", "abroad_countries": "abroad_countries.csv", "district": "home_district.csv", "age_band": "age_band.csv", "who_density": "who_density.csv"};
+  const calcs = [], draws = new Map(), store = {};
+  const run = (name) => {
+    const fn = draws.get(name);
+    if (!fn) return;
+    for (const el of document.querySelectorAll('[data-draw="' + name + '"]')) {
+      try { fn(el); } catch (e) { console.error(name, e); }
+    }
+  };
+  const api = {
+    colors: [1, 2, 3, 4, 5].map((i) => 'var(--series-' + i + ')'),
+    calc: (name, o) => calcs.push([name, o]),
+    data: (name) => store[name] || { status: 'loading', data: null },
+    draw: (name, fn) => { if (fn) draws.set(name, fn); if (document.readyState !== 'loading') run(name); },
+  };
+  const redrawAll = () => { for (const n of draws.keys()) run(n); };
+  // Start loading once the page script has registered every calc and drawing.
+  document.addEventListener('DOMContentLoaded', () => {
+    redrawAll();
+    const all = Object.entries(SOURCES).map(([id, file]) =>
+      d3.csv('data/' + file).then((rows) => { store[id] = { status: 'ok', data: rows }; })
+        .catch(() => { store[id] = { status: 'error', data: null }; }));
+    Promise.all(all).then(() => {
+      for (const [name, o] of calcs) {
+        const ins = o.inputs.map((i) => store[i]);
+        if (ins.some((d) => !d || d.status !== 'ok')) { store[name] = { status: 'error', data: null }; continue; }
+        try { store[name] = { status: 'ok', data: o.fn(...ins.map((d) => d.data)) }; }
+        catch (e) { console.error(name, e); store[name] = { status: 'error', data: null }; }
+      }
+      redrawAll();
+    });
+  });
+  let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(redrawAll, 150); });
+  return api;
+})();
+</script>
+</head>
+<body>
+<main class="site">
+<style>
+.kd { display: flex; flex-direction: column; gap: var(--cds-gap-xl); }
+.kd-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+.kd-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.kd-lede { margin: 0; max-width: 70ch; font-size: var(--cds-font-size-body); line-height: 1.55; }
+.kd-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--cds-gap-md); }
+.kd-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+.kd-tile .kd-v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kd-tile .kd-l { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.4; }
+.kd-sec { display: flex; flex-direction: column; gap: var(--cds-gap-md); min-width: 0; }
+.kd-sec h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+.kd-say { margin: 0; font-size: var(--cds-font-size-body); line-height: 1.55; max-width: 76ch; }
+.kd-note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.5; max-width: 76ch; margin: 0; }
+.kd-row { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); align-items: center; justify-content: space-between; }
+.kd-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); list-style: none; padding: 0; margin: 0; }
+.kd-sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.kd-chart { position: relative; min-height: 300px; }
+.kd-hbar { position: relative; min-height: 380px; }
+.kd-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 8px 10px; font-size: var(--cds-font-size-caption); line-height: 1.5; white-space: nowrap; z-index: 5; color: var(--color-fg); }
+.kd-tip .kd-tt { font-weight: var(--cds-font-weight-medium); margin-bottom: 2px; }
+.kd-tip .kd-tn { font-variant-numeric: tabular-nums; }
+.kd-tip .kd-tm { color: var(--cds-text-secondary); }
+.kd-chart svg text, .kd-hbar svg text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+.kd-hbar svg text.kd-val { fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.kd-chart .domain, .kd-hbar .domain { stroke: var(--cds-chart-axis); }
+.kd-chart .tick line { stroke: var(--cds-chart-grid); }
+.kd-fail { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: var(--cds-pad-md) 0; }
+.kd-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.kd-seg button { font: inherit; font-size: var(--cds-font-size-caption); background: transparent; color: var(--color-fg-muted); border: 0; padding: 6px 12px; cursor: pointer; }
+.kd-seg button[aria-pressed="true"] { background: var(--color-panel); color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+.kd-seg button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: -2px; }
+.kd-about summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+.kd-about ul { margin: var(--cds-gap-sm) 0 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--cds-gap-xs); max-width: 76ch; line-height: 1.5; }
+</style>
+
+<div class="kd">
+  <header class="kd-head" id="summary">
+    <h1>Kerala Doctors Register</h1>
+    <p class="kd-lede">Women have outnumbered men among new registrations every year since <b data-draw="since" data-source="trend" data-field="since" data-row="0">—</b>. In <span data-draw="lastyear" data-source="trend" data-field="last_year" data-row="0">—</span>, the last full year on the register, they were <b data-draw="lastpct" data-source="trend" data-field="last_female_pct" data-row="0">—</b>% of new doctors whose gender could be estimated.</p>
+    <p class="kd-note">Source: NMC Indian Medical Register, Travancore Cochin Medical Council (Kerala), downloaded 19 November 2026. The register holds no gender field: gender is estimated from first names.</p>
+  </header>
+
+  <div class="kd-tiles" id="tiles">
+    <div class="kd-tile" id="tile-total">
+      <span class="kd-v" data-draw="t-total" data-source="totals" data-field="total" data-row="0">—</span>
+      <span class="kd-l">Doctors on the register</span>
+    </div>
+    <div class="kd-tile" id="tile-women">
+      <span class="kd-v"><span data-draw="t-fpct" data-source="totals" data-field="female_pct" data-row="0">—</span>%</span>
+      <span class="kd-l">Estimated share of women, all years (of doctors whose gender could be estimated)</span>
+    </div>
+    <div class="kd-tile" id="tile-outside">
+      <span class="kd-v"><span data-draw="t-outside" data-source="study" data-field="outside_pct" data-row="0">—</span>%</span>
+      <span class="kd-l">Studied medicine outside Kerala, all years</span>
+    </div>
+    <div class="kd-tile" id="tile-abroad">
+      <span class="kd-v" data-draw="t-abroad" data-source="study" data-field="abroad" data-row="0">—</span>
+      <span class="kd-l">Trained abroad, from <span data-draw="t-countries" data-source="abroad_summary" data-field="countries" data-row="0">—</span> countries</span>
+    </div>
+    <div class="kd-tile" id="tile-working">
+      <span class="kd-v" data-draw="t-working" data-source="age_summary" data-field="working" data-row="0">—</span>
+      <span class="kd-l">Of working age today (estimated under 65), <span data-draw="t-wpct" data-source="age_summary" data-field="working_pct" data-row="0">—</span>% of the register</span>
+    </div>
+  </div>
+
+  <section class="kd-sec" id="per-year">
+    <h2>New registrations per year, by estimated gender</h2>
+    <div class="kd-row">
+      <ul class="kd-legend" aria-label="Legend">
+        <li><span class="kd-sw" data-swatch="0"></span>Women</li>
+        <li><span class="kd-sw" data-swatch="1"></span>Men</li>
+        <li><span class="kd-sw" data-swatch="muted"></span>Unknown</li>
+      </ul>
+      <div class="kd-seg" role="group" aria-label="Show counts or shares" data-for="gender-chart">
+        <button type="button" id="g-count" data-mode="count" aria-pressed="true">Doctors</button>
+        <button type="button" id="g-share" data-mode="share" aria-pressed="false">Share of year</button>
+      </div>
+    </div>
+    <div class="kd-chart" id="gender-chart" data-draw="gender-chart" data-source="per_year"></div>
+    <p class="kd-note">Year of registration with the council. Kerala's entries on the national register stop after 2019: 2020–2023 hold only a few dozen late entries, and 2024–2026 none. Three records with an impossible 1900 date are left out of the chart.</p>
+  </section>
+
+  <section class="kd-sec" id="age">
+    <h2>How many are still of working age</h2>
+    <p class="kd-say">The register doesn't say who is still practising: only 12 doctors have ever been marked removed, so deaths and retirements go unrecorded. Judging by year of registration, about <b data-draw="g-over" data-source="age_summary" data-field="over" data-row="0">—</b> doctors registered in <span data-draw="g-overyear" data-source="age_summary" data-field="over_to" data-row="0">—</span> or earlier and are now likely 65 or older.</p>
+    <ul class="kd-legend" aria-label="Legend">
+      <li><span class="kd-sw" data-swatch="0"></span>Women</li>
+      <li><span class="kd-sw" data-swatch="1"></span>Men</li>
+      <li><span class="kd-sw" data-swatch="muted"></span>Unknown</li>
+    </ul>
+    <div class="kd-hbar" id="age-chart" data-draw="age-chart" data-source="age_band" style="min-height: 190px"></div>
+    <p class="kd-note">Approximate age today = 2026 − year of registration + 25. Among the 46,000 doctors with a birth date on the register, the median age at registration is 25 (most register at 24–30), so a band can be off by a few years for a given doctor. Birth dates are missing for nearly everyone registered before 1986, so they can't be used directly. Older bands lean male because few women entered medicine before the 1990s.</p>
+
+    <h2>Kerala next to India and the world</h2>
+    <p class="kd-say">Kerala's register holds about <b data-draw="d-work" data-source="age_summary" data-field="per10k_working" data-row="0">—</b> doctors under 65 for every 10,000 people (<span data-draw="d-all" data-source="age_summary" data-field="per10k_all" data-row="0">—</span> counting everyone). That is close to the world figure of <span data-draw="d-world" data-source="who_ref" data-field="world" data-row="0">—</span> and about double India's <span data-draw="d-india" data-source="who_ref" data-field="india" data-row="0">—</span>.</p>
+    <ul class="kd-legend" aria-label="Legend">
+      <li><span class="kd-sw" data-swatch="0"></span>Kerala, from this register</li>
+      <li><span class="kd-sw" data-swatch="muted"></span>WHO figure</li>
+    </ul>
+    <div class="kd-hbar" id="density-chart" data-draw="density-chart" data-source="density" style="min-height: 290px"></div>
+    <p class="kd-note">Doctors (modern medicine) per 10,000 people. WHO figures are its density-of-physicians indicator (SDG 3.c.1), latest year per place (2022–2024). Kerala uses a 2026 population of about 36 million (Government of India projection). The two Kerala bars bracket the truth from different sides: they still count doctors who have emigrated or left practice, but miss everyone registered after 2019, when TCMC stopped sending entries to the national register (about 4,000 a year before then).</p>
+  </section>
+
+  <section class="kd-sec" id="studied">
+    <h2>Where Kerala's doctors studied</h2>
+    <p class="kd-say">Of doctors registered in <span data-draw="s-year" data-source="study" data-field="last_year" data-row="0">—</span>, <b data-draw="s-last" data-source="study" data-field="last_outside_pct" data-row="0">—</b>% studied outside Kerala, most often in Karnataka or Tamil Nadu.</p>
+    <div class="kd-row">
+      <ul class="kd-legend" aria-label="Legend">
+        <li><span class="kd-sw" data-swatch="0"></span>Kerala</li>
+        <li><span class="kd-sw" data-swatch="1"></span>Karnataka</li>
+        <li><span class="kd-sw" data-swatch="2"></span>Tamil Nadu</li>
+        <li><span class="kd-sw" data-swatch="3"></span>Other Indian states</li>
+        <li><span class="kd-sw" data-swatch="4"></span>Abroad</li>
+        <li><span class="kd-sw" data-swatch="muted"></span>Not identified</li>
+      </ul>
+      <div class="kd-seg" role="group" aria-label="Show counts or shares" data-for="study-chart">
+        <button type="button" id="s-count" data-mode="count" aria-pressed="false">Doctors</button>
+        <button type="button" id="s-share" data-mode="share" aria-pressed="true">Share of year</button>
+      </div>
+    </div>
+    <div class="kd-chart" id="study-chart" data-draw="study-chart" data-source="study_region"></div>
+    <p class="kd-note">Place of the university that awarded the basic medical degree (MBBS or its foreign equivalent), by year of registration. About 2,600 spellings of university names were grouped by state or country; under 1% could not be placed. The 1945 spike is a batch of older doctors, mostly Madras graduates, entered at once.</p>
+  </section>
+
+  <section class="kd-sec" id="abroad">
+    <h2>Doctors trained abroad, by country</h2>
+    <p class="kd-say">Russia was the main foreign route until about 2010; China took over from 2011, peaking at <b data-draw="a-peak" data-source="abroad_summary" data-field="china_peak" data-row="0">—</b> registrations in <span data-draw="a-peakyear" data-source="abroad_summary" data-field="china_peak_year" data-row="0">—</span>.</p>
+    <ul class="kd-legend" aria-label="Legend">
+      <li><span class="kd-sw" data-swatch="0"></span>China</li>
+      <li><span class="kd-sw" data-swatch="1"></span>Russia</li>
+      <li><span class="kd-sw" data-swatch="2"></span>Nepal</li>
+      <li><span class="kd-sw" data-swatch="3"></span>Ukraine</li>
+      <li><span class="kd-sw" data-swatch="muted"></span>Other countries</li>
+    </ul>
+    <div class="kd-chart" id="abroad-chart" data-draw="abroad-chart" data-source="abroad_year"></div>
+    <div class="kd-hbar" id="country-chart" data-draw="country-chart" data-source="abroad_countries"></div>
+    <p class="kd-note">Top: foreign-trained doctors by year of registration, 1990–2019. Bottom: the 12 countries with the most graduates on the register, all years. Older European degrees (Italy, Germany, the UK) are mostly from registrations before 1990.</p>
+  </section>
+
+  <section class="kd-sec" id="district">
+    <h2>Home district</h2>
+    <ul class="kd-legend" aria-label="Legend">
+      <li><span class="kd-sw" data-swatch="0"></span>Women</li>
+      <li><span class="kd-sw" data-swatch="1"></span>Men</li>
+      <li><span class="kd-sw" data-swatch="muted"></span>Unknown</li>
+    </ul>
+    <div class="kd-hbar" id="district-chart" data-draw="district-chart" data-source="district"></div>
+    <p class="kd-note">District taken from the permanent address given at registration, by place name or PIN code. "Outside Kerala" is an address in another state or country; about 6% of addresses could not be placed and are left out. Point at a bar for the estimated share of women.</p>
+  </section>
+
+  <details class="kd-about" id="method">
+    <summary>How the numbers were made</summary>
+    <ul>
+      <li>All 67,147 Travancore Cochin Medical Council records were downloaded from the NMC Indian Medical Register, one registration year at a time. One record had its registration number typed in as its year and was recovered separately.</li>
+      <li>Gender is estimated, never recorded. Common first names (covering about three quarters of doctors) were labelled woman, man or unclear with Kerala naming in mind. Rarer names were placed by name endings that point to one gender at least 92% of the time. Everything else is Unknown. Expect a few percent of misreads in both directions.</li>
+      <li>Universities were matched to a state or country by name, including common misspellings. "MD Physician" degrees from Russia, Ukraine and similar countries count as foreign basic degrees.</li>
+      <li>Working age is estimated from year of registration (age today ≈ 2026 − registration year + 25), because the register has no active or retired status and few birth dates for older doctors. Doctors per 10,000 people divide these counts by Kerala's projected 2026 population of 36 million, for comparison with WHO's figures.</li>    </ul>
+  </details>
+</div>
+
+<script>
+dash.calc('totals', {
+  inputs: ['per_year'],
+  title: 'Register totals',
+  description: 'Sums of the per-year counts, and the estimated share of women among doctors whose gender could be estimated.',
+  fn: (per_year) => {
+    let f = 0, m = 0, u = 0;
+    for (const r of per_year) { f += +r.Female; m += +r.Male; u += +r.Unknown; }
+    return [{ total: f + m + u, female: f, male: m, unknown: u,
+      female_pct: Math.round(1000 * f / (f + m)) / 10,
+      unknown_pct: Math.round(1000 * u / (f + m + u)) / 10 }];
+  }
+});
+
+dash.calc('trend', {
+  inputs: ['per_year'],
+  title: 'Women among new registrations',
+  description: 'First year of the latest unbroken run in which estimated women outnumber men, and the share of women in the last year with at least 100 registrations.',
+  fn: (per_year) => {
+    const rows = per_year.map((r) => ({ y: +r.year, f: +r.Female, m: +r.Male, t: +r.Total }))
+      .filter((r) => r.t >= 100).sort((a, b) => a.y - b.y);
+    const last = rows[rows.length - 1];
+    let since = null;
+    for (let i = rows.length - 1; i >= 0 && rows[i].f > rows[i].m; i--) since = rows[i].y;
+    return [{ since, last_year: last.y, last_female_pct: Math.round(1000 * last.f / (last.f + last.m)) / 10 }];
+  }
+});
+
+dash.calc('study', {
+  inputs: ['study_region'],
+  title: 'Studied outside Kerala',
+  description: 'Share of doctors whose medical university is outside Kerala (of those whose university could be placed), overall and in the last year with at least 100 registrations, and the number trained abroad.',
+  fn: (study_region) => {
+    const cols = ['Kerala', 'Karnataka', 'Tamil Nadu', 'Other Indian states', 'Abroad'];
+    const sum = (r) => cols.reduce((a, c) => a + +r[c], 0);
+    let all = 0, kerala = 0, abroad = 0;
+    for (const r of study_region) { all += sum(r); kerala += +r.Kerala; abroad += +r.Abroad; }
+    const big = study_region.filter((r) => sum(r) >= 100).sort((a, b) => +a.year - +b.year);
+    const last = big[big.length - 1];
+    return [{ outside_pct: Math.round(1000 * (all - kerala) / all) / 10, abroad,
+      last_year: +last.year, last_outside_pct: Math.round(1000 * (sum(last) - +last.Kerala) / sum(last)) / 10 }];
+  }
+});
+
+dash.calc('abroad_summary', {
+  inputs: ['abroad_countries', 'abroad_year'],
+  title: 'Foreign-trained doctors',
+  description: 'Number of countries named among foreign degrees, and the busiest registration year for China-trained doctors.',
+  fn: (abroad_countries, abroad_year) => {
+    const countries = abroad_countries.filter((r) => r.country !== 'Not identified').length;
+    let china_peak = 0, china_peak_year = null;
+    for (const r of abroad_year) if (r.country === 'China' && +r.doctors > china_peak) { china_peak = +r.doctors; china_peak_year = +r.year; }
+    return [{ countries, china_peak, china_peak_year }];
+  }
+});
+
+const KERALA_POP = 36000000; // 2026 projection, Technical Group on Population Projections (2020)
+
+dash.calc('age_summary', {
+  inputs: ['age_band'],
+  title: 'Working-age doctors',
+  description: 'Doctors whose approximate age today (from year of registration) is under 65, those 65 or older, and doctors per 10,000 people in Kerala using a 2026 population of 36 million.',
+  fn: (age_band) => {
+    let total = 0, working = 0, over_to = 0;
+    for (const r of age_band) {
+      total += +r.Doctors;
+      if (+r.working_age === 1) working += +r.Doctors;
+      else if (r.registered_to) over_to = Math.max(over_to, +r.registered_to);
+    }
+    const per10k = (n) => Math.round(n / (KERALA_POP / 1e4) * 10) / 10;
+    return [{ total, working, over: total - working, over_to,
+      working_pct: Math.round(1000 * working / total) / 10,
+      per10k_working: per10k(working), per10k_all: per10k(total) }];
+  }
+});
+
+dash.calc('who_ref', {
+  inputs: ['who_density'],
+  title: 'World and India reference figures',
+  description: 'WHO doctors per 10,000 people for the world and for India.',
+  fn: (who_density) => {
+    const get = (p) => { const r = who_density.find((x) => x.place === p); return r ? +r.per_10k : null; };
+    return [{ world: get('World'), india: get('India') }];
+  }
+});
+
+dash.calc('density', {
+  inputs: ['age_band', 'who_density'],
+  title: 'Doctors per 10,000 people',
+  description: 'Kerala (under 65, and everyone on the register) beside WHO figures for the world, India, selected countries and WHO regions, highest first.',
+  fn: (age_band, who_density) => {
+    let total = 0, working = 0;
+    for (const r of age_band) { total += +r.Doctors; if (+r.working_age === 1) working += +r.Doctors; }
+    const per10k = (n) => Math.round(n / (KERALA_POP / 1e4) * 10) / 10;
+    const rows = [
+      { label: 'Kerala, under 65', value: per10k(working), kind: 'kerala', year: 2026 },
+      { label: 'Kerala, everyone', value: per10k(total), kind: 'kerala', year: 2026 },
+      ...who_density.map((r) => ({ label: r.place, value: +r.per_10k, kind: r.kind, year: +r.year })),
+    ];
+    return rows.sort((a, b) => b.value - a.value);
+  }
+});
+
+window.kdFmt = d3.format(',');
+window.kdMode = { 'gender-chart': 'count', 'study-chart': 'share' };
+window.kdSer = (i) => (i === 'muted' ? 'var(--cds-chart-muted)' : dash.colors[i]);
+
+for (const sw of document.querySelectorAll('[data-swatch]')) {
+  const k = sw.getAttribute('data-swatch');
+  sw.style.background = window.kdSer(k === 'muted' ? 'muted' : +k);
+}
+for (const grp of document.querySelectorAll('.kd-seg')) {
+  const target = grp.getAttribute('data-for');
+  for (const b of grp.querySelectorAll('button')) {
+    b.addEventListener('click', () => {
+      window.kdMode[target] = b.getAttribute('data-mode');
+      for (const o of grp.querySelectorAll('button')) o.setAttribute('aria-pressed', String(o === b));
+      dash.draw(target);
+    });
+  }
+}
+
+function kdNum(name, src, field, fmt) {
+  dash.draw(name, (el) => {
+    const d = dash.data(src);
+    if (d.status !== 'ok' || d.data == null) { el.textContent = '—'; return; }
+    const v = field ? (d.data[0] || {})[field] : d.data;
+    el.textContent = v == null ? '—' : (fmt ? fmt(v) : String(v));
+  });
+}
+const f1 = d3.format('.1f');
+kdNum('since', 'trend', 'since');
+kdNum('lastyear', 'trend', 'last_year');
+kdNum('lastpct', 'trend', 'last_female_pct', f1);
+kdNum('t-total', 'totals', 'total', window.kdFmt);
+kdNum('t-fpct', 'totals', 'female_pct', f1);
+kdNum('t-outside', 'study', 'outside_pct', f1);
+kdNum('t-abroad', 'study', 'abroad', window.kdFmt);
+kdNum('t-countries', 'abroad_summary', 'countries');
+kdNum('s-year', 'study', 'last_year');
+kdNum('s-last', 'study', 'last_outside_pct', f1);
+kdNum('a-peak', 'abroad_summary', 'china_peak', window.kdFmt);
+kdNum('a-peakyear', 'abroad_summary', 'china_peak_year');
+kdNum('t-working', 'age_summary', 'working', window.kdFmt);
+kdNum('t-wpct', 'age_summary', 'working_pct', d3.format('.0f'));
+kdNum('g-over', 'age_summary', 'over', window.kdFmt);
+kdNum('g-overyear', 'age_summary', 'over_to');
+kdNum('d-work', 'age_summary', 'per10k_working', f1);
+kdNum('d-all', 'age_summary', 'per10k_all', f1);
+kdNum('d-world', 'who_ref', 'world', f1);
+kdNum('d-india', 'who_ref', 'india', f1);
+
+function kdFail(el, d) {
+  el.replaceChildren();
+  if (d.status === 'error') { el.append(Object.assign(document.createElement('div'), { className: 'kd-fail', textContent: 'Failed to load' })); return true; }
+  if (d.status !== 'ok') { el.textContent = '—'; return true; }
+  return false;
+}
+
+function kdTipAt(tip, el, ev, dy) {
+  const [px, py] = d3.pointer(ev, el);
+  const tw = tip.node().offsetWidth;
+  tip.style('left', Math.min(Math.max(0, px + 12), el.clientWidth - tw) + 'px').style('top', Math.max(0, py - dy) + 'px');
+}
+
+// Stacked bars by year. series: [{key, label, color}]
+window.kdStacked = function (el, rows, opts) {
+  const series = opts.series, keys = series.map((s) => s.key);
+  const color = new Map(series.map((s) => [s.key, s.color]));
+  const W = Math.max(280, el.clientWidth), H = 300;
+  const m = { t: 10, r: 8, b: 26, l: 8 };
+  const share = opts.share;
+  const data = rows.map((r) => {
+    const t = keys.reduce((a, k) => a + (r[k] || 0), 0);
+    const o = { year: r.year, total: t, raw: r };
+    for (const k of keys) o[k] = share ? (t ? (r[k] || 0) / t : 0) : (r[k] || 0);
+    return o;
+  });
+  const years = d3.range(opts.from, opts.to + 1);
+  const ymax = share ? 1 : (d3.max(data, (d) => d.total) || 1);
+  const y = d3.scaleLinear().domain([0, ymax]).nice(4).range([H - m.b, m.t]);
+  const fmtY = share ? d3.format('.0%') : d3.format('~s');
+  const probe = d3.select(el).append('svg').attr('width', 0).attr('height', 0);
+  let lw = 0;
+  y.ticks(4).forEach((t) => { lw = Math.max(lw, probe.append('text').text(fmtY(t)).node().getComputedTextLength()); });
+  probe.remove();
+  m.l = Math.ceil(lw) + 10;
+  const x = d3.scaleBand().domain(years).range([m.l, W - m.r]).paddingInner(years.length > 50 ? 0.12 : 0.2);
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('role', 'img').attr('aria-label', opts.label);
+  svg.append('g').attr('transform', `translate(${m.l},0)`)
+    .call(d3.axisLeft(y).ticks(4).tickFormat(fmtY).tickSize(-(W - m.l - m.r)))
+    .call((g) => g.select('.domain').remove())
+    .call((g) => g.selectAll('.tick line').attr('stroke-dasharray', '2,3'));
+  const per = Math.max(2, Math.floor((W - m.l) / 46));
+  let step = Math.max(1, Math.ceil(years.length / per));
+  if (step > 1) step = step <= 2 ? 2 : Math.ceil(step / 5) * 5;
+  const tickYears = years.filter((yv) => yv % step === 0);
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`)
+    .call(d3.axisBottom(x).tickValues(tickYears).tickSize(0).tickPadding(8))
+    .call((g) => g.select('.domain').attr('stroke', 'var(--cds-chart-axis)'));
+  const stack = d3.stack().keys(keys)(data);
+  const bw = x.bandwidth();
+  svg.append('g').selectAll('g').data(stack).join('g').style('fill', (s) => color.get(s.key))
+    .selectAll('rect').data((s) => s).join('rect')
+    .attr('x', (d) => x(d.data.year)).attr('width', bw)
+    .attr('y', (d) => y(d[1]) + (d[1] > d[0] && bw > 4 ? 0.5 : 0))
+    .attr('height', (d) => Math.max(0, y(d[0]) - y(d[1]) - (bw > 4 ? 1 : 0)));
+  const tip = d3.select(el).append('div').attr('class', 'kd-tip').attr('hidden', '');
+  const byYear = new Map(data.map((d) => [d.year, d]));
+  svg.append('g').selectAll('rect').data(years).join('rect')
+    .attr('x', (yv) => x(yv) - (x.step() - bw) / 2).attr('width', x.step())
+    .attr('y', m.t).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+    .on('pointerenter pointermove', function (ev, yv) {
+      const d = byYear.get(yv);
+      tip.attr('hidden', null).html('');
+      tip.append('div').attr('class', 'kd-tt').text(opts.tipTitle(yv));
+      if (!d || !d.total) tip.append('div').attr('class', 'kd-tm').text('None recorded');
+      else {
+        for (const s of series.slice().reverse()) {
+          const v = d.raw[s.key] || 0;
+          if (!v && series.length > 3) continue;
+          const line = tip.append('div');
+          line.append('span').attr('class', 'kd-sw').style('background', s.color);
+          line.append('span').text(s.label + ' ');
+          line.append('b').attr('class', 'kd-tn').text(window.kdFmt(v));
+          if (share) line.append('span').attr('class', 'kd-tm').text(' (' + d3.format('.0%')(v / d.total) + ')');
+        }
+        tip.append('div').attr('class', 'kd-tm').text('Total ' + window.kdFmt(d.total));
+      }
+      kdTipAt(tip, el, ev, 70);
+    })
+    .on('pointerleave', () => tip.attr('hidden', ''));
+};
+
+// Horizontal bars. rows: [{label, parts: {key: n}, tip: [..lines]}], series as above
+window.kdHBars = function (el, rows, opts) {
+  const series = opts.series;
+  const fmt = opts.fmt || window.kdFmt;
+  const W = Math.max(280, el.clientWidth);
+  const rowH = 24, m = { t: 4, r: 8, b: 4, l: 8 };
+  const probe = d3.select(el).append('svg').attr('width', 0).attr('height', 0);
+  let lw = 0, vw = 0;
+  rows.forEach((r) => {
+    lw = Math.max(lw, probe.append('text').text(r.label).node().getComputedTextLength());
+    vw = Math.max(vw, probe.append('text').text(fmt(r.total)).node().getComputedTextLength());
+  });
+  probe.remove();
+  m.l = Math.ceil(lw) + 10; m.r = Math.ceil(vw) + 10;
+  const H = m.t + m.b + rowH * rows.length;
+  const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.total) || 1]).range([m.l, W - m.r]);
+  const y = d3.scaleBand().domain(rows.map((r) => r.label)).range([m.t, H - m.b]).paddingInner(0.25);
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('role', 'img').attr('aria-label', opts.label);
+  svg.append('g').attr('transform', `translate(${m.l - 6},0)`).call(d3.axisLeft(y).tickSize(0)).call((g) => g.select('.domain').remove());
+  const g = svg.append('g');
+  for (const r of rows) {
+    let x0 = 0;
+    for (const s of series) {
+      const v = r.parts[s.key] || 0;
+      if (!v) continue;
+      const w = x(x0 + v) - x(x0);
+      g.append('rect').attr('x', x(x0)).attr('y', y(r.label)).attr('height', y.bandwidth())
+        .attr('width', Math.max(0, w - (w > 3 ? 1 : 0))).style('fill', s.color);
+      x0 += v;
+    }
+    g.append('text').attr('class', 'kd-val').attr('x', x(r.total) + 6).attr('y', y(r.label) + y.bandwidth() / 2).attr('dy', '0.32em').text(fmt(r.total));
+  }
+  if (opts.divideAfter && y(opts.divideAfter.row) != null) {
+    const yy = y(opts.divideAfter.row) + y.bandwidth() + (y.step() - y.bandwidth()) / 2;
+    svg.append('line').attr('x1', 0).attr('x2', W - m.r).attr('y1', yy).attr('y2', yy)
+      .attr('stroke', 'var(--cds-chart-axis)').attr('stroke-dasharray', '4,3');
+    svg.append('text').attr('x', W - m.r).attr('y', yy - 4).attr('text-anchor', 'end').text(opts.divideAfter.above);
+    svg.append('text').attr('x', W - m.r).attr('y', yy + 13).attr('text-anchor', 'end').text(opts.divideAfter.below);
+  }
+  const tip = d3.select(el).append('div').attr('class', 'kd-tip').attr('hidden', '');
+  svg.append('g').selectAll('rect').data(rows).join('rect')
+    .attr('x', 0).attr('width', W).attr('y', (r) => y(r.label) - (y.step() - y.bandwidth()) / 2).attr('height', y.step())
+    .attr('fill', 'transparent')
+    .on('pointerenter pointermove', function (ev, r) {
+      tip.attr('hidden', null).html('');
+      tip.append('div').attr('class', 'kd-tt').text(r.label);
+      for (const line of r.tip) {
+        const div = tip.append('div');
+        if (line.color) div.append('span').attr('class', 'kd-sw').style('background', line.color);
+        div.append('span').text(line.text + ' ');
+        div.append('b').attr('class', 'kd-tn').text(line.value);
+      }
+      kdTipAt(tip, el, ev, 56);
+    })
+    .on('pointerleave', () => tip.attr('hidden', ''));
+};
+
+const GENDER = [
+  { key: 'Female', label: 'Women', color: window.kdSer(0) },
+  { key: 'Male', label: 'Men', color: window.kdSer(1) },
+  { key: 'Unknown', label: 'Unknown', color: window.kdSer('muted') },
+];
+
+dash.draw('gender-chart', (el) => {
+  const d = dash.data('per_year');
+  if (kdFail(el, d)) return;
+  const rows = d.data.map((r) => ({ year: +r.year, Female: +r.Female, Male: +r.Male, Unknown: +r.Unknown }))
+    .filter((r) => r.year >= 1945 && r.year <= 2023);
+  window.kdStacked(el, rows, { from: 1945, to: 2023, share: window.kdMode['gender-chart'] === 'share', series: GENDER,
+    label: 'Stacked bars of new registrations per year from 1945 to 2023, split into estimated women, men and unknown. Registrations rise from a few hundred a year to over 3,000 in the 2010s, with women the majority from 2015.',
+    tipTitle: (yv) => 'Registered in ' + yv });
+});
+
+dash.draw('study-chart', (el) => {
+  const d = dash.data('study_region');
+  if (kdFail(el, d)) return;
+  const series = [
+    { key: 'Kerala', label: 'Kerala', color: window.kdSer(0) },
+    { key: 'Karnataka', label: 'Karnataka', color: window.kdSer(1) },
+    { key: 'Tamil Nadu', label: 'Tamil Nadu', color: window.kdSer(2) },
+    { key: 'Other Indian states', label: 'Other Indian states', color: window.kdSer(3) },
+    { key: 'Abroad', label: 'Abroad', color: window.kdSer(4) },
+    { key: 'Not identified', label: 'Not identified', color: window.kdSer('muted') },
+  ];
+  const rows = d.data.map((r) => { const o = { year: +r.year }; for (const s of series) o[s.key] = +r[s.key]; return o; })
+    .filter((r) => r.year >= 1945 && r.year <= 2019);
+  window.kdStacked(el, rows, { from: 1945, to: 2019, share: window.kdMode['study-chart'] === 'share', series,
+    label: 'Stacked bars of new registrations per year from 1945 to 2019 by where the doctor studied: Kerala, Karnataka, Tamil Nadu, other Indian states or abroad. Kerala universities supply most doctors from the 1960s on.',
+    tipTitle: (yv) => 'Registered in ' + yv });
+});
+
+dash.draw('abroad-chart', (el) => {
+  const d = dash.data('abroad_year');
+  if (kdFail(el, d)) return;
+  const named = ['China', 'Russia', 'Nepal', 'Ukraine'];
+  const by = new Map();
+  for (const r of d.data) {
+    const yv = +r.year; if (yv < 1990 || yv > 2019) continue;
+    const o = by.get(yv) || { year: yv, China: 0, Russia: 0, Nepal: 0, Ukraine: 0, Other: 0 };
+    o[named.includes(r.country) ? r.country : 'Other'] += +r.doctors;
+    by.set(yv, o);
+  }
+  const series = [
+    { key: 'China', label: 'China', color: window.kdSer(0) },
+    { key: 'Russia', label: 'Russia', color: window.kdSer(1) },
+    { key: 'Nepal', label: 'Nepal', color: window.kdSer(2) },
+    { key: 'Ukraine', label: 'Ukraine', color: window.kdSer(3) },
+    { key: 'Other', label: 'Other countries', color: window.kdSer('muted') },
+  ];
+  window.kdStacked(el, [...by.values()], { from: 1990, to: 2019, share: false, series,
+    label: 'Stacked bars of foreign-trained doctors registered each year from 1990 to 2019 by country. Russia leads in the mid-2000s; China dominates from 2011 to 2015.',
+    tipTitle: (yv) => 'Registered in ' + yv });
+});
+
+dash.draw('country-chart', (el) => {
+  const d = dash.data('abroad_countries');
+  if (kdFail(el, d)) return;
+  const rows = d.data.filter((r) => r.country !== 'Not identified').slice(0, 12)
+    .map((r) => ({ label: r.country, total: +r.doctors, parts: { n: +r.doctors }, tip: [{ text: 'Doctors', value: window.kdFmt(+r.doctors) }] }));
+  window.kdHBars(el, rows, { series: [{ key: 'n', color: window.kdSer(4) }],
+    label: 'Bars of the 12 countries with the most foreign-trained doctors on the register, led by China and Russia.' });
+});
+
+dash.draw('age-chart', (el) => {
+  const d = dash.data('age_band');
+  if (kdFail(el, d)) return;
+  const pct = d3.format('.0%');
+  const rows = d.data.map((r) => {
+    const f = +r.Female, mm = +r.Male, u = +r.Unknown, t = +r.Doctors;
+    const span = r.registered_from && r.registered_to ? `${r.registered_from}–${r.registered_to}`
+      : r.registered_from ? `${r.registered_from} or later` : `${r.registered_to} or earlier`;
+    return { label: r.band, total: t, parts: { Female: f, Male: mm, Unknown: u },
+      tip: [
+        { text: 'Registered', value: span },
+        { text: 'Doctors', value: window.kdFmt(t) },
+        { text: 'Women, estimated', value: pct(f / (f + mm)), color: window.kdSer(0) },
+      ] };
+  });
+  const lastWorking = d.data.filter((r) => +r.working_age === 1).pop();
+  window.kdHBars(el, rows, { series: GENDER,
+    divideAfter: lastWorking ? { row: lastWorking.band, above: 'Under 65 ↑', below: '65 and over ↓' } : null,
+    label: 'Bars of doctors by approximate age today, from under 35 to 85 and over, split by estimated gender. The 35–44 band is largest; about four in five doctors are under 65.' });
+});
+
+dash.draw('density-chart', (el) => {
+  const d = dash.data('density');
+  if (kdFail(el, d)) return;
+  const f1 = d3.format('.1f');
+  const rows = d.data.map((r) => {
+    const key = r.kind === 'kerala' ? 'kerala' : 'who';
+    return { label: r.label, total: r.value, parts: { [key]: r.value },
+      tip: [{ text: 'Doctors per 10,000 people', value: f1(r.value) },
+        { text: r.kind === 'kerala' ? 'Source: this register, 2026 population' : 'Source: WHO, ' + r.year, value: '' }] };
+  });
+  window.kdHBars(el, rows, { fmt: f1,
+    series: [{ key: 'kerala', color: window.kdSer(0) }, { key: 'who', color: window.kdSer('muted') }],
+    label: 'Bars of doctors per 10,000 people, highest first: WHO Europe region, Saudi Arabia, the UK, China and the US lead; Kerala sits beside the world figure; India and the South-East Asia region are about half that; the Africa region is lowest.' });
+});
+
+dash.draw('district-chart', (el) => {
+  const d = dash.data('district');
+  if (kdFail(el, d)) return;
+  const pct = d3.format('.0%');
+  const rows = d.data.map((r) => {
+    const f = +r.Female, mm = +r.Male, u = +r.Unknown, t = +r.Doctors;
+    return { label: r.district, total: t, parts: { Female: f, Male: mm, Unknown: u },
+      tip: [
+        { text: 'Doctors', value: window.kdFmt(t) },
+        { text: 'Women, estimated', value: pct(f / (f + mm)), color: window.kdSer(0) },
+        { text: 'Registered 2010–2019', value: window.kdFmt(+r.Registered_2010_2019) },
+      ] };
+  }).sort((a, b) => (a.label === 'Outside Kerala') - (b.label === 'Outside Kerala') || b.total - a.total);
+  window.kdHBars(el, rows, { series: GENDER,
+    label: 'Bars of doctors by home district, split by estimated gender. Thiruvananthapuram has the most, Wayanad the fewest.' });
+});
+</script>
+
+<footer class="site-foot">
+  <span>Source: <a href="https://nmc.org.in/information-desk/indian-medical-register/">NMC Indian Medical Register</a>, Travancore Cochin Medical Council (Kerala), downloaded November 2026; doctor density for other places from the <a href="https://data.who.int/indicators/i/CCCEBB2/217795A">WHO</a>.</span>
+  <span>Only aggregate counts are published here. The tables behind each chart are in the <a href="https://github.com/nethahussain/kerala-doctors-dashboard/tree/main/data">data folder</a> of this site's repository.</span>
+</footer>
+</main>
+</body>
+</html>
