@@ -1472,8 +1472,24 @@ kdDraw('home-chart', (el) => {
 <footer class="site-foot">
   <span>Source: <a href="https://nmc.org.in/information-desk/indian-medical-register/">NMC Indian Medical Register</a>, all state councils and the central register, downloaded November 2026; doctor density for the world and other countries from the <a href="https://data.who.int/indicators/i/CCCEBB2/217795A">WHO</a>.</span>
   <span>Only aggregate counts are published here. The tables behind each chart are in the <a href="https://github.com/nethahussain/india-doctors-dashboard/tree/main/data">data folder</a> of this site's repository.</span>
+  <span>Visits are counted with <a href="https://www.goatcounter.com/">GoatCounter</a>, which sets no cookies and keeps no personal data.</span>
   <span>Created by Netha Hussain. Coding done with Claude Opus 5.5.</span>
 </footer>
+<script>
+window.goatcounter = { path: function () { return location.pathname + location.hash; } };
+(function () {
+  var pick = window.kdSelect;
+  if (typeof pick !== 'function') return;
+  window.kdSelect = function (code) {
+    var before = location.hash;
+    pick.apply(this, arguments);
+    if (location.hash !== before && window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: location.pathname + location.hash, title: document.title });
+    }
+  };
+})();
+</script>
+<script data-goatcounter="https://nethahussain.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </main>
 </body>
 </html>

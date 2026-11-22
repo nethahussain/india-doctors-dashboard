@@ -17,6 +17,8 @@ central register), downloaded November 2026. The landing page covers all of Indi
 Only aggregate counts are published; PIN areas with fewer than five doctors are left out. The tables behind each chart
 are in [`data/`](data/).
 
+Visits are counted with [GoatCounter](https://www.goatcounter.com/), which sets no cookies and keeps no personal data.
+
 ## Caveats
 
 - Gender is estimated from first names (the register has no gender field); about 11% are Unknown India-wide.
