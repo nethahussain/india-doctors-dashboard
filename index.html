@@ -94,6 +94,7 @@ window.dash = (() => {
 .kd-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
 .kd-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
 .kd-lede { margin: 0; max-width: 70ch; font-size: var(--cds-font-size-body); line-height: 1.55; }
+.kd-lede:empty { display: none; }
 .kd-pick { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cds-gap-sm); margin: var(--cds-gap-xs) 0; }
 .kd-pick label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
 .kd-pick select { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-panel); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); padding: 6px 32px 6px 10px; min-height: 40px; max-width: 100%; }
@@ -760,11 +761,9 @@ kdDraw('lede', (el) => {
     kdSay(el, ['India’s national register lists ', { f: 'records', fmt: window.kdFmt, b: true }, ' registrations across 29 state councils and the central register. ',
       s.since ? 'Women have outnumbered men among new registrations every year since ' : null, s.since ? { f: 'since', b: true } : null, s.since ? '.' : null]);
   } else if (s.since) {
-    kdSay(el, ['Women have outnumbered men among new registrations every year since ', { f: 'since', b: true }, '. In ', { f: 'last_year' },
-      ', the last full year on the register, they were ', { f: 'last_female_pct', fmt: f1, b: true }, '% of new doctors whose gender could be estimated.']);
+    kdSay(el, ['Women have outnumbered men among new registrations every year since ', { f: 'since', b: true }, '.']);
   } else {
-    kdSay(el, ['In ', { f: 'last_year' }, ', the last year with at least 100 registrations, women were ', { f: 'last_female_pct', fmt: f1, b: true },
-      '% of new doctors whose gender could be estimated.']);
+    el.textContent = '';
   }
 });
 
