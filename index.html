@@ -758,8 +758,7 @@ kdDraw('lede', (el) => {
   if (!s) { el.textContent = '—'; return; }
   if (s.code === 'IN') {
     kdSay(el, ['India’s national register lists ', { f: 'records', fmt: window.kdFmt, b: true }, ' registrations across 29 state councils and the central register. ',
-      s.since ? 'Women have outnumbered men among new registrations every year since ' : null, s.since ? { f: 'since', b: true } : null, s.since ? '; in ' : 'In ',
-      { f: 'last_year' }, ' they were ', { f: 'last_female_pct', fmt: f1, b: true }, '% of new doctors whose gender could be estimated.']);
+      s.since ? 'Women have outnumbered men among new registrations every year since ' : null, s.since ? { f: 'since', b: true } : null, s.since ? '.' : null]);
   } else if (s.since) {
     kdSay(el, ['Women have outnumbered men among new registrations every year since ', { f: 'since', b: true }, '. In ', { f: 'last_year' },
       ', the last full year on the register, they were ', { f: 'last_female_pct', fmt: f1, b: true }, '% of new doctors whose gender could be estimated.']);
