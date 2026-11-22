@@ -1,6 +1,6 @@
 # Doctors on India's Medical Register: dashboard
 
-**Live page: https://nethahussain.github.io/kerala-doctors-dashboard/**
+**Live page: https://nethahussain.github.io/india-doctors-dashboard/**
 
 Charts of the 1.73 million registrations on the
 [NMC Indian Medical Register](https://nmc.org.in/information-desk/indian-medical-register/) (29 state councils and the
