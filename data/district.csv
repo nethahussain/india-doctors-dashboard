@@ -1,0 +1,662 @@
+code,district,Doctors,Female,Male,Unknown
+AND,Guntur,1252,429,606,217
+AND,Krishna,937,370,388,179
+AND,Visakhapatanam,934,395,379,160
+AND,Chittoor,633,207,310,116
+AND,East Godavari,609,180,274,155
+AND,Kurnool,508,151,281,76
+AND,Spsr Nellore,466,164,211,91
+AND,West Godavari,411,119,191,101
+AND,Y.S.R.,353,96,196,61
+AND,Prakasam,297,84,158,55
+AND,Anantapur,277,100,140,37
+AND,Srikakulam,125,46,60,19
+AND,Vizianagaram,78,27,36,15
+ARU,Lower Subansiri,55,4,4,47
+ARU,Papum Pare,49,11,7,31
+ARU,East Siang,44,11,4,29
+ARU,West Siang,21,2,1,18
+ARU,Lower Dibang Valley,12,0,2,10
+ARU,Changlang,12,2,0,10
+ARU,Upper Subansiri,12,1,3,8
+ARU,Tawang,11,3,1,7
+ARU,Leparada,10,0,3,7
+ARU,Upper Siang,10,1,1,8
+ARU,Namsai,10,2,2,6
+ARU,West Kameng,9,0,3,6
+ARU,East Kameng,8,0,1,7
+ASS,Kamrup Metro,1651,671,639,341
+ASS,Dibrugarh,547,195,240,112
+ASS,Cachar,521,137,261,123
+ASS,Nagaon,428,95,217,116
+ASS,Barpeta,396,45,250,101
+ASS,Kamrup,361,64,205,92
+ASS,Jorhat,286,93,127,66
+ASS,Tinsukia,285,71,152,62
+ASS,Nalbari,234,43,131,60
+ASS,Sonitpur,226,71,112,43
+ASS,Karimganj,208,39,140,29
+ASS,Lakhimpur,202,61,84,57
+ASS,Dhubri,187,28,106,53
+ASS,Sivasagar,153,36,80,37
+ASS,Bongaigaon,153,33,88,32
+ASS,Golaghat,152,43,68,41
+ASS,Hojai,141,35,89,17
+ASS,Goalpara,139,21,86,32
+ASS,Karbi Anglong,124,23,41,60
+ASS,Dhemaji,119,37,58,24
+ASS,Hailakandi,109,17,58,34
+ASS,Marigaon,105,20,63,22
+ASS,Darrang,104,26,51,27
+ASS,Dima Hasao,84,28,20,36
+ASS,Biswanath,83,21,43,19
+ASS,Udalguri,80,15,39,26
+ASS,Baksa,73,12,36,25
+ASS,Charaideo,70,15,40,15
+ASS,South Salmara Mancachar,66,4,43,19
+ASS,Kokrajhar,65,14,29,22
+ASS,Chirang,54,13,24,17
+ASS,Majuli,31,7,11,13
+ASS,West Karbi Anglong,23,1,9,13
+BIH,Patna,1937,668,1208,61
+BIH,Nalanda,508,126,380,2
+BIH,Darbhanga,440,134,299,7
+BIH,Muzaffarpur,423,134,285,4
+BIH,Bhagalpur,413,129,278,6
+BIH,Purbi Champaran,335,66,269,0
+BIH,Gaya,328,112,210,6
+BIH,Samastipur,321,89,229,3
+BIH,Madhubani,295,43,251,1
+BIH,Begusarai,284,81,201,2
+BIH,Vaishali,263,68,191,4
+BIH,Purnia,253,85,165,3
+BIH,Siwan,252,38,213,1
+BIH,Rohtas,224,48,174,2
+BIH,Saran,217,49,165,3
+BIH,Gopalganj,211,42,167,2
+BIH,Katihar,195,46,147,2
+BIH,Sitamarhi,189,40,148,1
+BIH,Pashchim Champaran,184,51,132,1
+BIH,Nawada,180,36,144,0
+BIH,Saharsa,168,41,126,1
+BIH,Munger,162,50,111,1
+BIH,Bhojpur,153,38,113,2
+BIH,Khagaria,145,27,117,1
+BIH,Madhepura,140,22,118,0
+BIH,Supaul,137,16,119,2
+BIH,Araria,129,27,101,1
+BIH,Lakhisarai,117,28,88,1
+BIH,Aurangabad,114,24,89,1
+BIH,Jehanabad,93,23,70,0
+BIH,Jamui,86,22,64,0
+BIH,Buxar,79,17,62,0
+BIH,Kaimur (Bhabua),70,12,56,2
+BIH,Sheikhpura,66,13,53,0
+BIH,Banka,63,13,48,2
+BIH,Arwal,48,12,36,0
+BIH,Kishanganj,46,14,31,1
+BIH,Sheohar,16,2,14,0
+CHA,Raipur,1383,631,627,125
+CHA,Durg,1219,568,560,91
+CHA,Bilaspur,892,369,461,62
+CHA,Raigarh,391,128,237,26
+CHA,Surguja,359,143,196,20
+CHA,Korba,339,135,180,24
+CHA,Janjgir-Champa,296,87,191,18
+CHA,Rajnandgaon,279,99,164,16
+CHA,Dhamtari,222,82,129,11
+CHA,Mahasamund,207,58,135,14
+CHA,Korea,173,59,103,11
+CHA,Bastar,162,70,82,10
+CHA,Surajpur,133,38,83,12
+CHA,Jashpur,128,62,62,4
+CHA,Baloda Bazar,126,41,76,9
+CHA,Kanker,116,46,61,9
+CHA,Balod,113,32,66,15
+CHA,Kabirdham,86,16,62,8
+CHA,Mungeli,81,20,53,8
+CHA,Balrampur,69,18,46,5
+CHA,Bemetara,68,14,50,4
+CHA,Gaurella Pendra Marwahi,51,14,35,2
+CHA,Dantewada,49,25,18,6
+CHA,Kondagaon,41,10,30,1
+CHA,Gariyaband,22,5,14,3
+CHA,Narayanpur,12,4,8,0
+CHA,Bijapur,12,6,6,0
+CHA,Sukma,7,4,2,1
+DEL,West,2601,1003,1360,238
+DEL,South East,2065,705,1132,228
+DEL,North West,2008,830,1017,161
+DEL,South,1978,723,1043,212
+DEL,South West,1584,741,738,105
+DEL,New Delhi,1400,650,589,161
+DEL,North,1246,493,641,112
+DEL,East,1179,502,595,82
+DEL,Shahdara,888,306,492,90
+DEL,North East,862,269,549,44
+DEL,Central,842,304,435,103
+GUJ,Ahmadabad,18881,6864,10202,1815
+GUJ,Surat,8149,3404,4191,554
+GUJ,Vadodara,5649,2527,2683,439
+GUJ,Rajkot,5063,1936,2680,447
+GUJ,Bhavnagar,2509,816,1444,249
+GUJ,Banas Kantha,2274,545,1539,190
+GUJ,Gandhinagar,2121,784,1100,237
+GUJ,Junagadh,1931,604,1171,156
+GUJ,Jamnagar,1712,609,933,170
+GUJ,Mahesana,1540,435,963,142
+GUJ,Valsad,1530,757,685,88
+GUJ,Navsari,1363,640,635,88
+GUJ,Sabar Kantha,1246,357,740,149
+GUJ,Anand,1221,433,672,116
+GUJ,Kachchh,1173,474,575,124
+GUJ,Patan,1122,275,742,105
+GUJ,Bharuch,1094,560,428,106
+GUJ,Dohad,1092,414,577,101
+GUJ,Morbi,942,328,540,74
+GUJ,Arvalli,879,263,545,71
+GUJ,Surendranagar,861,276,507,78
+GUJ,Kheda,772,241,446,85
+GUJ,Amreli,760,233,471,56
+GUJ,Gir Somnath,737,243,423,71
+GUJ,Panch Mahals,678,221,368,89
+GUJ,Tapi,540,272,247,21
+GUJ,Mahisagar,521,142,325,54
+GUJ,Porbandar,372,119,221,32
+GUJ,Botad,359,66,261,32
+GUJ,Devbhumi Dwarka,328,89,215,24
+GUJ,Chhotaudepur,190,45,131,14
+GUJ,Narmada,135,43,85,7
+GUJ,Dang,46,21,23,2
+HAR,Gurugram,631,269,322,40
+HAR,Faridabad,362,125,207,30
+HAR,Hisar,216,78,125,13
+HAR,Karnal,191,54,118,19
+HAR,Rohtak,190,73,100,17
+HAR,Panipat,151,51,87,13
+HAR,Panchkula,140,62,72,6
+HAR,Sonipat,131,44,78,9
+HAR,Rewari,127,54,67,6
+HAR,Ambala,126,41,76,9
+HAR,Mahendragarh,120,34,71,15
+HAR,Sirsa,119,29,78,12
+HAR,Yamunanagar,115,25,76,14
+HAR,Bhiwani,87,27,55,5
+HAR,Jind,78,17,54,7
+HAR,Fatehabad,73,28,39,6
+HAR,Kurukshetra,64,20,35,9
+HAR,Jhajjar,61,22,39,0
+HAR,Palwal,59,14,41,4
+HAR,Kaithal,57,14,38,5
+HAR,Charki Dadri,31,9,18,4
+HAR,Nuh,18,4,12,2
+HIM,Shimla,56,24,25,7
+HIM,Kangra,44,18,21,5
+HIM,Hamirpur,42,19,20,3
+HIM,Kullu,24,8,15,1
+HIM,Mandi,19,6,13,0
+HIM,Bilaspur,16,2,12,2
+HIM,Una,14,6,7,1
+HIM,Chamba,13,2,8,3
+HIM,Solan,13,3,8,2
+HIM,Sirmaur,12,4,8,0
+HIM,Kinnaur,5,1,3,1
+JAM,Srinagar,980,259,580,141
+JAM,Jammu,605,261,278,66
+JAM,Anantnag,214,38,144,32
+JAM,Baramulla,197,37,124,36
+JAM,Budgam,197,38,130,29
+JAM,Pulwama,162,18,115,29
+JAM,Kupwara,82,13,63,6
+JAM,Kulgam,79,8,60,11
+JAM,Kathua,66,16,35,15
+JAM,Shopian,51,6,35,10
+JAM,Doda,47,10,28,9
+JAM,Bandipora,47,8,33,6
+JAM,Ganderbal,36,7,26,3
+JAM,Rajouri,33,9,19,5
+JAM,Udhampur,32,9,19,4
+JAM,Samba,29,6,18,5
+JAM,Leh Ladakh,24,11,4,9
+JAM,Kishtwar,22,5,16,1
+JAM,Ramban,19,4,12,3
+JAM,Poonch,15,5,9,1
+JAM,Kargil,11,2,7,2
+JAM,Reasi,10,4,5,1
+JHA,Ranchi,1370,683,604,83
+JHA,East Singhbum,485,216,223,46
+JHA,Dhanbad,410,184,199,27
+JHA,Bokaro,283,106,160,17
+JHA,Hazaribagh,245,92,147,6
+JHA,Palamu,168,61,102,5
+JHA,Giridih,144,45,94,5
+JHA,Deoghar,125,47,75,3
+JHA,Ramgarh,114,46,64,4
+JHA,Godda,112,40,66,6
+JHA,Koderma,101,37,61,3
+JHA,Saraikela Kharsawan,97,44,45,8
+JHA,Sahebganj,82,25,51,6
+JHA,Garhwa,71,21,48,2
+JHA,Dumka,66,27,33,6
+JHA,West Singhbhum,64,31,29,4
+JHA,Gumla,51,27,23,1
+JHA,Chatra,49,13,36,0
+JHA,Jamtara,42,12,26,4
+JHA,Khunti,35,21,11,3
+JHA,Simdega,35,15,17,3
+JHA,Pakur,35,7,24,4
+JHA,Lohardaga,33,20,10,3
+JHA,Latehar,20,9,10,1
+KAR,Bengaluru Urban,46585,21974,20576,4035
+KAR,Mysuru,6484,2662,3178,644
+KAR,Dakshina Kannada,6028,2535,2776,717
+KAR,Kalaburagi,5284,1961,2909,414
+KAR,Belagavi,4573,1535,2621,417
+KAR,Ballari,3478,1297,1813,368
+KAR,Dharwad,3336,1276,1719,341
+KAR,Udupi,3310,1332,1543,435
+KAR,Davangere,3243,1159,1794,290
+KAR,Tumakuru,3144,1120,1706,318
+KAR,Bidar,3057,1058,1763,236
+KAR,Vijayapura,2759,914,1525,320
+KAR,Shivamogga,2560,925,1383,252
+KAR,Kolar,2371,980,1168,223
+KAR,Raichur,2305,844,1195,266
+KAR,Hassan,1934,710,1028,196
+KAR,Chitradurga,1807,609,988,210
+KAR,Bagalkote,1756,544,1069,143
+KAR,Mandya,1742,619,914,209
+KAR,Chikkaballapura,1275,481,682,112
+KAR,Chikkamagaluru,1264,396,714,154
+KAR,Bengaluru Rural,1045,400,563,82
+KAR,Uttara Kannada,1043,362,594,87
+KAR,Koppal,953,351,491,111
+KAR,Haveri,922,288,537,97
+KAR,Gadag,863,277,475,111
+KAR,Yadgir,831,235,491,105
+KAR,Ramanagara,607,239,323,45
+KAR,Kodagu,588,216,287,85
+KAR,Chamarajanagara,517,190,279,48
+MAD,Bhopal,2776,1406,1203,167
+MAD,Indore,2773,1290,1309,174
+MAD,Gwalior,2330,966,1248,116
+MAD,Jabalpur,1391,666,662,63
+MAD,Ujjain,725,300,382,43
+MAD,Rewa,675,215,427,33
+MAD,Morena,563,151,384,28
+MAD,Sagar,562,228,304,30
+MAD,Satna,393,149,220,24
+MAD,Dhar,370,113,242,15
+MAD,Chhatarpur,363,117,217,29
+MAD,Vidisha,350,115,218,17
+MAD,Khargone,308,98,191,19
+MAD,Dewas,285,113,156,16
+MAD,Hoshangabad,283,129,144,10
+MAD,Bhind,244,37,193,14
+MAD,Ratlam,232,88,136,8
+MAD,Mandsaur,226,59,151,16
+MAD,Balaghat,224,94,122,8
+MAD,Chhindwara,223,83,130,10
+MAD,Shivpuri,205,61,130,14
+MAD,Betul,200,86,110,4
+MAD,Barwani,187,53,121,13
+MAD,Damoh,181,47,121,13
+MAD,Katni,170,71,95,4
+MAD,Tikamgarh,169,55,103,11
+MAD,Neemuch,169,55,105,9
+MAD,Narsinghpur,168,51,113,4
+MAD,Guna,166,72,89,5
+MAD,Sehore,162,42,111,9
+MAD,Shahdol,161,68,80,13
+MAD,East Nimar,151,52,87,12
+MAD,Singrauli,133,42,87,4
+MAD,Harda,131,45,78,8
+MAD,Seoni,126,50,68,8
+MAD,Raisen,121,33,81,7
+MAD,Mandla,118,51,57,10
+MAD,Rajgarh,114,35,75,4
+MAD,Datia,114,26,80,8
+MAD,Burhanpur,112,39,64,9
+MAD,Ashoknagar,100,22,76,2
+MAD,Jhabua,100,18,78,4
+MAD,Shajapur,98,29,64,5
+MAD,Panna,88,26,59,3
+MAD,Anuppur,88,27,58,3
+MAD,Sidhi,84,17,63,4
+MAD,Sheopur,72,22,45,5
+MAD,Alirajpur,63,32,29,2
+MAD,Agar Malwa,54,19,32,3
+MAD,Niwari,40,14,25,1
+MAD,Umaria,36,14,21,1
+MAD,Dindori,15,3,11,1
+MAH,Mumbai Suburban,2438,1098,1241,99
+MAH,Pune,2307,976,1241,90
+MAH,Thane,1313,581,674,58
+MAH,Nagpur,943,420,508,15
+MAH,Mumbai,914,361,505,48
+MAH,Nanded,540,170,353,17
+MAH,Nashik,459,156,293,10
+MAH,Aurangabad,431,166,258,7
+MAH,Beed,428,109,311,8
+MAH,Solapur,421,136,274,11
+MAH,Buldhana,413,94,312,7
+MAH,Ahmednagar,407,128,272,7
+MAH,Raigad,377,162,196,19
+MAH,Latur,326,98,219,9
+MAH,Akola,286,99,183,4
+MAH,Palghar,276,100,172,4
+MAH,Sangli,269,98,166,5
+MAH,Parbhani,268,69,198,1
+MAH,Amravati,251,58,183,10
+MAH,Yavatmal,249,67,174,8
+MAH,Kolhapur,241,78,156,7
+MAH,Jalgaon,229,62,161,6
+MAH,Satara,188,71,115,2
+MAH,Chandrapur,164,45,118,1
+MAH,Osmanabad,154,46,107,1
+MAH,Wardha,143,54,88,1
+MAH,Hingoli,136,36,99,1
+MAH,Washim,130,33,96,1
+MAH,Jalna,123,35,86,2
+MAH,Dhule,118,25,93,0
+MAH,Bhandara,93,34,57,2
+MAH,Gondia,86,28,56,2
+MAH,Nandurbar,64,15,47,2
+MAH,Gadchiroli,55,9,46,0
+MAH,Ratnagiri,48,16,30,2
+MAH,Sindhudurg,27,7,19,1
+NAG,Dimapur,227,34,15,178
+NAG,Kohima,137,13,7,117
+NAG,Mokokchung,19,1,1,17
+NAG,Phek,19,1,0,18
+NAG,Wokha,18,0,1,17
+NAG,Zunheboto,13,3,0,10
+NAG,Mon,12,2,0,10
+NAG,Tuensang,10,0,0,10
+NAG,Peren,10,0,0,10
+ORI,Khordha,562,253,227,82
+ORI,Cuttack,309,111,144,54
+ORI,Ganjam,246,84,116,46
+ORI,Baleshwar,196,63,110,23
+ORI,Jajapur,151,41,90,20
+ORI,Sundargarh,146,57,74,15
+ORI,Mayurbhanj,132,41,68,23
+ORI,Bargarh,121,34,70,17
+ORI,Bhadrak,111,29,63,19
+ORI,Anugul,93,28,52,13
+ORI,Dhenkanal,91,33,41,17
+ORI,Kendrapara,91,30,40,21
+ORI,Balangir,86,18,54,14
+ORI,Sambalpur,80,35,36,9
+ORI,Jagatsinghapur,76,27,32,17
+ORI,Kendujhar,71,29,39,3
+ORI,Puri,68,22,32,14
+ORI,Kalahandi,55,16,31,8
+ORI,Koraput,53,15,33,5
+ORI,Jharsuguda,50,21,20,9
+ORI,Nayagarh,48,11,20,17
+ORI,Nuapada,43,9,28,6
+ORI,Sonepur,32,10,19,3
+ORI,Nabarangpur,29,7,18,4
+ORI,Kandhamal,27,11,10,6
+ORI,Gajapati,25,7,14,4
+ORI,Rayagada,21,10,8,3
+ORI,Boudh,13,6,4,3
+ORI,Malkangiri,11,4,6,1
+ORI,Deogarh,8,2,2,4
+PUN,Ludhiana,223,69,106,48
+PUN,Patiala,152,37,75,40
+PUN,Jalandhar,147,46,72,29
+PUN,S.A.S Nagar,143,50,62,31
+PUN,Amritsar,136,37,71,28
+PUN,Gurdaspur,120,23,74,23
+PUN,Sangrur,92,28,44,20
+PUN,Bathinda,91,27,45,19
+PUN,Hoshiarpur,87,22,48,17
+PUN,Fazilka,81,25,42,14
+PUN,Kapurthala,64,14,36,14
+PUN,Barnala,55,12,32,11
+PUN,Pathankot,51,21,21,9
+PUN,Mansa,51,12,31,8
+PUN,Sri Muktsar Sahib,46,8,26,12
+PUN,Firozepur,44,12,25,7
+PUN,Moga,43,14,22,7
+PUN,Shahid Bhagat Singh Nagar,43,6,24,13
+PUN,Faridkot,37,12,21,4
+PUN,Rupnagar,31,11,16,4
+PUN,Tarn Taran,30,6,12,12
+PUN,Fatehgarh Sahib,21,4,10,7
+RAJ,Jaipur,234,64,153,17
+RAJ,Ajmer,54,9,37,8
+RAJ,Jodhpur,52,14,35,3
+RAJ,Jhunjhunu,36,12,24,0
+RAJ,Bikaner,36,12,23,1
+RAJ,Kota,32,7,23,2
+RAJ,Udaipur,32,10,19,3
+RAJ,Sikar,30,13,15,2
+RAJ,Alwar,28,3,22,3
+RAJ,Ganganagar,13,1,12,0
+RAJ,Barmer,13,3,9,1
+RAJ,Nagaur,13,1,12,0
+RAJ,Bharatpur,13,2,10,1
+RAJ,Tonk,12,1,11,0
+RAJ,Karauli,12,3,9,0
+RAJ,Pali,11,3,8,0
+RAJ,Hanumangarh,9,2,7,0
+RAJ,Dausa,9,2,6,1
+RAJ,Churu,8,2,4,2
+RAJ,Sawai Madhopur,8,2,6,0
+RAJ,Sirohi,7,2,3,2
+RAJ,Dungarpur,7,2,4,1
+RAJ,Bhilwara,7,2,4,1
+RAJ,Banswara,7,0,6,1
+RAJ,Pratapgarh,7,1,6,0
+RAJ,Jalore,6,1,5,0
+RAJ,Chittorgarh,6,2,4,0
+RAJ,Jhalawar,6,2,3,1
+RAJ,Dholpur,6,0,6,0
+SIK,East District,429,151,143,135
+SIK,West District,100,38,31,31
+SIK,South District,62,20,20,22
+SIK,North District,12,1,3,8
+TAM,Chennai,32890,13879,16267,2744
+TAM,Coimbatore,8785,3410,4562,813
+TAM,Madurai,7171,2562,3945,664
+TAM,Salem,7080,2437,3983,660
+TAM,Chengalpattu,5987,2638,2838,511
+TAM,Tiruchirappalli,5894,2239,3129,526
+TAM,Thiruvallur,5675,2382,2782,511
+TAM,Kanniyakumari,4966,1706,2572,688
+TAM,Erode,4781,1629,2598,554
+TAM,Cuddalore,4408,1550,2426,432
+TAM,Thanjavur,4316,1500,2404,412
+TAM,Namakkal,4121,1445,2231,445
+TAM,Vellore,4100,1605,2204,291
+TAM,Dharmapuri,3437,1187,1940,310
+TAM,Tirunelveli,3360,1149,1839,372
+TAM,Tiruppur,3201,1283,1596,322
+TAM,Krishnagiri,3148,1163,1658,327
+TAM,Dindigul,2694,954,1476,264
+TAM,Virudhunagar,2629,852,1544,233
+TAM,Villupuram,2341,813,1283,245
+TAM,Tiruvannamalai,2222,766,1255,201
+TAM,Tuticorin,2208,798,1161,249
+TAM,Pudukkottai,1819,586,1050,183
+TAM,Kanchipuram,1788,721,911,156
+TAM,Tenkasi,1785,616,971,198
+TAM,Theni,1708,536,995,177
+TAM,Karur,1609,591,869,149
+TAM,Kallakurichi,1570,533,879,158
+TAM,Tirupathur,1522,573,819,130
+TAM,Ramanathapuram,1519,475,884,160
+TAM,Sivaganga,1433,517,766,150
+TAM,Ranipet,1405,557,742,106
+TAM,Ariyalur,1166,370,695,101
+TAM,Perambalur,1055,344,606,105
+TAM,Thiruvarur,971,308,576,87
+TAM,Mayiladuthurai,833,278,471,84
+TAM,The Nilgiris,819,300,462,57
+TAM,Nagapattinam,495,161,279,55
+TC,Thiruvananthapuram,10615,4684,5347,584
+TC,Ernakulam,7655,3111,4061,483
+TC,Thrissur,6564,2362,3715,487
+TC,Kollam,6130,2470,3266,394
+TC,Kottayam,5469,2111,3117,241
+TC,Kozhikode,5133,2007,2621,505
+TC,Malappuram,4036,1371,2157,508
+TC,Alappuzha,4029,1621,2185,223
+TC,Kannur,3357,1363,1713,281
+TC,Pathanamthitta,2630,1101,1442,87
+TC,Palakkad,2273,899,1167,207
+TC,Idukki,891,343,501,47
+TC,Kasaragod,850,330,441,79
+TC,Wayanad,403,196,168,39
+TEL,Hyderabad,4066,2269,1371,426
+TEL,Medchal Malkajgiri,1710,952,504,254
+TEL,Ranga Reddy,1537,831,491,215
+TEL,Warangal Urban,710,385,229,96
+TEL,Karimnagar,385,205,139,41
+TEL,Khammam,358,176,127,55
+TEL,Nalgonda,332,166,128,38
+TEL,Sangareddy,327,160,125,42
+TEL,Nizamabad,297,155,111,31
+TEL,Mahabubnagar,289,151,97,41
+TEL,Mancherial,225,92,102,31
+TEL,Suryapet,173,91,61,21
+TEL,Bhadradri Kothagudem,165,77,59,29
+TEL,Peddapalli,163,83,57,23
+TEL,Siddipet,161,64,74,23
+TEL,Jagitial,156,66,76,14
+TEL,Nagarkurnool,151,70,58,23
+TEL,Warangal Rural,130,49,63,18
+TEL,Wanaparthy,126,49,61,16
+TEL,Adilabad,123,50,64,9
+TEL,Mahabubabad,121,42,62,17
+TEL,Kamareddy,119,50,53,16
+TEL,Nirmal,115,58,48,9
+TEL,Yadadri Bhuvanagiri,109,56,41,12
+TEL,Jogulamba Gadwal,104,45,45,14
+TEL,Vikarabad,104,55,38,11
+TEL,Jangoan,79,39,32,8
+TEL,Medak,74,37,27,10
+TEL,Narayanpet,69,27,35,7
+TEL,Jayashankar Bhupalapally,66,26,32,8
+TEL,Rajanna Sircilla,63,25,29,9
+TEL,Kumuram Bheem Asifabad,38,12,22,4
+TEL,Mulugu,32,10,19,3
+TRI,West Tripura,1567,518,751,298
+TRI,Gomati,175,42,91,42
+TRI,South Tripura,167,52,91,24
+TRI,Khowai,158,44,75,39
+TRI,Sepahijala,141,38,80,23
+TRI,North Tripura,103,37,53,13
+TRI,Dhalai,101,29,53,19
+TRI,Unakoti,75,23,39,13
+UP,Lucknow,4964,1818,2712,434
+UP,Ghaziabad,2339,841,1304,194
+UP,Varanasi,2317,766,1370,181
+UP,Prayagraj,2239,718,1348,173
+UP,Kanpur Nagar,2234,831,1238,165
+UP,Agra,2229,771,1277,181
+UP,Gorakhpur,2020,717,1158,145
+UP,Gautam Buddha Nagar,1582,589,868,125
+UP,Aligarh,1427,484,842,101
+UP,Meerut,1382,507,757,118
+UP,Bareilly,1213,353,760,100
+UP,Jaunpur,1023,238,711,74
+UP,Azamgarh,934,222,624,88
+UP,Bijnor,750,251,439,60
+UP,Jhansi,733,231,434,68
+UP,Moradabad,726,229,427,70
+UP,Saharanpur,687,217,421,49
+UP,Mathura,685,184,448,53
+UP,Deoria,657,178,429,50
+UP,Mau,556,153,368,35
+UP,Ambedkar Nagar,534,123,369,42
+UP,Muzaffarnagar,533,164,334,35
+UP,Basti,496,115,348,33
+UP,Kushi Nagar,493,127,329,37
+UP,Sultanpur,453,118,296,39
+UP,Ghazipur,447,120,290,37
+UP,Ayodhya,441,130,279,32
+UP,Bulandshahr,417,136,252,29
+UP,Ballia,415,117,265,33
+UP,Mirzapur,403,108,256,39
+UP,Gonda,366,89,249,28
+UP,Etawah,366,121,226,19
+UP,Pratapgarh,358,99,244,15
+UP,Rae Bareli,345,104,225,16
+UP,Bhadohi,345,64,258,23
+UP,Shahjahanpur,335,89,218,28
+UP,Firozabad,328,91,205,32
+UP,Kheri,317,93,199,25
+UP,Bahraich,315,84,198,33
+UP,Hardoi,296,78,195,23
+UP,Siddharth Nagar,289,83,187,19
+UP,Amroha,281,66,188,27
+UP,Rampur,277,70,187,20
+UP,Budaun,277,75,169,33
+UP,Hapur,275,88,170,17
+UP,Chandauli,264,79,165,20
+UP,Farrukhabad,263,74,166,23
+UP,Sitapur,259,66,175,18
+UP,Fatehpur,250,86,149,15
+UP,Maharajganj,243,52,172,19
+UP,Barabanki,238,53,174,11
+UP,Etah,238,70,150,18
+UP,Mainpuri,235,84,129,22
+UP,Sonbhadra,231,77,139,15
+UP,Pilibhit,217,61,132,24
+UP,Sambhal,208,58,130,20
+UP,Jalaun,206,66,127,13
+UP,Hathras,197,67,115,15
+UP,Sant Kabeer Nagar,195,54,128,13
+UP,Unnao,176,61,97,18
+UP,Baghpat,175,59,97,19
+UP,Balrampur,172,45,111,16
+UP,Banda,155,47,96,12
+UP,Shamli,146,38,94,14
+UP,Hamirpur,141,43,87,11
+UP,Auraiya,130,51,71,8
+UP,Lalitpur,124,37,79,8
+UP,Kasganj,121,35,72,14
+UP,Amethi,120,29,85,6
+UP,Kannauj,118,31,73,14
+UP,Mahoba,110,39,62,9
+UP,Chitrakoot,97,28,61,8
+UP,Kanpur Dehat,88,32,52,4
+UP,Kaushambi,88,24,62,2
+UP,Shravasti,54,13,34,7
+UTT,Dehradun,216,81,122,13
+UTT,Haridwar,138,44,90,4
+UTT,Udam Singh Nagar,82,25,51,6
+UTT,Nainital,58,17,39,2
+UTT,Pithoragarh,19,2,15,2
+UTT,Pauri Garhwal,17,5,12,0
+UTT,Almora,16,4,12,0
+UTT,Uttar Kashi,7,2,5,0
+UTT,Chamoli,5,1,3,1
+UTT,Champawat,5,1,3,1
+WES,Kolkata,7404,2183,4123,1098
+WES,24 Paraganas North,5671,1502,3271,898
+WES,24 Paraganas South,1690,430,983,277
+WES,Hooghly,1537,337,953,247
+WES,Howrah,1521,391,934,196
+WES,Paschim Bardhaman,1478,454,837,187
+WES,Murshidabad,1029,221,608,200
+WES,Purba Bardhaman,1024,198,664,162
+WES,Nadia,963,198,601,164
+WES,Medinipur West,873,184,552,137
+WES,Bankura,834,192,522,120
+WES,Medinipur East,777,169,488,120
+WES,Maldah,710,135,438,137
+WES,Darjeeling,592,204,292,96
+WES,Birbhum,504,95,328,81
+WES,Dinajpur Uttar,338,49,239,50
+WES,Purulia,325,66,218,41
+WES,Coochbehar,255,43,166,46
+WES,Jalpaiguri,238,50,146,42
+WES,Jhargram,229,50,143,36
+WES,Dinajpur Dakshin,162,24,100,38
+WES,Alipurduar,120,23,76,21
+WES,Kalimpong,59,15,13,31

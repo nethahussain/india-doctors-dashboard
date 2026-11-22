@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kerala Doctors Register</title>
-<meta name="description" content="Kerala's 67,147 registered doctors on the NMC Indian Medical Register: new registrations by estimated gender, working age, doctors per 10,000 people against India and the world, where they studied, and home district.">
+<title>Doctors on India's Medical Register</title>
+<meta name="description" content="About 1.7 million registrations on the NMC Indian Medical Register, for all India and each state council: where doctors live, new registrations by estimated gender, working age, doctors per 10,000 people against the world, and where they studied.">
 <style>
 :root {
   color-scheme: light;
@@ -50,7 +50,7 @@ body { font-family: var(--font-anthropic-sans); line-height: 1.5; }
 <script>
 // Minimal stand-in for the claude.ai dashboard runtime: loads the CSVs, runs the calcs, redraws.
 window.dash = (() => {
-  const SOURCES = {"per_year": "doctors_per_year_by_gender.csv", "study_region": "study_region_by_year.csv", "abroad_year": "abroad_by_year.csv", "abroad_countries": "abroad_countries.csv", "district": "home_district.csv", "age_band": "age_band.csv", "who_density": "who_density.csv", "pins": "pin_doctors.csv", "district_pop": "district_population.csv"};
+  const SOURCES = {"councils": "councils.csv", "per_year": "per_year.csv", "age_band": "age_band.csv", "study": "study.csv", "study_states": "study_states.csv", "abroad_countries": "abroad_countries.csv", "abroad_year": "abroad_year.csv", "pins": "pins.csv", "pin_places": "pin_places.csv", "district": "district.csv", "home_state": "home_state.csv", "duplicates": "duplicates.csv", "who_density": "who_density.csv", "district_pop": "district_population.csv", "india_geo": "india_states.json", "kerala_geo": "kerala_districts.json"};  // id -> file in data/
   const calcs = [], draws = new Map(), store = {};
   const run = (name) => {
     const fn = draws.get(name);
@@ -70,7 +70,7 @@ window.dash = (() => {
   document.addEventListener('DOMContentLoaded', () => {
     redrawAll();
     const all = Object.entries(SOURCES).map(([id, file]) =>
-      d3.csv('data/' + file).then((rows) => { store[id] = { status: 'ok', data: rows }; })
+      (file.endsWith('.json') ? d3.json('data/' + file) : d3.csv('data/' + file)).then((rows) => { store[id] = { status: 'ok', data: rows }; })
         .catch(() => { store[id] = { status: 'error', data: null }; }));
     Promise.all(all).then(() => {
       for (const [name, o] of calcs) {
@@ -94,11 +94,17 @@ window.dash = (() => {
 .kd-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
 .kd-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
 .kd-lede { margin: 0; max-width: 70ch; font-size: var(--cds-font-size-body); line-height: 1.55; }
+.kd-pick { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cds-gap-sm); margin: var(--cds-gap-xs) 0; }
+.kd-pick label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.kd-pick select { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-panel); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); padding: 6px 32px 6px 10px; min-height: 40px; max-width: 100%; }
+.kd-pick button { font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); background: transparent; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 6px 12px; min-height: 40px; cursor: pointer; }
+.kd-pick button[hidden] { display: none; }
 .kd-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--cds-gap-md); }
 .kd-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
 .kd-tile .kd-v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .kd-tile .kd-l { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.4; }
 .kd-sec { display: flex; flex-direction: column; gap: var(--cds-gap-md); min-width: 0; }
+.kd-sec[hidden], .kd [hidden] { display: none !important; }
 .kd-sec h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
 .kd-say { margin: 0; font-size: var(--cds-font-size-body); line-height: 1.55; max-width: 76ch; }
 .kd-note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.5; max-width: 76ch; margin: 0; }
@@ -106,40 +112,41 @@ window.dash = (() => {
 .kd-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); list-style: none; padding: 0; margin: 0; }
 .kd-sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
 .kd-chart { position: relative; min-height: 300px; }
-.kd-hbar { position: relative; min-height: 380px; }
-.kd-hbar.kd-drawn { min-height: 0 !important; }
+.kd-hbar { position: relative; min-height: 200px; }
+.kd-hbar.kd-drawn, .kd-chart.kd-drawn { min-height: 0 !important; }
 .kd-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 8px 10px; font-size: var(--cds-font-size-caption); line-height: 1.5; white-space: nowrap; z-index: 5; color: var(--color-fg); }
 .kd-tip .kd-tt { font-weight: var(--cds-font-weight-medium); margin-bottom: 2px; }
 .kd-tip .kd-tn { font-variant-numeric: tabular-nums; }
 .kd-tip .kd-tm { color: var(--cds-text-secondary); }
-.kd-chart svg text, .kd-hbar svg text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
-.kd-hbar svg text.kd-val { fill: var(--color-fg); font-variant-numeric: tabular-nums; }
-.kd-chart .domain, .kd-hbar .domain { stroke: var(--cds-chart-axis); }
-.kd-chart .tick line { stroke: var(--cds-chart-grid); }
+.kd svg text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+.kd svg text.kd-val { fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.kd .domain { stroke: var(--cds-chart-axis); }
+.kd .tick line { stroke: var(--cds-chart-grid); }
 .kd-fail { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: var(--cds-pad-md) 0; }
 .kd-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
 .kd-seg button { font: inherit; font-size: var(--cds-font-size-caption); background: transparent; color: var(--color-fg-muted); border: 0; padding: 6px 12px; min-height: 36px; cursor: pointer; touch-action: manipulation; }
 .kd-seg button[aria-pressed="true"] { background: var(--color-panel); color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
-.kd-seg button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: -2px; }
+.kd-seg button:focus-visible, .kd-pick select:focus-visible, .kd-pick button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 1px; }
 .kd-about summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+.kd-about ul { margin: var(--cds-gap-sm) 0 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--cds-gap-xs); max-width: 76ch; line-height: 1.5; }
 @media (max-width: 520px) {
   .kd-tiles { gap: var(--cds-gap-sm); }
   .kd-tile { padding: var(--cds-pad-md); }
   .kd-tile .kd-v { font-size: 1.6rem; }
   .kd-tip { white-space: normal; max-width: 240px; }
+  .kd-pick select { width: 100%; }
 }
-.kd-about ul { margin: var(--cds-gap-sm) 0 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--cds-gap-xs); max-width: 76ch; line-height: 1.5; }
-
 .kd { --kd-seq-1: #cde2fb; --kd-seq-2: #86b6ef; --kd-seq-3: #3987e5; --kd-seq-4: #1c5cab; --kd-seq-5: #0d366b; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kd { --kd-seq-1: #184f95; --kd-seq-2: #256abf; --kd-seq-3: #3987e5; --kd-seq-4: #6da7ec; --kd-seq-5: #b7d3f6; } }
 :root[data-theme="dark"] .kd { --kd-seq-1: #184f95; --kd-seq-2: #256abf; --kd-seq-3: #3987e5; --kd-seq-4: #6da7ec; --kd-seq-5: #b7d3f6; }
-.kd-map-grid { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: var(--cds-gap-xl); align-items: start; }
+.kd-map-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--cds-gap-xl); align-items: start; }
 @media (max-width: 760px) { .kd-map-grid { grid-template-columns: minmax(0, 1fr); gap: var(--cds-gap-md); } }
 .kd-map { position: relative; min-height: 320px; }
 .kd-map.kd-drawn { min-height: 0; }
 .kd-map svg .kd-dist { fill: var(--color-panel); stroke: var(--cds-chart-axis); stroke-width: 0.75; }
 .kd-map svg .kd-dist.kd-on { stroke: var(--color-fg); stroke-width: 1.5; }
-.kd-map svg text { font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); fill: var(--color-fg); }
+.kd-map svg .kd-dist.kd-none { fill: none; stroke-dasharray: 2,2; }
+.kd-map svg text { fill: var(--color-fg); }
 .kd-map svg text.kd-lbl { paint-order: stroke; stroke: var(--color-panel); stroke-width: 3px; stroke-linejoin: round; font-variant-numeric: tabular-nums; font-weight: var(--cds-font-weight-medium); }
 .kd-map svg text.kd-cap { fill: var(--cds-text-secondary); }
 .kd-rank-h { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0 0 var(--cds-gap-sm); }
@@ -148,39 +155,54 @@ window.dash = (() => {
 .kd-rank .kd-i { color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
 .kd-rank .kd-n { font-variant-numeric: tabular-nums; font-weight: var(--cds-font-weight-medium); text-align: right; }
 .kd-rank .kd-sub { color: var(--color-fg-muted); }
+.kd-rank button { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-color: var(--cds-chart-axis); text-underline-offset: 3px; }
 .kd-sw-proj { background: color-mix(in srgb, var(--kd-proj, #2a78d6) 35%, transparent); box-shadow: inset 0 0 0 1px var(--kd-proj, #2a78d6); }
 .kd-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.kd-click { cursor: pointer; }
 </style>
 
 <div class="kd">
   <header class="kd-head" id="summary">
-    <h1>Kerala Doctors Register</h1>
-    <p class="kd-lede">Women have outnumbered men among new registrations every year since <b data-draw="since" data-source="trend" data-field="since" data-row="0">—</b>. In <span data-draw="lastyear" data-source="trend" data-field="last_year" data-row="0">—</span>, the last full year on the register, they were <b data-draw="lastpct" data-source="trend" data-field="last_female_pct" data-row="0">—</b>% of new doctors whose gender could be estimated.</p>
-    <p class="kd-note">Source: NMC Indian Medical Register, Travancore Cochin Medical Council (Kerala), downloaded 19 November 2026. The register holds no gender field: gender is estimated from first names.</p>
+    <h1 id="kd-title" data-draw="title" data-source="stats">Doctors on India's Medical Register</h1>
+    <div class="kd-pick">
+      <label for="kd-pick">Show</label>
+      <select id="kd-pick" aria-label="Choose all of India or one state council"><option value="IN">All India</option></select>
+      <button type="button" id="kd-back" hidden>Back to all India</button>
+    </div>
+    <p class="kd-lede" data-draw="lede" data-source="stats"></p>
+    <p class="kd-note" data-draw="source-note" data-source="stats"></p>
   </header>
 
-  <div class="kd-tiles" id="tiles">
-    <div class="kd-tile" id="tile-total">
-      <span class="kd-v" data-draw="t-total" data-source="totals" data-field="total" data-row="0">—</span>
-      <span class="kd-l">Doctors on the register</span>
+  <div class="kd-tiles" id="tiles" data-draw="tiles" data-source="stats"></div>
+
+  <section class="kd-sec" id="india-map-sec" data-view="india">
+    <h2>Where India's doctors live</h2>
+    <p class="kd-say" data-draw="imap-say" data-source="stats pin_places"></p>
+    <div class="kd-row">
+      <ul class="kd-legend" id="imap-legend" aria-label="Legend"></ul>
+      <div class="kd-seg" role="group" aria-label="Show home PIN codes or doctors per 10,000 people" data-for="india-map india-rank">
+        <button type="button" data-mode="pins" aria-pressed="true">Home PIN codes</button>
+        <button type="button" data-mode="rate" aria-pressed="false">Per 10,000 people</button>
+      </div>
     </div>
-    <div class="kd-tile" id="tile-women">
-      <span class="kd-v"><span data-draw="t-fpct" data-source="totals" data-field="female_pct" data-row="0">—</span>%</span>
-      <span class="kd-l">Estimated share of women, all years (of doctors whose gender could be estimated)</span>
+    <div class="kd-map-grid">
+      <div class="kd-map" id="india-map" data-draw="india-map" data-source="pin_places stats india_geo"></div>
+      <div id="india-rank" data-draw="india-rank" data-source="pin_places stats"></div>
     </div>
-    <div class="kd-tile" id="tile-outside">
-      <span class="kd-v"><span data-draw="t-outside" data-source="study" data-field="outside_pct" data-row="0">—</span>%</span>
-      <span class="kd-l">Studied medicine outside Kerala, all years</span>
-    </div>
-    <div class="kd-tile" id="tile-abroad">
-      <span class="kd-v" data-draw="t-abroad" data-source="study" data-field="abroad" data-row="0">—</span>
-      <span class="kd-l">Trained abroad, from <span data-draw="t-countries" data-source="abroad_summary" data-field="countries" data-row="0">—</span> countries</span>
-    </div>
-    <div class="kd-tile" id="tile-working">
-      <span class="kd-v" data-draw="t-working" data-source="age_summary" data-field="working" data-row="0">—</span>
-      <span class="kd-l">Of working age today (estimated under 65), <span data-draw="t-wpct" data-source="age_summary" data-field="working_pct" data-row="0">—</span>% of the register</span>
-    </div>
-  </div>
+    <p class="kd-note" data-draw="imap-note" data-source="pin_places"></p>
+  </section>
+
+  <section class="kd-sec" id="councils-sec" data-view="india">
+    <h2>Doctors on each council's register</h2>
+    <p class="kd-say">Each state's medical council keeps its own register and passes it to the national one. Choose a bar, or use the menu at the top, to see one council in detail.</p>
+    <ul class="kd-legend" aria-label="Legend">
+      <li><span class="kd-sw" data-swatch="0"></span>Women</li>
+      <li><span class="kd-sw" data-swatch="1"></span>Men</li>
+      <li><span class="kd-sw" data-swatch="muted"></span>Unknown</li>
+    </ul>
+    <div class="kd-hbar" id="council-chart" data-draw="council-chart" data-source="stats"></div>
+    <p class="kd-note" data-draw="council-note" data-source="stats"></p>
+  </section>
 
   <section class="kd-sec" id="per-year">
     <h2>New registrations per year, by estimated gender</h2>
@@ -191,96 +213,104 @@ window.dash = (() => {
         <li><span class="kd-sw" data-swatch="muted"></span>Unknown</li>
       </ul>
       <div class="kd-seg" role="group" aria-label="Show counts or shares" data-for="gender-chart">
-        <button type="button" id="g-count" data-mode="count" aria-pressed="true">Doctors</button>
-        <button type="button" id="g-share" data-mode="share" aria-pressed="false">Share of year</button>
+        <button type="button" data-mode="count" aria-pressed="true">Doctors</button>
+        <button type="button" data-mode="share" aria-pressed="false">Share of year</button>
       </div>
     </div>
-    <div class="kd-chart" id="gender-chart" data-draw="gender-chart" data-source="per_year"></div>
-    <p class="kd-note">Year of registration with the council. Kerala's entries on the national register stop after 2019: 2020–2023 hold only a few dozen late entries, and 2024–2026 none. Three records with an impossible 1900 date are left out of the chart.</p>
+    <div class="kd-chart" id="gender-chart" data-draw="gender-chart" data-source="per_year stats"></div>
+    <p class="kd-note" data-draw="gender-note" data-source="stats"></p>
   </section>
 
   <section class="kd-sec" id="age">
     <h2>How many are still of working age</h2>
-    <p class="kd-say">The register doesn't say who is still practising: only 12 doctors have ever been marked removed, so deaths and retirements go unrecorded. Judging by year of registration, about <b data-draw="g-over" data-source="age_summary" data-field="over" data-row="0">—</b> doctors registered in <span data-draw="g-overyear" data-source="age_summary" data-field="over_to" data-row="0">—</span> or earlier and are now likely 65 or older.</p>
+    <p class="kd-say" data-draw="age-say" data-source="stats"></p>
     <ul class="kd-legend" aria-label="Legend">
       <li><span class="kd-sw" data-swatch="0"></span>Women</li>
       <li><span class="kd-sw" data-swatch="1"></span>Men</li>
       <li><span class="kd-sw" data-swatch="muted"></span>Unknown</li>
     </ul>
-    <div class="kd-hbar" id="age-chart" data-draw="age-chart" data-source="age_band" style="min-height: 190px"></div>
-    <p class="kd-note">Approximate age today = 2026 − year of registration + 25. Among the 46,000 doctors with a birth date on the register, the median age at registration is 25 (most register at 24–30), so a band can be off by a few years for a given doctor. Birth dates are missing for nearly everyone registered before 1986, so they can't be used directly. Older bands lean male because few women entered medicine before the 1990s.</p>
+    <div class="kd-hbar" id="age-chart" data-draw="age-chart" data-source="age_band"></div>
+    <p class="kd-note">Approximate age today = 2026 − year of registration + 25. Among Kerala doctors with a birth date on the register, the median age at registration is 25 (most register at 24–30), so a band can be off by a few years for a given doctor. Birth dates are missing or placeholders for most older records, so they can't be used directly. Older bands lean male because few women entered medicine before the 1990s.</p>
+  </section>
 
-    <h2>Kerala next to India and the world</h2>
-    <p class="kd-say">Kerala's entries on the national register stop in 2019, so the register alone shows only <b data-draw="d-work" data-source="age_summary" data-field="per10k_working" data-row="0">—</b> doctors under 65 per 10,000 people. Carrying the 2010–2019 trend forward adds an estimated <b data-draw="p-added" data-source="projection" data-field="added" data-row="0">—</b> doctors registered in 2020–2026, for about <b data-draw="p-rate" data-source="projection" data-field="per10k_2026" data-row="0">—</b> per 10,000 people in 2026: above the world figure of <span data-draw="d-world" data-source="who_ref" data-field="world" data-row="0">—</span> (WHO, <span data-draw="d-wyear" data-source="who_ref" data-field="world_year" data-row="0">—</span>) and more than double India's <span data-draw="d-india" data-source="who_ref" data-field="india" data-row="0">—</span> (<span data-draw="d-iyear" data-source="who_ref" data-field="india_year" data-row="0">—</span>).</p>
-    <ul class="kd-legend" aria-label="Legend">
-      <li><span class="kd-sw" data-swatch="0"></span>On the register</li>
-      <li><span class="kd-sw kd-sw-proj"></span>Projected</li>
-    </ul>
-    <div class="kd-chart" id="proj-chart" data-draw="proj-chart" data-source="proj_years" style="min-height: 220px"></div>
-    <p class="kd-note">New registrations per year. Projected years (2020–2026) follow a straight line fitted to 2010–2019, rising by about <span data-draw="p-slope" data-source="projection" data-field="slope" data-row="0">—</span> a year. If registrations had instead stayed at their 2015–2019 average, 2020–2026 would add <span data-draw="p-addlow" data-source="projection" data-field="added_low" data-row="0">—</span> and the 2026 figure would be <span data-draw="p-ratelow" data-source="projection" data-field="per10k_2026_low" data-row="0">—</span> per 10,000. The few dozen real entries for 2020–2023 are replaced by the projection.</p>
-    <ul class="kd-legend" aria-label="Legend">
-      <li><span class="kd-sw" data-swatch="0"></span>Kerala 2026, projected</li>
-      <li><span class="kd-sw kd-sw-proj"></span>Kerala, register only (entries to 2019)</li>
-      <li><span class="kd-sw" data-swatch="muted"></span>WHO figure</li>
-    </ul>
-    <div class="kd-hbar" id="density-chart" data-draw="density-chart" data-source="density" style="min-height: 290px"></div>
-    <p class="kd-note">Doctors (modern medicine) per 10,000 people. WHO counts doctors of all ages, so "all ages" is the like-for-like Kerala figure; "under 65" allows for doctors who have probably retired. WHO figures are its density-of-physicians indicator (SDG 3.c.1), for the latest year WHO has published for each place, shown in brackets. They are not projected: WHO gives the world and regional figures for 2024 only, so there is no trend to extend, and at recent rates India would move only from 9.6 to about 9.8 by 2026. Kerala uses a 2026 population of about 36 million (Government of India projection). The Kerala projection counts registrations only: it doesn't subtract doctors who emigrate, leave medicine or die before 65, nor add doctors registered in other states who work in Kerala, so treat it as an upper-end estimate of doctors available.</p>
+  <section class="kd-sec" id="density" data-need="pop">
+    <h2 data-draw="density-h" data-source="stats">Next to India and the world</h2>
+    <p class="kd-say" data-draw="density-say" data-source="stats who_density"></p>
+    <div data-need="proj">
+      <ul class="kd-legend" aria-label="Legend">
+        <li><span class="kd-sw" data-swatch="0"></span>On the register</li>
+        <li><span class="kd-sw kd-sw-proj"></span>Projected</li>
+      </ul>
+      <div class="kd-chart" id="proj-chart" data-draw="proj-chart" data-source="proj_years" style="min-height: 220px"></div>
+      <p class="kd-note" data-draw="proj-note" data-source="stats"></p>
+    </div>
+    <ul class="kd-legend" aria-label="Legend" data-draw="density-legend" data-source="stats"></ul>
+    <div class="kd-hbar" id="density-chart" data-draw="density-chart" data-source="stats who_density" style="min-height: 290px"></div>
+    <p class="kd-note">Doctors (modern medicine) per 10,000 people. WHO counts doctors of all ages, so "all ages" is the like-for-like register figure; "under 65" allows for doctors who have probably retired. WHO figures are its density-of-physicians indicator (SDG 3.c.1), for the latest year WHO has published for each place, shown in brackets, and are not projected. Populations are the Government of India's projections for 1 July 2026. Register figures count registrations: they don't subtract doctors who emigrate, leave medicine or die before 65, and a doctor registered with two councils counts in both, so treat them as an upper-end estimate of doctors available.</p>
+  </section>
+
+  <section class="kd-sec" id="state-density-sec" data-view="india">
+    <h2>Doctors per 10,000 people, state by state</h2>
+    <p class="kd-say" data-draw="sd-say" data-source="stats"></p>
+    <div class="kd-row">
+      <ul class="kd-legend" aria-label="Legend">
+        <li><span class="kd-sw" data-swatch="0"></span>State council, 2026 estimate</li>
+        <li><span class="kd-sw" data-swatch="muted"></span>WHO figure</li>
+      </ul>
+      <div class="kd-seg" role="group" aria-label="Doctors under 65 or of all ages" data-for="state-density">
+        <button type="button" data-mode="u65" aria-pressed="true">Under 65</button>
+        <button type="button" data-mode="all" aria-pressed="false">All ages</button>
+      </div>
+    </div>
+    <div class="kd-hbar" id="state-density" data-draw="state-density" data-source="stats who_density"></div>
+    <p class="kd-note">Doctors on each council's register divided by the state's projected 2026 population. Where a council's entries on the national register stop early, registrations since then are projected from its last ten years, as for the totals above. A council's register shows where doctors registered, which is usually but not always where they work: doctors move, and Delhi in particular registers many who work elsewhere. Councils with no population figure (the central register) are left out.</p>
   </section>
 
   <section class="kd-sec" id="studied">
-    <h2>Where Kerala's doctors studied</h2>
-    <p class="kd-say">Of doctors registered in <span data-draw="s-year" data-source="study" data-field="last_year" data-row="0">—</span>, <b data-draw="s-last" data-source="study" data-field="last_outside_pct" data-row="0">—</b>% studied outside Kerala, most often in Karnataka or Tamil Nadu.</p>
+    <h2 data-draw="study-h" data-source="stats">Where doctors studied</h2>
+    <p class="kd-say" data-draw="study-say" data-source="stats"></p>
     <div class="kd-row">
-      <ul class="kd-legend" aria-label="Legend">
-        <li><span class="kd-sw" data-swatch="0"></span>Kerala</li>
-        <li><span class="kd-sw" data-swatch="1"></span>Karnataka</li>
-        <li><span class="kd-sw" data-swatch="2"></span>Tamil Nadu</li>
-        <li><span class="kd-sw" data-swatch="3"></span>Other Indian states</li>
-        <li><span class="kd-sw" data-swatch="4"></span>Abroad</li>
-        <li><span class="kd-sw" data-swatch="muted"></span>Not identified</li>
-      </ul>
+      <ul class="kd-legend" aria-label="Legend" data-draw="study-legend" data-source="stats"></ul>
       <div class="kd-seg" role="group" aria-label="Show counts or shares" data-for="study-chart">
-        <button type="button" id="s-count" data-mode="count" aria-pressed="false">Doctors</button>
-        <button type="button" id="s-share" data-mode="share" aria-pressed="true">Share of year</button>
+        <button type="button" data-mode="count" aria-pressed="false">Doctors</button>
+        <button type="button" data-mode="share" aria-pressed="true">Share of year</button>
       </div>
     </div>
-    <div class="kd-chart" id="study-chart" data-draw="study-chart" data-source="study_region"></div>
-    <p class="kd-note">Place of the university that awarded the basic medical degree (MBBS or its foreign equivalent), by year of registration. About 2,600 spellings of university names were grouped by state or country; under 1% could not be placed. The 1945 spike is a batch of older doctors, mostly Madras graduates, entered at once.</p>
+    <div class="kd-chart" id="study-chart" data-draw="study-chart" data-source="study"></div>
+    <div data-view="state">
+      <h3 class="kd-rank-h">Doctors who studied in another state, by where they studied</h3>
+      <div class="kd-hbar" id="study-states" data-draw="study-states" data-source="study_states"></div>
+    </div>
+    <p class="kd-note">Place of the university that awarded the basic medical degree (MBBS or its foreign equivalent), by year of registration. Thousands of spellings and abbreviations of university names were grouped by state or country; "Not identified" covers blanks and names that could not be placed.</p>
   </section>
 
   <section class="kd-sec" id="abroad">
     <h2>Doctors trained abroad, by country</h2>
-    <p class="kd-say">Russia was the main foreign route until about 2010; China took over from 2011, peaking at <b data-draw="a-peak" data-source="abroad_summary" data-field="china_peak" data-row="0">—</b> registrations in <span data-draw="a-peakyear" data-source="abroad_summary" data-field="china_peak_year" data-row="0">—</span>.</p>
-    <ul class="kd-legend" aria-label="Legend">
-      <li><span class="kd-sw" data-swatch="0"></span>China</li>
-      <li><span class="kd-sw" data-swatch="1"></span>Russia</li>
-      <li><span class="kd-sw" data-swatch="2"></span>Nepal</li>
-      <li><span class="kd-sw" data-swatch="3"></span>Ukraine</li>
-      <li><span class="kd-sw" data-swatch="muted"></span>Other countries</li>
-    </ul>
-    <div class="kd-chart" id="abroad-chart" data-draw="abroad-chart" data-source="abroad_year"></div>
+    <p class="kd-say" data-draw="abroad-say" data-source="stats abroad_countries"></p>
+    <ul class="kd-legend" aria-label="Legend" data-draw="abroad-legend" data-source="abroad_countries"></ul>
+    <div class="kd-chart" id="abroad-chart" data-draw="abroad-chart" data-source="abroad_year abroad_countries"></div>
     <div class="kd-hbar" id="country-chart" data-draw="country-chart" data-source="abroad_countries"></div>
-    <p class="kd-note">Top: foreign-trained doctors by year of registration, 1990–2019. Bottom: the 12 countries with the most graduates on the register, all years. Older European degrees (Italy, Germany, the UK) are mostly from registrations before 1990.</p>
+    <p class="kd-note">Top: foreign-trained doctors by year of registration, 1990 on. Bottom: the 12 countries with the most graduates on the register, all years. Older European degrees (the UK, Germany, Italy) are mostly from registrations before 1990.</p>
   </section>
 
-  <section class="kd-sec" id="map">
-    <h2>Where Kerala's doctors come from</h2>
-    <p class="kd-say">Doctors on the register come mostly from southern and central Kerala. <span data-draw="m-top" data-source="map_summary" data-field="top" data-row="0">—</span> has <b data-draw="m-toprate" data-source="map_summary" data-field="top_rate" data-row="0">—</b> doctors for every 10,000 residents; <span data-draw="m-bottom" data-source="map_summary" data-field="bottom" data-row="0">—</span> has <b data-draw="m-bottomrate" data-source="map_summary" data-field="bottom_rate" data-row="0">—</b>.</p>
+  <section class="kd-sec" id="state-map-sec" data-view="state">
+    <h2 data-draw="smap-h" data-source="stats">Where the doctors come from</h2>
+    <p class="kd-say" data-draw="smap-say" data-source="stats pins home_state"></p>
     <div class="kd-row">
-      <ul class="kd-legend" id="map-legend" aria-label="Legend"></ul>
-      <div class="kd-seg" role="group" aria-label="Show PIN codes or district rates" data-for="map-chart map-rank">
-        <button type="button" id="m-pins" data-mode="pins" aria-pressed="true">PIN codes</button>
-        <button type="button" id="m-rate" data-mode="rate" aria-pressed="false">Per 10,000 residents</button>
+      <ul class="kd-legend" id="smap-legend" aria-label="Legend"></ul>
+      <div class="kd-seg" role="group" aria-label="Show PIN codes or district rates" data-for="state-map state-rank" data-only="TC">
+        <button type="button" data-mode="pins" aria-pressed="true">PIN codes</button>
+        <button type="button" data-mode="rate" aria-pressed="false">Per 10,000 residents</button>
       </div>
     </div>
     <div class="kd-map-grid">
-      <div class="kd-map" id="map-chart" data-draw="map-chart" data-source="pins"></div>
-      <div id="map-rank" data-draw="map-rank" data-source="pins"></div>
+      <div class="kd-map" id="state-map" data-draw="state-map" data-source="pins pin_places india_geo kerala_geo district district_pop"></div>
+      <div id="state-rank" data-draw="state-rank" data-source="pins pin_places district district_pop"></div>
     </div>
-    <p class="kd-note">Circles: the <span data-draw="m-areas" data-source="map_summary" data-field="pin_areas" data-row="0">—</span> PIN code areas with at least five doctors, <span data-draw="m-pindocs" data-source="map_summary" data-field="pin_doctors" data-row="0">—</span> doctors in all. Only about four in ten addresses on the register include a PIN code, mostly recent ones, so the circles undercount older doctors; PIN areas with fewer than five doctors are left out. District rates use every doctor whose home district could be identified (94%) and the 2011 census population. Both show where doctors come from (their permanent address at registration), not where they work. Point at or tap the map for details. Boundaries: DataMeet (CC BY 2.5 India). PIN locations: India Post pincode directory.</p>
+    <p class="kd-note" data-draw="smap-note" data-source="stats pins"></p>
   </section>
 
-  <section class="kd-sec" id="district">
+  <section class="kd-sec" id="district-sec" data-view="state">
     <h2>Home district</h2>
     <ul class="kd-legend" aria-label="Legend">
       <li><span class="kd-sw" data-swatch="0"></span>Women</li>
@@ -288,200 +318,206 @@ window.dash = (() => {
       <li><span class="kd-sw" data-swatch="muted"></span>Unknown</li>
     </ul>
     <div class="kd-hbar" id="district-chart" data-draw="district-chart" data-source="district"></div>
-    <p class="kd-note">District taken from the permanent address given at registration, by place name or PIN code. "Outside Kerala" is an address in another state or country; about 6% of addresses could not be placed and are left out. Point at or tap a bar for the estimated share of women.</p>
+    <p class="kd-note" data-draw="district-note" data-source="stats"></p>
+  </section>
+
+  <section class="kd-sec" id="home-state-sec" data-view="state">
+    <h2>Home state of the council's doctors</h2>
+    <div class="kd-hbar" id="home-chart" data-draw="home-chart" data-source="home_state"></div>
+    <p class="kd-note">State of the PIN code in the permanent address, for doctors whose address has one. States with fewer than five doctors are left out.</p>
   </section>
 
   <details class="kd-about" id="method">
     <summary>How the numbers were made</summary>
     <ul>
-      <li>All 67,147 Travancore Cochin Medical Council records were downloaded from the NMC Indian Medical Register, one registration year at a time. One record had its registration number typed in as its year and was recovered separately.</li>
-      <li>Gender is estimated, never recorded. Common first names (covering about three quarters of doctors) were labelled woman, man or unclear with Kerala naming in mind. Rarer names were placed by name endings that point to one gender at least 92% of the time. Everything else is Unknown. Expect a few percent of misreads in both directions.</li>
-      <li>Universities were matched to a state or country by name, including common misspellings. "MD Physician" degrees from Russia, Ukraine and similar countries count as foreign basic degrees.</li>
-      <li>The map places doctors by the PIN code in their permanent address, using India Post's PIN directory; a PIN is kept only where its post offices fall inside the PIN's own district (about 3% of PIN-coded doctors could not be placed this way). District boundaries are the 2011 census districts from DataMeet.</li>
-      <li>Working age is estimated from year of registration (age today ≈ 2026 − registration year + 25), because the register has no active or retired status and few birth dates for older doctors. Doctors per 10,000 people divide these counts by Kerala's projected 2026 population of 36 million, for comparison with WHO's figures. Because Kerala's entries stop in 2019, the 2026 figure adds registrations for 2020–2026 projected from a straight-line fit to 2010–2019.</li>    </ul>
+      <li>Every council's records (about 1.7 million in all) were downloaded from the NMC Indian Medical Register in November 2026, one registration year at a time; years with more than 10,000 records were split by registration number.</li>
+      <li>The register holds 29 state councils plus the central register of the former Medical Council of India. A doctor registered with more than one council appears once for each; among records with a usable birth date, the share of such repeats is shown on the all-India page.</li>
+      <li>Gender is estimated, never recorded. The most common first names across India (covering most doctors) were labelled woman, man or unclear; rarer names were placed by name endings that point to one gender at least 92% of the time, and second names such as Kaur, Devi or Kumari were used where the first name was unclear. Everything else is Unknown. Expect a few percent of misreads in both directions.</li>
+      <li>Universities were matched to a state or country by name, including common abbreviations and misspellings. "MD Physician" degrees from Russia, Ukraine and similar countries count as foreign basic degrees.</li>
+      <li>Working age is estimated from year of registration (age today ≈ 2026 − registration year + 25), because the register has no active or retired status and few usable birth dates for older doctors.</li>
+      <li>Some councils stopped sending new entries to the national register years ago (Kerala's stop in 2019). For doctors per 10,000 people, registrations since a council's last complete year are projected with a straight line fitted to its previous ten years; the low case keeps them flat at the last five years' average.</li>
+      <li>Maps place doctors by the PIN code in their permanent address, using India Post's PIN directory; a PIN's location is kept only where its post offices fall inside the PIN's own state (Kerala: its own district). PIN areas with fewer than five doctors are left out. State boundaries: DataMeet (MIT licence); Kerala districts: DataMeet (CC BY 2.5 India).</li>
+      <li>Populations: Report of the Technical Group on Population Projections, 2011–2036 (National Commission on Population, 2020), for 1 July 2026; Kerala districts: 2011 census.</li>
+    </ul>
   </details>
 </div>
 
-<script type="application/json" id="kd-geo">{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"district":"Alappuzha"},"geometry":{"type":"MultiPolygon","coordinates":[[[[76.373,9.836],[76.382,9.816],[76.366,9.792],[76.382,9.75],[76.377,9.695],[76.403,9.684],[76.397,9.66],[76.392,9.546],[76.411,9.561],[76.428,9.548],[76.466,9.559],[76.466,9.54],[76.479,9.534],[76.482,9.506],[76.508,9.499],[76.497,9.44],[76.511,9.433],[76.506,9.426],[76.51,9.402],[76.516,9.4],[76.509,9.376],[76.523,9.362],[76.514,9.362],[76.513,9.353],[76.49,9.346],[76.476,9.328],[76.501,9.321],[76.55,9.321],[76.56,9.342],[76.551,9.347],[76.573,9.353],[76.625,9.34],[76.642,9.342],[76.645,9.331],[76.639,9.326],[76.655,9.304],[76.66,9.286],[76.694,9.294],[76.693,9.282],[76.657,9.258],[76.659,9.239],[76.641,9.23],[76.645,9.202],[76.65,9.207],[76.654,9.2],[76.668,9.198],[76.686,9.173],[76.674,9.167],[76.673,9.151],[76.643,9.148],[76.635,9.135],[76.614,9.127],[76.591,9.128],[76.585,9.114],[76.558,9.107],[76.551,9.11],[76.543,9.136],[76.515,9.136],[76.508,9.121],[76.481,9.119],[76.492,9.088],[76.487,9.085],[76.465,9.119],[76.343,9.403],[76.32,9.498],[76.29,9.672],[76.28,9.789],[76.283,9.803],[76.291,9.808],[76.282,9.828],[76.287,9.848],[76.298,9.852],[76.293,9.888],[76.302,9.89],[76.333,9.876],[76.355,9.882],[76.37,9.859],[76.373,9.836]]]]}},{"type":"Feature","properties":{"district":"Ernakulam"},"geometry":{"type":"MultiPolygon","coordinates":[[[[76.689,10.267],[76.681,10.252],[76.676,10.217],[76.652,10.191],[76.643,10.161],[76.658,10.141],[76.673,10.141],[76.754,10.073],[76.783,10.06],[76.795,10.042],[76.84,10.024],[76.833,10.015],[76.784,10.035],[76.767,10.011],[76.772,10.0],[76.766,9.982],[76.749,9.99],[76.727,9.981],[76.711,9.987],[76.719,9.958],[76.699,9.929],[76.691,9.925],[76.701,9.915],[76.699,9.91],[76.693,9.908],[76.68,9.919],[76.635,9.916],[76.631,9.899],[76.639,9.875],[76.633,9.856],[76.625,9.858],[76.613,9.849],[76.619,9.842],[76.614,9.84],[76.596,9.846],[76.583,9.842],[76.582,9.823],[76.568,9.823],[76.559,9.803],[76.549,9.8],[76.541,9.822],[76.524,9.824],[76.515,9.85],[76.476,9.844],[76.462,9.848],[76.446,9.832],[76.418,9.822],[76.396,9.828],[76.387,9.843],[76.373,9.836],[76.37,9.859],[76.355,9.882],[76.333,9.876],[76.297,9.89],[76.298,9.852],[76.287,9.848],[76.282,9.828],[76.291,9.808],[76.283,9.803],[76.28,9.789],[76.263,9.886],[76.242,9.946],[76.243,9.969],[76.22,10.002],[76.202,10.049],[76.169,10.184],[76.213,10.194],[76.222,10.207],[76.265,10.198],[76.263,10.188],[76.276,10.174],[76.307,10.185],[76.315,10.18],[76.313,10.205],[76.335,10.212],[76.344,10.233],[76.376,10.242],[76.403,10.276],[76.413,10.279],[76.418,10.296],[76.432,10.29],[76.462,10.296],[76.557,10.282],[76.573,10.283],[76.567,10.293],[76.579,10.302],[76.623,10.275],[76.659,10.281],[76.689,10.267]]]]}},{"type":"Feature","properties":{"district":"Idukki"},"geometry":{"type":"MultiPolygon","coordinates":[[[[77.289,10.23],[77.295,10.216],[77.284,10.206],[77.279,10.189],[77.274,10.128],[77.268,10.121],[77.239,10.127],[77.218,10.113],[77.209,10.115],[77.202,10.105],[77.209,10.083],[77.233,10.066],[77.263,10.029],[77.255,10.009],[77.262,10.004],[77.265,9.982],[77.276,9.973],[77.265,9.952],[77.249,9.952],[77.232,9.915],[77.219,9.903],[77.221,9.887],[77.214,9.875],[77.224,9.863],[77.239,9.858],[77.239,9.852],[77.229,9.848],[77.224,9.823],[77.242,9.815],[77.249,9.798],[77.225,9.789],[77.226,9.775],[77.234,9.769],[77.221,9.746],[77.223,9.731],[77.205,9.724],[77.207,9.695],[77.195,9.669],[77.181,9.657],[77.178,9.629],[77.167,9.615],[77.19,9.606],[77.201,9.615],[77.211,9.613],[77.212,9.605],[77.239,9.582],[77.246,9.585],[77.271,9.574],[77.291,9.59],[77.32,9.602],[77.331,9.598],[77.327,9.58],[77.341,9.572],[77.357,9.604],[77.367,9.597],[77.359,9.594],[77.361,9.577],[77.352,9.566],[77.365,9.555],[77.367,9.536],[77.387,9.518],[77.403,9.526],[77.403,9.516],[77.411,9.514],[77.413,9.506],[77.402,9.496],[77.403,9.477],[77.394,9.468],[77.395,9.46],[77.38,9.453],[77.368,9.459],[77.351,9.44],[77.338,9.415],[77.344,9.399],[77.336,9.385],[77.337,9.36],[77.326,9.344],[77.328,9.337],[77.301,9.336],[77.3,9.31],[77.283,9.3],[77.291,9.272],[77.284,9.271],[77.247,9.289],[77.246,9.282],[77.24,9.282],[77.238,9.292],[77.227,9.296],[77.227,9.314],[77.237,9.326],[77.237,9.349],[77.25,9.381],[77.23,9.411],[77.231,9.42],[77.223,9.424],[77.225,9.433],[77.208,9.441],[77.205,9.451],[77.185,9.454],[77.182,9.47],[77.17,9.461],[77.167,9.47],[77.144,9.461],[77.142,9.489],[77.132,9.492],[77.121,9.478],[77.105,9.478],[77.074,9.455],[77.051,9.456],[77.049,9.451],[77.068,9.416],[77.022,9.407],[77.014,9.409],[77.015,9.42],[76.941,9.43],[76.946,9.434],[76.942,9.445],[76.961,9.46],[76.985,9.467],[76.986,9.485],[76.967,9.506],[76.956,9.49],[76.949,9.491],[76.907,9.523],[76.903,9.536],[76.89,9.537],[76.885,9.578],[76.896,9.585],[76.89,9.617],[76.895,9.626],[76.905,9.633],[76.932,9.614],[76.937,9.62],[76.923,9.638],[76.93,9.651],[76.906,9.675],[76.888,9.717],[76.855,9.734],[76.814,9.783],[76.784,9.805],[76.758,9.815],[76.743,9.804],[76.673,9.843],[76.664,9.839],[76.631,9.849],[76.639,9.875],[76.633,9.913],[76.65,9.92],[76.68,9.919],[76.693,9.908],[76.699,9.91],[76.701,9.915],[76.691,9.925],[76.699,9.929],[76.719,9.958],[76.711,9.987],[76.727,9.981],[76.749,9.99],[76.766,9.982],[76.772,10.0],[76.767,10.011],[76.784,10.035],[76.83,10.014],[76.84,10.024],[76.795,10.042],[76.783,10.06],[76.754,10.073],[76.673,10.141],[76.658,10.141],[76.643,10.161],[76.652,10.191],[76.676,10.217],[76.681,10.252],[76.689,10.267],[76.75,10.278],[76.771,10.27],[76.777,10.277],[76.8,10.277],[76.807,10.286],[76.834,10.276],[76.841,10.284],[76.896,10.259],[76.905,10.251],[76.905,10.241],[76.918,10.233],[76.941,10.238],[76.984,10.217],[77.02,10.245],[77.052,10.257],[77.056,10.271],[77.047,10.281],[77.059,10.283],[77.065,10.294],[77.122,10.316],[77.176,10.355],[77.203,10.355],[77.236,10.349],[77.228,10.315],[77.265,10.263],[77.259,10.254],[77.261,10.23],[77.27,10.235],[77.289,10.23]]]]}},{"type":"Feature","properties":{"district":"Kannur"},"geometry":{"type":"MultiPolygon","coordinates":[[[[75.47,12.3],[75.486,12.291],[75.495,12.272],[75.514,12.259],[75.528,12.225],[75.541,12.216],[75.537,12.201],[75.552,12.194],[75.556,12.181],[75.595,12.148],[75.621,12.154],[75.639,12.148],[75.652,12.111],[75.666,12.097],[75.682,12.099],[75.688,12.108],[75.706,12.106],[75.705,12.089],[75.721,12.084],[75.721,12.068],[75.756,12.083],[75.804,12.077],[75.798,12.053],[75.805,12.036],[75.831,12.012],[75.832,11.984],[75.849,11.976],[75.871,11.951],[75.931,11.939],[75.925,11.921],[75.935,11.91],[75.936,11.888],[75.913,11.873],[75.931,11.861],[75.927,11.84],[75.921,11.845],[75.901,11.841],[75.856,11.847],[75.845,11.854],[75.83,11.849],[75.808,11.855],[75.791,11.841],[75.797,11.814],[75.783,11.808],[75.777,11.798],[75.754,11.803],[75.755,11.785],[75.74,11.786],[75.733,11.78],[75.717,11.795],[75.695,11.798],[75.686,11.776],[75.671,11.767],[75.668,11.758],[75.636,11.736],[75.628,11.736],[75.61,11.717],[75.592,11.715],[75.595,11.701],[75.605,11.695],[75.603,11.688],[75.589,11.687],[75.571,11.674],[75.556,11.701],[75.54,11.709],[75.529,11.705],[75.511,11.728],[75.481,11.752],[75.474,11.768],[75.458,11.766],[75.457,11.78],[75.388,11.858],[75.377,11.86],[75.366,11.851],[75.358,11.854],[75.349,11.875],[75.321,11.899],[75.324,11.908],[75.309,11.941],[75.323,11.941],[75.342,11.927],[75.351,11.93],[75.323,11.953],[75.319,11.973],[75.315,11.977],[75.307,11.969],[75.288,11.99],[75.301,11.956],[75.296,11.952],[75.276,11.973],[75.249,12.016],[75.236,12.023],[75.204,12.003],[75.171,12.093],[75.181,12.102],[75.192,12.1],[75.189,12.13],[75.195,12.143],[75.187,12.173],[75.174,12.191],[75.206,12.194],[75.231,12.22],[75.256,12.22],[75.291,12.235],[75.29,12.258],[75.301,12.268],[75.322,12.272],[75.349,12.268],[75.387,12.287],[75.392,12.295],[75.393,12.288],[75.433,12.297],[75.461,12.294],[75.47,12.3]],[[75.54,11.735],[75.53,11.732],[75.528,11.72],[75.541,11.714],[75.559,11.721],[75.545,11.734],[75.544,11.759],[75.533,11.756],[75.54,11.735]]]]}},{"type":"Feature","properties":{"district":"Kasaragod"},"geometry":{"type":"MultiPolygon","coordinates":[[[[75.417,12.502],[75.425,12.465],[75.394,12.45],[75.369,12.457],[75.373,12.434],[75.368,12.412],[75.381,12.392],[75.424,12.372],[75.42,12.353],[75.412,12.346],[75.433,12.305],[75.422,12.291],[75.393,12.288],[75.394,12.294],[75.389,12.295],[75.387,12.287],[75.349,12.268],[75.322,12.272],[75.301,12.268],[75.29,12.258],[75.291,12.235],[75.256,12.22],[75.231,12.22],[75.206,12.194],[75.174,12.191],[75.187,12.173],[75.195,12.143],[75.189,12.13],[75.192,12.1],[75.181,12.102],[75.171,12.093],[75.183,12.061],[75.081,12.31],[75.045,12.384],[75.002,12.448],[74.991,12.492],[74.984,12.485],[74.98,12.49],[74.917,12.648],[74.863,12.758],[74.885,12.753],[74.954,12.784],[74.97,12.777],[74.982,12.78],[74.992,12.788],[74.989,12.795],[75.005,12.79],[75.008,12.765],[74.992,12.742],[74.986,12.743],[74.985,12.734],[74.993,12.737],[75.012,12.727],[75.003,12.718],[75.007,12.714],[75.038,12.723],[75.05,12.719],[75.057,12.691],[75.045,12.692],[75.048,12.664],[75.071,12.662],[75.083,12.671],[75.086,12.702],[75.105,12.696],[75.113,12.68],[75.132,12.675],[75.151,12.681],[75.151,12.673],[75.162,12.669],[75.144,12.638],[75.16,12.622],[75.171,12.621],[75.183,12.632],[75.202,12.63],[75.2,12.611],[75.211,12.602],[75.204,12.585],[75.212,12.589],[75.224,12.567],[75.238,12.567],[75.24,12.577],[75.251,12.58],[75.278,12.616],[75.293,12.601],[75.303,12.604],[75.31,12.593],[75.329,12.59],[75.33,12.582],[75.318,12.573],[75.293,12.58],[75.272,12.558],[75.283,12.523],[75.306,12.522],[75.307,12.502],[75.337,12.495],[75.342,12.469],[75.339,12.463],[75.358,12.463],[75.374,12.474],[75.372,12.488],[75.385,12.498],[75.399,12.503],[75.406,12.495],[75.417,12.502]]]]}},{"type":"Feature","properties":{"district":"Kollam"},"geometry":{"type":"MultiPolygon","coordinates":[[[[77.209,9.071],[77.197,9.053],[77.199,9.045],[77.171,9.045],[77.164,9.03],[77.149,9.02],[77.151,9.008],[77.16,9.006],[77.181,8.971],[77.198,8.955],[77.198,8.924],[77.202,8.919],[77.211,8.93],[77.222,8.926],[77.224,8.902],[77.239,8.897],[77.245,8.88],[77.258,8.877],[77.261,8.868],[77.265,8.84],[77.245,8.809],[77.235,8.806],[77.233,8.784],[77.216,8.778],[77.22,8.769],[77.216,8.766],[77.188,8.775],[77.108,8.829],[77.045,8.844],[77.035,8.841],[77.024,8.815],[77.013,8.808],[77.03,8.774],[77.006,8.77],[76.996,8.781],[76.981,8.785],[76.974,8.772],[76.952,8.771],[76.935,8.761],[76.916,8.778],[76.923,8.784],[76.92,8.791],[76.902,8.81],[76.887,8.805],[76.855,8.817],[76.848,8.835],[76.828,8.843],[76.823,8.854],[76.817,8.857],[76.806,8.85],[76.785,8.86],[76.78,8.859],[76.778,8.843],[76.795,8.826],[76.786,8.819],[76.793,8.808],[76.774,8.808],[76.773,8.8],[76.76,8.794],[76.722,8.801],[76.707,8.789],[76.694,8.79],[76.69,8.777],[76.683,8.775],[76.68,8.788],[76.672,8.781],[76.672,8.79],[76.656,8.803],[76.603,8.868],[76.579,8.884],[76.569,8.881],[76.554,8.891],[76.524,8.996],[76.487,9.083],[76.492,9.088],[76.48,9.116],[76.485,9.121],[76.508,9.121],[76.515,9.136],[76.543,9.136],[76.551,9.11],[76.57,9.108],[76.577,9.115],[76.585,9.114],[76.591,9.128],[76.614,9.127],[76.635,9.135],[76.643,9.148],[76.656,9.149],[76.656,9.122],[76.65,9.117],[76.66,9.093],[76.725,9.082],[76.749,9.083],[76.756,9.089],[76.759,9.073],[76.771,9.075],[76.767,9.097],[76.785,9.113],[76.814,9.107],[76.829,9.093],[76.849,9.098],[76.856,9.118],[76.876,9.13],[76.89,9.124],[76.897,9.13],[76.904,9.116],[76.905,9.123],[76.914,9.124],[76.954,9.119],[76.966,9.127],[76.929,9.139],[76.931,9.172],[77.0,9.132],[77.01,9.139],[77.026,9.127],[77.043,9.122],[77.055,9.127],[77.069,9.112],[77.108,9.096],[77.157,9.085],[77.156,9.08],[77.167,9.076],[77.193,9.077],[77.209,9.071]]]]}},{"type":"Feature","properties":{"district":"Kottayam"},"geometry":{"type":"MultiPolygon","coordinates":[[[[76.633,9.856],[76.636,9.846],[76.664,9.839],[76.673,9.843],[76.743,9.804],[76.758,9.815],[76.784,9.805],[76.814,9.783],[76.855,9.734],[76.888,9.717],[76.906,9.675],[76.93,9.651],[76.923,9.638],[76.937,9.62],[76.932,9.614],[76.905,9.633],[76.895,9.626],[76.89,9.617],[76.896,9.585],[76.885,9.578],[76.89,9.537],[76.903,9.536],[76.907,9.523],[76.949,9.491],[76.956,9.49],[76.967,9.506],[76.986,9.485],[76.985,9.467],[76.961,9.46],[76.942,9.445],[76.946,9.434],[76.94,9.422],[76.925,9.418],[76.923,9.426],[76.855,9.457],[76.851,9.447],[76.825,9.446],[76.817,9.454],[76.802,9.454],[76.794,9.451],[76.794,9.444],[76.764,9.439],[76.76,9.45],[76.751,9.453],[76.754,9.461],[76.748,9.473],[76.735,9.473],[76.732,9.465],[76.709,9.454],[76.7,9.476],[76.663,9.481],[76.641,9.476],[76.636,9.463],[76.629,9.47],[76.627,9.459],[76.61,9.458],[76.609,9.453],[76.603,9.457],[76.603,9.448],[76.592,9.444],[76.594,9.415],[76.582,9.421],[76.561,9.41],[76.554,9.42],[76.545,9.421],[76.516,9.408],[76.516,9.4],[76.51,9.402],[76.506,9.426],[76.511,9.433],[76.497,9.44],[76.508,9.499],[76.482,9.506],[76.479,9.534],[76.466,9.54],[76.466,9.559],[76.428,9.548],[76.411,9.561],[76.392,9.546],[76.397,9.66],[76.403,9.684],[76.377,9.695],[76.382,9.75],[76.366,9.792],[76.382,9.816],[76.373,9.836],[76.387,9.843],[76.396,9.828],[76.418,9.822],[76.446,9.832],[76.462,9.848],[76.476,9.844],[76.51,9.851],[76.524,9.824],[76.541,9.822],[76.549,9.8],[76.559,9.803],[76.568,9.823],[76.582,9.823],[76.583,9.842],[76.596,9.846],[76.614,9.84],[76.619,9.842],[76.613,9.849],[76.625,9.858],[76.633,9.856]]]]}},{"type":"Feature","properties":{"district":"Kozhikode"},"geometry":{"type":"MultiPolygon","coordinates":[[[[75.537,11.693],[75.544,11.703],[75.556,11.701],[75.571,11.674],[75.589,11.687],[75.603,11.688],[75.605,11.695],[75.595,11.701],[75.592,11.715],[75.61,11.717],[75.628,11.736],[75.636,11.736],[75.668,11.758],[75.671,11.767],[75.686,11.776],[75.695,11.798],[75.717,11.795],[75.733,11.78],[75.74,11.786],[75.755,11.785],[75.754,11.803],[75.789,11.793],[75.794,11.78],[75.785,11.759],[75.799,11.748],[75.796,11.742],[75.818,11.735],[75.845,11.712],[75.851,11.699],[75.896,11.699],[75.916,11.688],[75.902,11.677],[75.898,11.619],[75.908,11.603],[75.957,11.579],[75.959,11.561],[75.968,11.551],[76.042,11.501],[76.063,11.508],[76.078,11.52],[76.09,11.505],[76.095,11.482],[76.121,11.472],[76.143,11.449],[76.142,11.419],[76.133,11.425],[76.118,11.407],[76.106,11.408],[76.101,11.396],[76.101,11.37],[76.094,11.353],[76.099,11.34],[76.118,11.336],[76.116,11.317],[76.091,11.31],[76.072,11.294],[76.072,11.285],[76.046,11.265],[76.017,11.269],[75.994,11.252],[75.975,11.267],[75.959,11.251],[75.931,11.247],[75.919,11.238],[75.903,11.244],[75.899,11.232],[75.882,11.225],[75.861,11.194],[75.878,11.184],[75.889,11.186],[75.89,11.18],[75.857,11.156],[75.859,11.134],[75.849,11.141],[75.829,11.124],[75.81,11.154],[75.812,11.16],[75.824,11.159],[75.823,11.168],[75.801,11.172],[75.767,11.27],[75.739,11.328],[75.74,11.357],[75.689,11.439],[75.662,11.458],[75.633,11.462],[75.621,11.477],[75.574,11.613],[75.537,11.693]]]]}},{"type":"Feature","properties":{"district":"Malappuram"},"geometry":{"type":"MultiPolygon","coordinates":[[[[76.447,11.202],[76.411,11.205],[76.407,11.183],[76.416,11.17],[76.413,11.153],[76.418,11.141],[76.413,11.114],[76.377,11.097],[76.352,11.093],[76.335,11.072],[76.335,11.055],[76.324,11.048],[76.297,11.049],[76.287,11.037],[76.289,11.02],[76.31,11.026],[76.33,11.022],[76.327,11.005],[76.337,10.998],[76.371,10.996],[76.364,10.975],[76.33,10.978],[76.324,10.934],[76.332,10.923],[76.333,10.905],[76.299,10.919],[76.289,10.914],[76.271,10.916],[76.252,10.887],[76.233,10.886],[76.219,10.912],[76.2,10.897],[76.168,10.914],[76.159,10.909],[76.15,10.889],[76.13,10.895],[76.131,10.878],[76.119,10.88],[76.113,10.866],[76.106,10.868],[76.099,10.841],[76.068,10.837],[76.045,10.846],[76.027,10.821],[76.037,10.813],[76.035,10.807],[76.048,10.803],[76.05,10.797],[76.043,10.793],[76.041,10.753],[76.046,10.753],[76.049,10.743],[76.064,10.745],[76.069,10.722],[76.056,10.713],[76.053,10.704],[76.04,10.705],[76.01,10.687],[75.995,10.696],[75.984,10.693],[75.983,10.686],[75.973,10.694],[75.954,10.686],[75.925,10.765],[75.902,10.803],[75.867,10.993],[75.829,11.124],[75.849,11.141],[75.859,11.134],[75.857,11.156],[75.89,11.18],[75.889,11.186],[75.878,11.184],[75.861,11.194],[75.882,11.225],[75.897,11.23],[75.903,11.244],[75.919,11.238],[75.931,11.247],[75.959,11.251],[75.975,11.267],[75.994,11.252],[76.017,11.269],[76.046,11.265],[76.072,11.285],[76.072,11.294],[76.091,11.31],[76.116,11.317],[76.118,11.336],[76.099,11.34],[76.094,11.353],[76.106,11.408],[76.118,11.407],[76.133,11.425],[76.142,11.419],[76.143,11.449],[76.184,11.471],[76.183,11.482],[76.202,11.507],[76.224,11.512],[76.233,11.525],[76.241,11.525],[76.252,11.501],[76.248,11.466],[76.266,11.48],[76.274,11.475],[76.286,11.481],[76.297,11.463],[76.306,11.466],[76.329,11.452],[76.342,11.466],[76.399,11.435],[76.419,11.441],[76.417,11.422],[76.457,11.389],[76.519,11.368],[76.518,11.354],[76.547,11.359],[76.549,11.328],[76.538,11.311],[76.54,11.303],[76.549,11.3],[76.531,11.289],[76.523,11.269],[76.455,11.238],[76.447,11.202]]]]}},{"type":"Feature","properties":{"district":"Palakkad"},"geometry":{"type":"MultiPolygon","coordinates":[[[[76.839,10.338],[76.832,10.337],[76.819,10.348],[76.806,10.338],[76.778,10.341],[76.773,10.335],[76.755,10.336],[76.754,10.347],[76.763,10.351],[76.766,10.363],[76.721,10.374],[76.689,10.362],[76.659,10.385],[76.657,10.377],[76.646,10.382],[76.631,10.376],[76.586,10.435],[76.561,10.432],[76.558,10.443],[76.539,10.448],[76.525,10.466],[76.477,10.487],[76.455,10.518],[76.435,10.532],[76.44,10.554],[76.433,10.556],[76.423,10.576],[76.412,10.572],[76.404,10.594],[76.406,10.599],[76.416,10.595],[76.417,10.604],[76.43,10.615],[76.427,10.626],[76.42,10.628],[76.426,10.647],[76.437,10.65],[76.443,10.663],[76.453,10.659],[76.445,10.696],[76.459,10.698],[76.467,10.72],[76.48,10.732],[76.471,10.74],[76.475,10.748],[76.471,10.751],[76.403,10.745],[76.383,10.768],[76.365,10.764],[76.357,10.744],[76.326,10.744],[76.288,10.757],[76.252,10.747],[76.245,10.752],[76.242,10.772],[76.221,10.782],[76.213,10.778],[76.192,10.783],[76.204,10.768],[76.203,10.753],[76.191,10.748],[76.163,10.705],[76.155,10.715],[76.153,10.711],[76.132,10.72],[76.125,10.71],[76.104,10.722],[76.07,10.727],[76.064,10.745],[76.049,10.743],[76.046,10.753],[76.041,10.753],[76.043,10.793],[76.05,10.797],[76.048,10.803],[76.035,10.807],[76.037,10.813],[76.027,10.821],[76.041,10.843],[76.068,10.837],[76.099,10.841],[76.106,10.868],[76.113,10.866],[76.119,10.88],[76.131,10.878],[76.13,10.895],[76.15,10.889],[76.164,10.913],[76.171,10.914],[76.175,10.906],[76.183,10.91],[76.189,10.898],[76.2,10.897],[76.219,10.912],[76.233,10.886],[76.252,10.887],[76.271,10.916],[76.289,10.914],[76.299,10.919],[76.333,10.905],[76.332,10.923],[76.324,10.934],[76.33,10.978],[76.364,10.975],[76.371,10.996],[76.337,10.998],[76.327,11.005],[76.33,11.022],[76.31,11.026],[76.289,11.02],[76.287,11.037],[76.297,11.049],[76.324,11.048],[76.335,11.055],[76.335,11.072],[76.352,11.093],[76.377,11.097],[76.413,11.114],[76.418,11.141],[76.413,11.153],[76.416,11.17],[76.407,11.183],[76.411,11.205],[76.447,11.202],[76.462,11.187],[76.476,11.193],[76.475,11.206],[76.497,11.21],[76.515,11.209],[76.531,11.198],[76.603,11.205],[76.633,11.193],[76.678,11.218],[76.689,11.235],[76.707,11.239],[76.736,11.217],[76.728,11.206],[76.731,11.192],[76.699,11.173],[76.701,11.152],[76.707,11.14],[76.714,11.14],[76.713,11.15],[76.72,11.148],[76.732,11.13],[76.749,11.129],[76.744,11.101],[76.758,11.083],[76.745,11.072],[76.747,11.055],[76.762,11.055],[76.778,11.04],[76.801,11.058],[76.803,11.05],[76.792,11.037],[76.767,11.032],[76.717,11.039],[76.69,11.007],[76.688,10.987],[76.671,10.968],[76.66,10.932],[76.743,10.889],[76.784,10.89],[76.796,10.879],[76.829,10.87],[76.856,10.835],[76.848,10.824],[76.852,10.816],[76.864,10.817],[76.871,10.808],[76.9,10.808],[76.909,10.779],[76.892,10.734],[76.895,10.716],[76.887,10.715],[76.867,10.683],[76.882,10.672],[76.884,10.638],[76.864,10.632],[76.817,10.634],[76.82,10.603],[76.842,10.593],[76.836,10.546],[76.843,10.533],[76.832,10.499],[76.83,10.447],[76.819,10.423],[76.827,10.41],[76.834,10.411],[76.835,10.402],[76.828,10.395],[76.852,10.368],[76.839,10.338]]]]}},{"type":"Feature","properties":{"district":"Pathanamthitta"},"geometry":{"type":"MultiPolygon","coordinates":[[[[77.284,9.271],[77.276,9.233],[77.284,9.218],[77.267,9.199],[77.257,9.199],[77.254,9.188],[77.265,9.185],[77.269,9.152],[77.247,9.124],[77.229,9.115],[77.226,9.106],[77.213,9.097],[77.206,9.069],[77.108,9.096],[77.069,9.112],[77.055,9.127],[77.043,9.122],[77.026,9.127],[77.01,9.139],[77.0,9.132],[76.931,9.172],[76.929,9.139],[76.966,9.127],[76.954,9.119],[76.914,9.124],[76.905,9.123],[76.904,9.116],[76.897,9.13],[76.89,9.124],[76.876,9.13],[76.856,9.118],[76.849,9.098],[76.829,9.093],[76.814,9.107],[76.785,9.113],[76.767,9.097],[76.771,9.075],[76.759,9.073],[76.756,9.089],[76.749,9.083],[76.725,9.082],[76.657,9.097],[76.65,9.117],[76.656,9.122],[76.656,9.149],[76.673,9.151],[76.674,9.167],[76.686,9.173],[76.668,9.198],[76.654,9.2],[76.65,9.207],[76.645,9.202],[76.641,9.23],[76.659,9.239],[76.657,9.258],[76.693,9.282],[76.694,9.294],[76.668,9.285],[76.656,9.288],[76.655,9.304],[76.639,9.326],[76.645,9.331],[76.642,9.342],[76.625,9.34],[76.573,9.353],[76.551,9.347],[76.56,9.342],[76.55,9.321],[76.501,9.321],[76.476,9.328],[76.49,9.346],[76.513,9.353],[76.514,9.362],[76.523,9.362],[76.509,9.376],[76.516,9.408],[76.549,9.421],[76.561,9.41],[76.582,9.421],[76.594,9.415],[76.592,9.444],[76.603,9.448],[76.603,9.457],[76.609,9.453],[76.61,9.458],[76.627,9.459],[76.629,9.47],[76.636,9.463],[76.641,9.476],[76.654,9.48],[76.7,9.476],[76.709,9.454],[76.732,9.465],[76.735,9.473],[76.748,9.473],[76.754,9.461],[76.751,9.453],[76.76,9.45],[76.764,9.439],[76.794,9.444],[76.794,9.451],[76.802,9.454],[76.817,9.454],[76.825,9.446],[76.851,9.447],[76.855,9.457],[76.923,9.426],[76.925,9.418],[76.94,9.422],[76.941,9.43],[76.964,9.429],[77.015,9.42],[77.014,9.409],[77.022,9.407],[77.068,9.416],[77.049,9.451],[77.055,9.46],[77.074,9.455],[77.105,9.478],[77.121,9.478],[77.132,9.492],[77.144,9.486],[77.144,9.461],[77.167,9.47],[77.17,9.461],[77.182,9.47],[77.185,9.454],[77.205,9.451],[77.208,9.441],[77.225,9.433],[77.223,9.424],[77.231,9.42],[77.23,9.411],[77.25,9.381],[77.237,9.349],[77.237,9.326],[77.227,9.314],[77.227,9.296],[77.238,9.292],[77.24,9.282],[77.246,9.282],[77.247,9.289],[77.284,9.271]]]]}},{"type":"Feature","properties":{"district":"Thiruvananthapuram"},"geometry":{"type":"MultiPolygon","coordinates":[[[[77.201,8.769],[77.195,8.743],[77.173,8.746],[77.18,8.723],[77.197,8.708],[77.208,8.686],[77.209,8.663],[77.247,8.621],[77.247,8.606],[77.27,8.579],[77.284,8.546],[77.267,8.51],[77.242,8.497],[77.225,8.513],[77.205,8.501],[77.218,8.468],[77.228,8.459],[77.229,8.446],[77.208,8.443],[77.199,8.417],[77.173,8.385],[77.16,8.391],[77.154,8.386],[77.162,8.37],[77.155,8.353],[77.167,8.362],[77.174,8.359],[77.17,8.339],[77.179,8.32],[77.169,8.33],[77.141,8.331],[77.12,8.319],[77.124,8.309],[77.109,8.305],[77.1,8.291],[77.023,8.355],[77.006,8.36],[76.998,8.378],[76.99,8.375],[76.983,8.38],[76.973,8.392],[76.971,8.413],[76.892,8.5],[76.672,8.781],[76.68,8.788],[76.683,8.775],[76.69,8.777],[76.694,8.79],[76.707,8.789],[76.722,8.801],[76.76,8.794],[76.773,8.8],[76.774,8.808],[76.793,8.808],[76.786,8.819],[76.795,8.826],[76.778,8.843],[76.78,8.859],[76.785,8.86],[76.806,8.85],[76.817,8.857],[76.823,8.854],[76.828,8.843],[76.848,8.835],[76.855,8.817],[76.887,8.805],[76.902,8.81],[76.92,8.791],[76.923,8.784],[76.916,8.778],[76.935,8.761],[76.952,8.771],[76.974,8.772],[76.981,8.785],[76.996,8.781],[77.006,8.77],[77.03,8.774],[77.013,8.808],[77.024,8.815],[77.035,8.841],[77.045,8.844],[77.108,8.829],[77.201,8.769]]]]}},{"type":"Feature","properties":{"district":"Thrissur"},"geometry":{"type":"MultiPolygon","coordinates":[[[[76.839,10.338],[76.832,10.303],[76.843,10.299],[76.851,10.286],[76.853,10.292],[76.877,10.298],[76.875,10.275],[76.897,10.263],[76.905,10.251],[76.841,10.284],[76.834,10.276],[76.807,10.286],[76.8,10.277],[76.777,10.277],[76.771,10.27],[76.75,10.278],[76.699,10.266],[76.67,10.272],[76.659,10.281],[76.626,10.274],[76.604,10.282],[76.591,10.298],[76.579,10.302],[76.567,10.293],[76.573,10.283],[76.557,10.282],[76.462,10.296],[76.432,10.29],[76.418,10.296],[76.413,10.279],[76.403,10.276],[76.376,10.242],[76.344,10.233],[76.335,10.212],[76.313,10.205],[76.315,10.18],[76.307,10.185],[76.276,10.174],[76.263,10.188],[76.265,10.198],[76.222,10.207],[76.213,10.194],[76.169,10.184],[76.155,10.199],[76.14,10.233],[76.14,10.258],[76.095,10.392],[76.064,10.462],[76.043,10.494],[76.058,10.48],[76.04,10.522],[76.055,10.527],[76.069,10.509],[76.062,10.527],[76.066,10.535],[76.053,10.541],[76.048,10.567],[76.041,10.566],[76.038,10.558],[76.048,10.533],[76.035,10.528],[76.039,10.505],[76.033,10.507],[76.011,10.572],[75.955,10.686],[75.973,10.694],[75.983,10.686],[75.984,10.693],[75.995,10.696],[76.01,10.687],[76.04,10.705],[76.053,10.704],[76.07,10.727],[76.104,10.722],[76.125,10.71],[76.132,10.72],[76.153,10.711],[76.155,10.715],[76.163,10.705],[76.191,10.748],[76.203,10.753],[76.204,10.768],[76.192,10.783],[76.213,10.778],[76.221,10.782],[76.242,10.772],[76.245,10.752],[76.252,10.747],[76.288,10.757],[76.326,10.744],[76.357,10.744],[76.365,10.764],[76.383,10.768],[76.403,10.745],[76.471,10.751],[76.475,10.748],[76.471,10.74],[76.48,10.732],[76.467,10.72],[76.459,10.698],[76.445,10.696],[76.453,10.659],[76.443,10.663],[76.437,10.65],[76.426,10.647],[76.42,10.628],[76.427,10.626],[76.43,10.615],[76.417,10.604],[76.416,10.595],[76.406,10.599],[76.404,10.594],[76.412,10.572],[76.423,10.576],[76.433,10.556],[76.44,10.554],[76.435,10.532],[76.455,10.518],[76.477,10.487],[76.525,10.466],[76.539,10.448],[76.558,10.443],[76.561,10.432],[76.586,10.435],[76.631,10.376],[76.646,10.382],[76.657,10.377],[76.659,10.385],[76.689,10.362],[76.721,10.374],[76.766,10.363],[76.763,10.351],[76.754,10.347],[76.755,10.336],[76.773,10.335],[76.778,10.341],[76.806,10.338],[76.819,10.348],[76.832,10.337],[76.839,10.338]]]]}},{"type":"Feature","properties":{"district":"Wayanad"},"geometry":{"type":"MultiPolygon","coordinates":[[[[76.415,11.76],[76.413,11.74],[76.42,11.741],[76.427,11.724],[76.416,11.711],[76.404,11.708],[76.411,11.706],[76.415,11.677],[76.431,11.666],[76.442,11.641],[76.433,11.63],[76.388,11.629],[76.379,11.6],[76.343,11.585],[76.336,11.595],[76.306,11.571],[76.298,11.587],[76.285,11.59],[76.284,11.597],[76.267,11.594],[76.233,11.571],[76.25,11.531],[76.233,11.525],[76.224,11.512],[76.202,11.507],[76.183,11.482],[76.184,11.471],[76.143,11.449],[76.121,11.472],[76.095,11.482],[76.09,11.505],[76.078,11.52],[76.063,11.508],[76.042,11.501],[75.968,11.551],[75.959,11.561],[75.957,11.579],[75.908,11.603],[75.898,11.619],[75.902,11.677],[75.916,11.688],[75.896,11.699],[75.851,11.699],[75.845,11.712],[75.818,11.735],[75.796,11.742],[75.799,11.748],[75.785,11.759],[75.793,11.789],[75.777,11.798],[75.783,11.808],[75.797,11.814],[75.791,11.841],[75.808,11.855],[75.83,11.849],[75.845,11.854],[75.856,11.847],[75.901,11.841],[75.921,11.845],[75.927,11.84],[75.931,11.861],[75.913,11.873],[75.936,11.888],[75.935,11.91],[75.925,11.921],[75.931,11.939],[76.004,11.93],[76.01,11.938],[76.035,11.939],[76.079,11.968],[76.097,11.968],[76.114,11.977],[76.114,11.858],[76.123,11.849],[76.156,11.867],[76.191,11.87],[76.208,11.861],[76.212,11.826],[76.225,11.807],[76.251,11.802],[76.279,11.81],[76.291,11.792],[76.307,11.783],[76.318,11.751],[76.342,11.737],[76.354,11.737],[76.364,11.747],[76.38,11.743],[76.415,11.76]]]]}}]}</script>
 <script>
-dash.calc('totals', {
-  inputs: ['per_year'],
-  title: 'Register totals',
-  description: 'Sums of the per-year counts, and the estimated share of women among doctors whose gender could be estimated.',
-  fn: (per_year) => {
-    let f = 0, m = 0, u = 0;
-    for (const r of per_year) { f += +r.Female; m += +r.Male; u += +r.Unknown; }
-    return [{ total: f + m + u, female: f, male: m, unknown: u,
-      female_pct: Math.round(1000 * f / (f + m)) / 10,
-      unknown_pct: Math.round(1000 * u / (f + m + u)) / 10 }];
+// ---------- shared helpers for the calcs ----------
+// Last complete year on a council's register, and a straight-line projection of registrations after it.
+function kdFit(T, asOf) {
+  let L = null;
+  for (let y = asOf; y >= 1990; y--) {
+    const t = T.get(y) || 0;
+    let best = 0; for (let k = 1; k <= 5; k++) best = Math.max(best, T.get(y - k) || 0);
+    if (t >= 20 && t >= 0.5 * best) { L = y; break; }  // at least half the best of the five years before
   }
-});
+  if (L == null) return null;
+  const xs = []; for (let y = L - 9; y <= L; y++) xs.push(y);
+  const mx = xs.reduce((a, x) => a + x, 0) / xs.length;
+  const my = xs.reduce((a, x) => a + (T.get(x) || 0), 0) / xs.length;
+  const sxx = xs.reduce((a, x) => a + (x - mx) ** 2, 0);
+  const slope = xs.reduce((a, x) => a + (x - mx) * ((T.get(x) || 0) - my), 0) / sxx;
+  const proj = (y) => Math.max(0, Math.round(my + slope * (y - mx)));
+  let flatSum = 0; for (let y = L - 4; y <= L; y++) flatSum += T.get(y) || 0;
+  const flat = Math.round(flatSum / 5);
+  let late = 0, added = 0;
+  for (let y = L + 1; y <= asOf; y++) { late += T.get(y) || 0; added += proj(y); }
+  return { L, slope: Math.round(slope), flat, late, added, added_low: flat * (asOf - L), proj };
+}
 
-dash.calc('trend', {
-  inputs: ['per_year'],
-  title: 'Women among new registrations',
-  description: 'First year of the latest unbroken run in which estimated women outnumber men, and the share of women in the last year with at least 100 registrations.',
-  fn: (per_year) => {
-    const rows = per_year.map((r) => ({ y: +r.year, f: +r.Female, m: +r.Male, t: +r.Total }))
-      .filter((r) => r.t >= 100).sort((a, b) => a.y - b.y);
-    const last = rows[rows.length - 1];
-    let since = null;
-    for (let i = rows.length - 1; i >= 0 && rows[i].f > rows[i].m; i--) since = rows[i].y;
-    return [{ since, last_year: last.y, last_female_pct: Math.round(1000 * last.f / (last.f + last.m)) / 10 }];
-  }
-});
-
-dash.calc('study', {
-  inputs: ['study_region'],
-  title: 'Studied outside Kerala',
-  description: 'Share of doctors whose medical university is outside Kerala (of those whose university could be placed), overall and in the last year with at least 100 registrations, and the number trained abroad.',
-  fn: (study_region) => {
-    const cols = ['Kerala', 'Karnataka', 'Tamil Nadu', 'Other Indian states', 'Abroad'];
-    const sum = (r) => cols.reduce((a, c) => a + +r[c], 0);
-    let all = 0, kerala = 0, abroad = 0;
-    for (const r of study_region) { all += sum(r); kerala += +r.Kerala; abroad += +r.Abroad; }
-    const big = study_region.filter((r) => sum(r) >= 100).sort((a, b) => +a.year - +b.year);
-    const last = big[big.length - 1];
-    return [{ outside_pct: Math.round(1000 * (all - kerala) / all) / 10, abroad,
-      last_year: +last.year, last_outside_pct: Math.round(1000 * (sum(last) - +last.Kerala) / sum(last)) / 10 }];
-  }
-});
-
-dash.calc('abroad_summary', {
-  inputs: ['abroad_countries', 'abroad_year'],
-  title: 'Foreign-trained doctors',
-  description: 'Number of countries named among foreign degrees, and the busiest registration year for China-trained doctors.',
-  fn: (abroad_countries, abroad_year) => {
-    const countries = abroad_countries.filter((r) => r.country !== 'Not identified').length;
-    let china_peak = 0, china_peak_year = null;
-    for (const r of abroad_year) if (r.country === 'China' && +r.doctors > china_peak) { china_peak = +r.doctors; china_peak_year = +r.year; }
-    return [{ countries, china_peak, china_peak_year }];
-  }
-});
-
-const KERALA_POP = 36000000; // 2026 projection, Technical Group on Population Projections (2020)
-
-dash.calc('age_summary', {
-  inputs: ['age_band'],
-  title: 'Working-age doctors',
-  description: 'Doctors whose approximate age today (from year of registration) is under 65, those 65 or older, and doctors per 10,000 people in Kerala using a 2026 population of 36 million.',
-  fn: (age_band) => {
-    let total = 0, working = 0, over_to = 0;
-    for (const r of age_band) {
-      total += +r.Doctors;
-      if (+r.working_age === 1) working += +r.Doctors;
-      else if (r.registered_to) over_to = Math.max(over_to, +r.registered_to);
+dash.calc('stats', {
+  inputs: ['councils', 'per_year', 'age_band', 'study', 'abroad_countries', 'duplicates'],
+  title: 'Summary for each council and all India',
+  description: 'Per council (and all India): registrations, estimated share of women, doctors under 65, where they studied, the last complete year on the register, registrations projected from then to 2026, and doctors per 10,000 people in 2026.',
+  fn: (councils, per_year, age_band, study, abroad_countries, duplicates) => {
+    const AS_OF = 2026;
+    const r1 = (v) => Math.round(v * 10) / 10;
+    const pct = (a, b) => (b ? r1(100 * a / b) : null);
+    const by = (rows) => { const m = new Map(); for (const r of rows) { if (!m.has(r.code)) m.set(r.code, []); m.get(r.code).push(r); } return m; };
+    const PY = by(per_year), AG = by(age_band), ST = by(study), AC = by(abroad_countries);
+    const dupShare = duplicates.length ? +duplicates[0].share : 0;
+    const out = [];
+    const make = (code, c, years, ages, studies, abroad) => {
+      const T = new Map();
+      for (const r of years) T.set(+r.year, (T.get(+r.year) || 0) + +r.Total);
+      let f = 0, m = 0, u = 0;
+      for (const r of years) { f += +r.Female; m += +r.Male; u += +r.Unknown; }
+      // years with at least 100 registrations, leaving out a part-entered latest year (under half the year before)
+      const big = [...T.keys()].filter((y) => T.get(y) >= 100 && T.get(y) >= 0.5 * (T.get(y - 1) || 0)).sort((a, b) => a - b);
+      const fy = new Map();
+      for (const r of years) { const o = fy.get(+r.year) || { f: 0, m: 0 }; o.f += +r.Female; o.m += +r.Male; fy.set(+r.year, o); }
+      const known = big.filter((y) => fy.get(y).f + fy.get(y).m >= 50);
+      let since = null;
+      for (let i = known.length - 1; i >= 0 && fy.get(known[i]).f > fy.get(known[i]).m; i--) since = known[i];
+      const lastY = known[known.length - 1];
+      let working = 0, total = 0, over_to = 0;
+      for (const r of ages) { total += +r.Doctors; if (+r.working_age === 1) working += +r.Doctors; else if (r.registered_to) over_to = Math.max(over_to, +r.registered_to); }
+      let same = 0, other = 0, abr = 0, ident = 0, unplaced = 0;
+      for (const r of studies) { same += +r['Same state']; other += +r['Other Indian states']; abr += +r.Abroad; unplaced += +r['Not identified']; }
+      ident = same + other + abr;
+      const lastStudy = studies.filter((r) => +r['Same state'] + +r['Other Indian states'] + +r.Abroad >= 100 && big.includes(+r.year)).sort((a, b) => +a.year - +b.year).pop();
+      const ls = lastStudy ? +lastStudy['Same state'] + +lastStudy['Other Indian states'] + +lastStudy.Abroad : 0;
+      const fit = code === 'IN' ? null : kdFit(T, AS_OF);
+      return { code, T, fit, row: {
+        code, name: c.state, council: c.council, records: +c.records, female: f, male: m, unknown: u,
+        female_pct: pct(f, f + m), unknown_pct: pct(u, f + m + u), since, last_year: lastY || null,
+        last_female_pct: lastY ? pct(fy.get(lastY).f, fy.get(lastY).f + fy.get(lastY).m) : null,
+        working, over: total - working, over_to, working_pct: pct(working, total),
+        same_pct: pct(same, ident), outside_pct: pct(other + abr, ident), other_pct: pct(other, ident),
+        abroad: abr, abroad_pct: pct(abr, ident), countries: (abroad || []).filter((r) => r.country !== 'Not identified').length,
+        univ_known_pct: pct(ident, ident + unplaced),
+        study_last_year: lastStudy ? +lastStudy.year : null,
+        study_last_outside_pct: lastStudy ? pct(+lastStudy['Other Indian states'] + +lastStudy.Abroad, ls) : null,
+        with_pin_pct: pct(+c.with_pin, +c.records), removed: +c.removed,
+        pop: +c.population_2026 || null,
+      } };
+    };
+    const all = [];
+    for (const c of councils) if (c.code !== 'IN') all.push(make(c.code, c, PY.get(c.code) || [], AG.get(c.code) || [], ST.get(c.code) || [], AC.get(c.code)));
+    // All India: sums, with each council's own projection added up
+    const sumRows = (m) => [...m.values()].flat();
+    const india = make('IN', { state: 'India', council: 'All councils', records: councils.reduce((a, c) => a + +c.records, 0),
+      with_pin: councils.reduce((a, c) => a + +c.with_pin, 0), removed: councils.reduce((a, c) => a + +c.removed, 0),
+      population_2026: (councils.find((c) => c.code === 'IN') || {}).population_2026 }, sumRows(PY), sumRows(AG), sumRows(ST),
+      [...new Set(abroad_countries.map((r) => r.country))].map((country) => ({ country })));
+    for (const x of [...all, india]) {
+      const r = x.row, fit = x.fit;
+      let late = 0, added = 0, added_low = 0;
+      if (x.code === 'IN') {
+        for (const y of all) if (y.fit && y.row.pop) { late += y.fit.late; added += y.fit.added; added_low += y.fit.added_low; }
+      } else if (fit) { late = fit.late; added = fit.added; added_low = fit.added_low; }
+      r.complete_to = fit ? fit.L : null;
+      r.projected = x.code === 'IN' ? added > 0 : !!(fit && fit.L < AS_OF);
+      r.proj_from = fit && fit.L < AS_OF ? fit.L + 1 : null;
+      r.slope = fit ? fit.slope : null;
+      r.added = added; r.added_low = added_low; r.late = late;
+      r.est_unique = x.code === 'IN' ? Math.round(r.records * (1 - dupShare)) : null;
+      r.dup_pct = x.code === 'IN' ? r1(100 * dupShare) : null;
+      const per = (n) => (r.pop ? r1(n / r.pop * 1e4) : null);
+      r.d_reg_u65 = per(r.working); r.d_reg_all = per(r.working + r.over);
+      r.d26_u65 = per(r.working - late + added); r.d26_all = per(r.working + r.over - late + added);
+      r.d26_u65_low = per(r.working - late + added_low); r.d26_all_low = per(r.working + r.over - late + added_low);
+      out.push(r);
     }
-    const per10k = (n) => Math.round(n / (KERALA_POP / 1e4) * 10) / 10;
-    return [{ total, working, over: total - working, over_to,
-      working_pct: Math.round(1000 * working / total) / 10,
-      per10k_working: per10k(working), per10k_all: per10k(total) }];
-  }
-});
-
-dash.calc('who_ref', {
-  inputs: ['who_density'],
-  title: 'World and India reference figures',
-  description: 'WHO doctors per 10,000 people for the world and for India, with the year of each figure.',
-  fn: (who_density) => {
-    const row = (p) => who_density.find((x) => x.place === p) || {};
-    return [{ world: +row('World').per_10k, world_year: +row('World').year, india: +row('India').per_10k, india_year: +row('India').year }];
-  }
-});
-
-dash.calc('projection', {
-  inputs: ['per_year', 'age_band'],
-  title: 'Doctors projected to 2026',
-  description: 'Registrations for 2020–2026 projected from a straight-line fit to 2010–2019 (low case: flat at the 2015–2019 average), added to doctors under 65 on the register, per 10,000 of Kerala\u2019s 2026 population.',
-  fn: (per_year, age_band) => {
-    const T = new Map(per_year.map((r) => [+r.year, +r.Total]));
-    const xs = []; for (let y = 2010; y <= 2019; y++) xs.push(y);
-    const mx = xs.reduce((a, x) => a + x, 0) / xs.length, my = xs.reduce((a, x) => a + T.get(x), 0) / xs.length;
-    const slope = xs.reduce((a, x) => a + (x - mx) * (T.get(x) - my), 0) / xs.reduce((a, x) => a + (x - mx) ** 2, 0);
-    const proj = (y) => Math.round(my + slope * (y - mx));
-    const flat = Math.round([2015, 2016, 2017, 2018, 2019].reduce((a, y) => a + T.get(y), 0) / 5);
-    let working = 0, late = 0, added = 0;
-    for (const r of age_band) if (+r.working_age === 1) working += +r.Doctors;
-    for (let y = 2020; y <= 2026; y++) { late += T.get(y) || 0; added += proj(y); }
-    const added_low = flat * 7;
-    const per10k = (n) => Math.round(n / (KERALA_POP / 1e4) * 10) / 10;
-    const w26 = working - late + added, w26low = working - late + added_low;
-    return [{ slope: Math.round(slope), added, added_low, working_2026: w26, working_2026_low: w26low,
-      per10k_2026: per10k(w26), per10k_2026_low: per10k(w26low), per10k_now: per10k(working) }];
+    return out;
   }
 });
 
 dash.calc('proj_years', {
-  inputs: ['per_year'],
+  inputs: ['per_year', 'councils'],
   title: 'Registrations per year, actual and projected',
-  description: 'Registrations per year 2000–2019 from the register, and 2020–2026 projected from a straight-line fit to 2010–2019, with a low case flat at the 2015–2019 average.',
-  fn: (per_year) => {
-    const T = new Map(per_year.map((r) => [+r.year, +r.Total]));
-    const xs = []; for (let y = 2010; y <= 2019; y++) xs.push(y);
-    const mx = xs.reduce((a, x) => a + x, 0) / xs.length, my = xs.reduce((a, x) => a + T.get(x), 0) / xs.length;
-    const slope = xs.reduce((a, x) => a + (x - mx) * (T.get(x) - my), 0) / xs.reduce((a, x) => a + (x - mx) ** 2, 0);
-    const proj = (y) => Math.round(my + slope * (y - mx));
-    const flat = Math.round([2015, 2016, 2017, 2018, 2019].reduce((a, y) => a + T.get(y), 0) / 5);
-    const rows = [];
-    for (let y = 2000; y <= 2026; y++) rows.push(y <= 2019 ? { year: y, doctors: T.get(y) || 0, projected: 0 } : { year: y, doctors: proj(y), low: flat, projected: 1 });
+  description: 'Registrations per year from 2000, per council and all India; after a council’s last complete year, registrations are projected with a straight line fitted to its previous ten years (low case: flat at the last five years’ average).',
+  fn: (per_year, councils) => {
+    const AS_OF = 2026;
+    const T = new Map();
+    for (const r of per_year) { if (!T.has(r.code)) T.set(r.code, new Map()); const m = T.get(r.code); m.set(+r.year, (m.get(+r.year) || 0) + +r.Total); }
+    const rows = [], india = new Map();
+    const hasPop = new Set(councils.filter((c) => +c.population_2026).map((c) => c.code));
+    for (const [code, m] of T) {
+      const fit = hasPop.has(code) ? kdFit(m, AS_OF) : null;  // the central register has no population to project for
+      for (let y = 2000; y <= AS_OF; y++) {
+        const isProj = fit && y > fit.L;
+        const row = { code, year: y, doctors: isProj ? fit.proj(y) : (m.get(y) || 0), low: isProj ? fit.flat : null, projected: isProj ? 1 : 0 };
+        rows.push(row);
+        const o = india.get(y) || { code: 'IN', year: y, doctors: 0, low: 0, projected: 0 };
+        o.doctors += row.doctors; o.low += isProj ? fit.flat : row.doctors;
+        if (isProj && hasPop.has(code)) o.projected = 1;
+        india.set(y, o);
+      }
+    }
+    for (const o of india.values()) { if (!o.projected) o.low = null; rows.push(o); }
     return rows;
   }
 });
 
-dash.calc('density', {
-  inputs: ['age_band', 'who_density', 'per_year'],
-  title: 'Doctors per 10,000 people',
-  description: 'Kerala in 2026 (all ages, and under 65: doctors on the register plus projected 2020–2026 registrations), Kerala under 65 from the register alone, and WHO figures for the world, India, selected countries and WHO regions, highest first.',
-  fn: (age_band, who_density, per_year) => {
-    const T = new Map(per_year.map((r) => [+r.year, +r.Total]));
-    const xs = []; for (let y = 2010; y <= 2019; y++) xs.push(y);
-    const mx = xs.reduce((a, x) => a + x, 0) / xs.length, my = xs.reduce((a, x) => a + T.get(x), 0) / xs.length;
-    const slope = xs.reduce((a, x) => a + (x - mx) * (T.get(x) - my), 0) / xs.reduce((a, x) => a + (x - mx) ** 2, 0);
-    const proj = (y) => Math.round(my + slope * (y - mx));
-    const flat = Math.round([2015, 2016, 2017, 2018, 2019].reduce((a, y) => a + T.get(y), 0) / 5);
-    let working = 0, total = 0, late = 0, added = 0;
-    for (const r of age_band) { total += +r.Doctors; if (+r.working_age === 1) working += +r.Doctors; }
-    for (let y = 2020; y <= 2026; y++) { late += T.get(y) || 0; added += proj(y); }
-    const per10k = (n) => Math.round(n / (KERALA_POP / 1e4) * 10) / 10;
-    const rows = [
-      { label: 'Kerala 2026, all ages', value: per10k(total - late + added), low: per10k(total - late + flat * 7), kind: 'kerala', who: 'all', year: 2026 },
-      { label: 'Kerala 2026, under 65', value: per10k(working - late + added), low: per10k(working - late + flat * 7), kind: 'kerala', who: 'u65', year: 2026 },
-      { label: 'Kerala, under 65, register only', value: per10k(working), kind: 'kerala_reg', year: 2026 },
-      ...who_density.map((r) => ({ label: r.place.replace(/^WHO /, '') + ' (' + r.year + ')', value: +r.per_10k, kind: r.kind, year: +r.year })),
-    ];
-    return rows.sort((a, b) => b.value - a.value);
-  }
-});
-
-dash.calc('district_rate', {
-  inputs: ['district', 'district_pop'],
-  title: 'Doctors per 10,000 residents by home district',
-  description: 'Doctors whose permanent address is in each Kerala district, per 10,000 residents (2011 census), highest first.',
-  fn: (district, district_pop) => {
-    const P = new Map(district_pop.map((r) => [r.district, +r.population_2011]));
-    return district.filter((r) => P.has(r.district)).map((r) => ({ district: r.district, doctors: +r.Doctors,
-      population: P.get(r.district), per10k: Math.round(+r.Doctors / P.get(r.district) * 1e5) / 10 }))
-      .sort((a, b) => b.per10k - a.per10k);
-  }
-});
-
-dash.calc('map_summary', {
-  inputs: ['district', 'district_pop', 'pins'],
-  title: 'Map summary',
-  description: 'Districts with the most and fewest doctors per 10,000 residents, and how many PIN areas and doctors the map circles cover.',
-  fn: (district, district_pop, pins) => {
-    const P = new Map(district_pop.map((r) => [r.district, +r.population_2011]));
-    const rates = district.filter((r) => P.has(r.district))
-      .map((r) => ({ d: r.district, v: Math.round(+r.Doctors / P.get(r.district) * 1e5) / 10 })).sort((a, b) => b.v - a.v);
-    const top = rates[0], bottom = rates[rates.length - 1];
-    return [{ top: top.d, top_rate: top.v, bottom: bottom.d, bottom_rate: bottom.v,
-      pin_areas: pins.length, pin_doctors: pins.reduce((a, r) => a + +r.doctors, 0) }];
-  }
-});
-
+// ---------- selection ----------
+window.kdSel = 'IN';
+try { const h = decodeURIComponent((location.hash || '').replace(/^#/, '')); if (/^[A-Z]{2,3}$/.test(h)) window.kdSel = h; } catch (e) { /* no hash */ }
 window.kdFmt = d3.format(',');
-window.kdMode = { 'gender-chart': 'count', 'study-chart': 'share', 'map-chart': 'pins' };
+window.kdMode = { 'gender-chart': 'count', 'study-chart': 'share', 'india-map': 'pins', 'state-map': 'pins', 'state-density': 'u65' };
 window.kdSer = (i) => (i === 'muted' ? 'var(--cds-chart-muted)' : dash.colors[i]);
+const KD_DRAWS = [];
+function kdDraw(name, fn) { KD_DRAWS.push(name); dash.draw(name, fn); }
+const kdIsIndia = () => window.kdSel === 'IN';
+function kdStat(code) {
+  const d = dash.data('stats');
+  if (d.status !== 'ok' || !d.data) return null;
+  return d.data.find((r) => r.code === (code || window.kdSel)) || null;
+}
+
+function kdApplyView() {
+  const s = kdStat();
+  const india = kdIsIndia();
+  for (const el of document.querySelectorAll('[data-view]')) el.hidden = (el.getAttribute('data-view') === 'india') !== india;
+  for (const el of document.querySelectorAll('[data-need="pop"]')) if (!el.closest('[data-view]') || !el.closest('[data-view]').hidden) el.hidden = !!(s && !s.pop);
+  for (const el of document.querySelectorAll('[data-need="proj"]')) el.hidden = !(s && s.projected);
+  for (const el of document.querySelectorAll('[data-only]')) el.hidden = el.getAttribute('data-only') !== window.kdSel;
+  const back = document.getElementById('kd-back');
+  if (back) back.hidden = india;
+}
+
+function kdSelect(code) {
+  window.kdSel = code;
+  const sel = document.getElementById('kd-pick');
+  if (sel && sel.value !== code) sel.value = code;
+  try { history.replaceState(null, '', code === 'IN' ? location.pathname + location.search : '#' + code); } catch (e) { /* sandboxed */ }
+  kdApplyView();
+  for (const n of KD_DRAWS) dash.draw(n);
+}
+
+function kdFillPicker() {
+  const sel = document.getElementById('kd-pick');
+  const d = dash.data('stats');
+  if (!sel || d.status !== 'ok' || !d.data || sel.options.length > 1) return;
+  const rows = d.data.filter((r) => r.code !== 'IN').sort((a, b) => (a.code === 'MCI') - (b.code === 'MCI') || a.name.localeCompare(b.name));
+  for (const r of rows) sel.append(new Option(r.code === 'MCI' ? 'Central register (former MCI)' : r.name, r.code));
+  if (![...sel.options].some((o) => o.value === window.kdSel)) window.kdSel = 'IN';
+  sel.value = window.kdSel;
+  kdApplyView();
+}
+document.getElementById('kd-pick').addEventListener('change', (ev) => kdSelect(ev.target.value));
+document.getElementById('kd-back').addEventListener('click', () => { kdSelect('IN'); document.getElementById('summary').scrollIntoView({ behavior: 'smooth' }); });
 
 for (const sw of document.querySelectorAll('[data-swatch]')) {
   const k = sw.getAttribute('data-swatch');
@@ -498,53 +534,32 @@ for (const grp of document.querySelectorAll('.kd-seg')) {
   }
 }
 
-function kdNum(name, src, field, fmt) {
-  dash.draw(name, (el) => {
-    const d = dash.data(src);
-    if (d.status !== 'ok' || d.data == null) { el.textContent = '—'; return; }
-    const v = field ? (d.data[0] || {})[field] : d.data;
-    el.textContent = v == null ? '—' : (fmt ? fmt(v) : String(v));
-  });
-}
 const f1 = d3.format('.1f');
-kdNum('since', 'trend', 'since');
-kdNum('lastyear', 'trend', 'last_year');
-kdNum('lastpct', 'trend', 'last_female_pct', f1);
-kdNum('t-total', 'totals', 'total', window.kdFmt);
-kdNum('t-fpct', 'totals', 'female_pct', f1);
-kdNum('t-outside', 'study', 'outside_pct', f1);
-kdNum('t-abroad', 'study', 'abroad', window.kdFmt);
-kdNum('t-countries', 'abroad_summary', 'countries');
-kdNum('s-year', 'study', 'last_year');
-kdNum('s-last', 'study', 'last_outside_pct', f1);
-kdNum('a-peak', 'abroad_summary', 'china_peak', window.kdFmt);
-kdNum('a-peakyear', 'abroad_summary', 'china_peak_year');
-kdNum('t-working', 'age_summary', 'working', window.kdFmt);
-kdNum('m-top', 'map_summary', 'top');
-kdNum('m-toprate', 'map_summary', 'top_rate', f1);
-kdNum('m-bottom', 'map_summary', 'bottom');
-kdNum('m-bottomrate', 'map_summary', 'bottom_rate', f1);
-kdNum('m-areas', 'map_summary', 'pin_areas', window.kdFmt);
-kdNum('m-pindocs', 'map_summary', 'pin_doctors', window.kdFmt);
-kdNum('t-wpct', 'age_summary', 'working_pct', d3.format('.0f'));
-kdNum('g-over', 'age_summary', 'over', window.kdFmt);
-kdNum('g-overyear', 'age_summary', 'over_to');
-kdNum('d-work', 'age_summary', 'per10k_working', f1);
-kdNum('p-added', 'projection', 'added', (v) => d3.format(',')(Math.round(v / 100) * 100));
-kdNum('p-rate', 'projection', 'per10k_2026', f1);
-kdNum('p-slope', 'projection', 'slope', window.kdFmt);
-kdNum('p-addlow', 'projection', 'added_low', (v) => 'about ' + d3.format(',')(Math.round(v / 100) * 100));
-kdNum('p-ratelow', 'projection', 'per10k_2026_low', f1);
-kdNum('d-world', 'who_ref', 'world', f1);
-kdNum('d-india', 'who_ref', 'india', f1);
-kdNum('d-wyear', 'who_ref', 'world_year');
-kdNum('d-iyear', 'who_ref', 'india_year');
+const f0 = d3.format('.0f');
+const kdRound = (v) => window.kdFmt(Math.round(v / 100) * 100);
 
 function kdFail(el, d) {
   el.replaceChildren();
   if (d.status === 'error') { el.append(Object.assign(document.createElement('div'), { className: 'kd-fail', textContent: 'Failed to load' })); return true; }
-  if (d.status !== 'ok') { el.textContent = '—'; return true; }
+  if (d.status !== 'ok' || d.data == null) { el.textContent = '—'; return true; }
   return false;
+}
+const kdHiddenEl = (el) => !!el.closest('[hidden]');
+
+// Sentence builder: parts are strings or {f: field, fmt, b} read from the selected council's stats row (marked for checking).
+function kdSay(el, parts) {
+  el.replaceChildren();
+  const s = kdStat();
+  if (!s) { el.textContent = '—'; return; }
+  for (const p of parts) {
+    if (p == null || p === false) continue;
+    if (typeof p === 'string') { el.append(p); continue; }
+    const v = s[p.f];
+    const span = document.createElement(p.b ? 'b' : 'span');
+    span.setAttribute('data-source', 'stats'); span.setAttribute('data-field', p.f); span.setAttribute('data-where', 'code=' + s.code);
+    span.textContent = v == null ? '—' : (p.fmt ? p.fmt(v) : String(v));
+    el.append(span);
+  }
 }
 
 document.addEventListener('pointerdown', (ev) => {
@@ -561,7 +576,7 @@ function kdTipAt(tip, el, ev, dy) {
 window.kdStacked = function (el, rows, opts) {
   const series = opts.series, keys = series.map((s) => s.key);
   const color = new Map(series.map((s) => [s.key, s.color]));
-  const W = Math.max(280, el.clientWidth), H = 300;
+  const W = Math.max(280, el.clientWidth), H = opts.height || 300;
   const m = { t: 10, r: 8, b: 26, l: 8 };
   const share = opts.share;
   const data = rows.map((r) => {
@@ -580,6 +595,7 @@ window.kdStacked = function (el, rows, opts) {
   probe.remove();
   m.l = Math.ceil(lw) + 10;
   const x = d3.scaleBand().domain(years).range([m.l, W - m.r]).paddingInner(years.length > 50 ? 0.12 : 0.2);
+  el.classList.add('kd-drawn');
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
     .attr('role', 'img').attr('aria-label', opts.label);
   svg.append('g').attr('transform', `translate(${m.l},0)`)
@@ -627,7 +643,7 @@ window.kdStacked = function (el, rows, opts) {
     .on('pointerleave', (ev) => { if (ev.pointerType !== 'touch') tip.attr('hidden', ''); });
 };
 
-// Horizontal bars. rows: [{label, parts: {key: n}, tip: [..lines]}], series as above
+// Horizontal bars. rows: [{label, total, parts: {key: n}, tip: [..lines], code?}], series as above
 window.kdHBars = function (el, rows, opts) {
   const series = opts.series;
   const fmt = opts.fmt || window.kdFmt;
@@ -640,14 +656,27 @@ window.kdHBars = function (el, rows, opts) {
     vw = Math.max(vw, probe.append('text').text(fmt(r.total)).node().getComputedTextLength());
   });
   probe.remove();
-  m.l = Math.ceil(lw) + 10; m.r = Math.ceil(vw) + 10;
-  const H = m.t + m.b + rowH * rows.length;
+  m.l = Math.min(Math.ceil(lw) + 10, Math.round(W * 0.5)); m.r = Math.ceil(vw) + 10;
+  const div = opts.divideAfter && rows.some((r) => r.label === opts.divideAfter.row) ? opts.divideAfter : null;
+  const gap = div ? 22 : 0;
+  const H = m.t + m.b + rowH * rows.length + gap;
   el.classList.add('kd-drawn');
   const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.total) || 1]).range([m.l, W - m.r]);
-  const y = d3.scaleBand().domain(rows.map((r) => r.label)).range([m.t, H - m.b]).paddingInner(0.25);
+  const yb = d3.scaleBand().domain(rows.map((r) => r.label)).range([m.t, H - m.b - gap]).paddingInner(0.25);
+  const cut = div ? rows.findIndex((r) => r.label === div.row) : rows.length;
+  const y = Object.assign((lab) => { const v = yb(lab); return v == null ? v : v + (rows.findIndex((r) => r.label === lab) > cut ? gap : 0); },
+    { bandwidth: () => yb.bandwidth(), step: () => yb.step(), domain: () => yb.domain(), range: () => yb.range(), copy: () => y });
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
     .attr('role', 'img').attr('aria-label', opts.label);
-  svg.append('g').attr('transform', `translate(${m.l - 6},0)`).call(d3.axisLeft(y).tickSize(0)).call((g) => g.select('.domain').remove());
+  svg.append('g').selectAll('text').data(rows).join('text').attr('x', m.l - 6).attr('y', (r) => y(r.label) + y.bandwidth() / 2).attr('dy', '0.32em')
+    .attr('text-anchor', 'end').text((r) => r.label)
+    .each(function (r) {
+      let t = r.label;
+      while (t.length > 4 && this.getComputedTextLength() > m.l - 8) { t = t.slice(0, -1); this.textContent = t.trimEnd() + '…'; }
+      if (t !== r.label && !r.title) r.title = r.label;
+    })
+    .style('font-weight', (r) => (opts.bold && opts.bold(r.label) ? 'var(--cds-font-weight-medium)' : null))
+    .style('fill', (r) => (opts.bold && opts.bold(r.label) ? 'var(--color-fg)' : null));
   const g = svg.append('g');
   for (const r of rows) {
     let x0 = 0;
@@ -661,27 +690,34 @@ window.kdHBars = function (el, rows, opts) {
     }
     g.append('text').attr('class', 'kd-val').attr('x', x(r.total) + 6).attr('y', y(r.label) + y.bandwidth() / 2).attr('dy', '0.32em').text(fmt(r.total));
   }
-  if (opts.divideAfter && y(opts.divideAfter.row) != null) {
-    const yy = y(opts.divideAfter.row) + y.bandwidth() + (y.step() - y.bandwidth()) / 2;
-    svg.append('line').attr('x1', 0).attr('x2', W - m.r).attr('y1', yy).attr('y2', yy)
+  if (div) {
+    const yy = y(div.row) + y.bandwidth() + (y.step() - y.bandwidth()) / 2 + gap / 2;
+    const lab = svg.append('text').attr('x', W - 2).attr('y', yy).attr('dy', '0.32em').attr('text-anchor', 'end').text(div.above + '  ·  ' + div.below);
+    const tw = lab.node().getComputedTextLength();
+    svg.append('line').attr('x1', m.l).attr('x2', Math.max(m.l, W - tw - 12)).attr('y1', yy).attr('y2', yy)
       .attr('stroke', 'var(--cds-chart-axis)').attr('stroke-dasharray', '4,3');
-    svg.append('text').attr('x', W - m.r).attr('y', yy - 4).attr('text-anchor', 'end').text(opts.divideAfter.above);
-    svg.append('text').attr('x', W - m.r).attr('y', yy + 13).attr('text-anchor', 'end').text(opts.divideAfter.below);
   }
   const tip = d3.select(el).append('div').attr('class', 'kd-tip').attr('hidden', '');
+  let lastTouch = null;
   svg.append('g').selectAll('rect').data(rows).join('rect')
     .attr('x', 0).attr('width', W).attr('y', (r) => y(r.label) - (y.step() - y.bandwidth()) / 2).attr('height', y.step())
-    .attr('fill', 'transparent')
+    .attr('fill', 'transparent').attr('class', (r) => (opts.onPick && r.code ? 'kd-click' : null))
     .on('pointerenter pointermove', function (ev, r) {
       tip.attr('hidden', null).html('');
-      tip.append('div').attr('class', 'kd-tt').text(r.label);
+      tip.append('div').attr('class', 'kd-tt').text(r.title || r.label);
       for (const line of r.tip) {
         const div = tip.append('div');
         if (line.color) div.append('span').attr('class', 'kd-sw').style('background', line.color);
         div.append('span').text(line.text + ' ');
         div.append('b').attr('class', 'kd-tn').text(line.value);
       }
+      if (opts.onPick && r.code) tip.append('div').attr('class', 'kd-tm').text(ev.pointerType === 'touch' ? 'Tap again to open' : 'Click to open');
       kdTipAt(tip, el, ev, 56);
+    })
+    .on('click', (ev, r) => {
+      if (!opts.onPick || !r.code) return;
+      if (ev.pointerType === 'touch' && lastTouch !== r.code) { lastTouch = r.code; return; }
+      opts.onPick(r.code);
     })
     .on('pointerleave', (ev) => { if (ev.pointerType !== 'touch') tip.attr('hidden', ''); });
 };
@@ -691,100 +727,384 @@ const GENDER = [
   { key: 'Male', label: 'Men', color: window.kdSer(1) },
   { key: 'Unknown', label: 'Unknown', color: window.kdSer('muted') },
 ];
+const kdPctFmt = d3.format('.0%');
+const kdName = (s) => (s.code === 'IN' ? 'India' : s.code === 'MCI' ? 'the central register' : s.name);
+const kdNameCap = (s) => (s.code === 'MCI' ? 'The central register' : kdName(s));
+// Rows of a dataset for the selected council; all India sums the councils.
+function kdRows(rows, keyCols, numCols) {
+  if (!kdIsIndia()) return rows.filter((r) => r.code === window.kdSel);
+  const m = new Map();
+  for (const r of rows) {
+    const k = keyCols.map((c) => r[c]).join('|');
+    let o = m.get(k);
+    if (!o) { o = { code: 'IN' }; for (const c of keyCols) o[c] = r[c]; for (const c of numCols) o[c] = 0; m.set(k, o); }
+    for (const c of numCols) o[c] += +r[c] || 0;
+  }
+  return [...m.values()];
+}
 
-dash.draw('gender-chart', (el) => {
+// ---------- header, tiles, sentences ----------
+kdApplyView();
+kdDraw('title', (el) => {
+  kdFillPicker();
+  kdApplyView();
+  const s = kdStat();
+  el.textContent = !s || s.code === 'IN' ? "Doctors on India's Medical Register" : s.code === 'MCI' ? 'Central Register of Doctors (former MCI)' : s.name + ' Doctors Register';
+  try { document.title = el.textContent; } catch (e) { /* ignore */ }
+});
+
+kdDraw('lede', (el) => {
+  const s = kdStat();
+  if (!s) { el.textContent = '—'; return; }
+  if (s.code === 'IN') {
+    kdSay(el, ['India’s national register lists ', { f: 'records', fmt: window.kdFmt, b: true }, ' registrations across 29 state councils and the central register. ',
+      s.since ? 'Women have outnumbered men among new registrations every year since ' : null, s.since ? { f: 'since', b: true } : null, s.since ? '; in ' : 'In ',
+      { f: 'last_year' }, ' they were ', { f: 'last_female_pct', fmt: f1, b: true }, '% of new doctors whose gender could be estimated.']);
+  } else if (s.since) {
+    kdSay(el, ['Women have outnumbered men among new registrations every year since ', { f: 'since', b: true }, '. In ', { f: 'last_year' },
+      ', the last full year on the register, they were ', { f: 'last_female_pct', fmt: f1, b: true }, '% of new doctors whose gender could be estimated.']);
+  } else {
+    kdSay(el, ['In ', { f: 'last_year' }, ', the last year with at least 100 registrations, women were ', { f: 'last_female_pct', fmt: f1, b: true },
+      '% of new doctors whose gender could be estimated.']);
+  }
+});
+
+kdDraw('source-note', (el) => {
+  const s = kdStat();
+  el.textContent = 'Source: NMC Indian Medical Register, ' + (s && s.code !== 'IN' ? s.council : 'all councils') +
+    ', downloaded November 2026. The register holds no gender field: gender is estimated from first names.';
+});
+
+kdDraw('tiles', (el) => {
+  const d = dash.data('stats');
+  if (kdFail(el, d)) return;
+  const s = kdStat();
+  if (!s) return;
+  const tile = (parts, label) => {
+    const t = Object.assign(document.createElement('div'), { className: 'kd-tile' });
+    const v = Object.assign(document.createElement('span'), { className: 'kd-v' });
+    kdSay(v, parts);
+    const l = Object.assign(document.createElement('span'), { className: 'kd-l' });
+    if (typeof label === 'string') l.textContent = label; else kdSay(l, label);
+    t.append(v, l); el.append(t);
+  };
+  if (s.code === 'IN') {
+    tile([{ f: 'records', fmt: window.kdFmt }], 'Registrations on the national register');
+    tile([{ f: 'est_unique', fmt: (v) => '~' + (v >= 1e6 ? d3.format('.2f')(v / 1e6) + ' million' : window.kdFmt(Math.round(v / 1000) * 1000)) }],
+      ['Estimated distinct doctors, allowing for ', { f: 'dup_pct', fmt: f1 }, '% registered with more than one council']);
+    tile([{ f: 'female_pct', fmt: f1 }, '%'], 'Estimated share of women, all years (of doctors whose gender could be estimated)');
+    tile([{ f: 'working', fmt: window.kdFmt }], ['Of working age today (estimated under 65), ', { f: 'working_pct', fmt: f0 }, '% of the register']);
+    tile([{ f: 'abroad', fmt: window.kdFmt }], ['Trained abroad, ', { f: 'abroad_pct', fmt: f1 }, '% of doctors whose university was identified']);
+  } else {
+    tile([{ f: 'records', fmt: window.kdFmt }], 'Doctors on the register');
+    tile([{ f: 'female_pct', fmt: f1 }, '%'], 'Estimated share of women, all years (of doctors whose gender could be estimated)');
+    const uniOk = s.univ_known_pct >= 20;
+    if (s.code !== 'MCI' && uniOk) tile([{ f: 'outside_pct', fmt: f1 }, '%'], 'Studied medicine outside ' + s.name + ', all years');
+    if (uniOk) tile([{ f: 'abroad', fmt: window.kdFmt }], ['Trained abroad, from ', { f: 'countries' }, ' countries']);
+    else tile([{ f: 'with_pin_pct', fmt: f0 }, '%'], 'Of addresses on this register include a PIN code');
+    tile([{ f: 'working', fmt: window.kdFmt }], ['Of working age today (estimated under 65), ', { f: 'working_pct', fmt: f0 }, '% of the register']);
+  }
+});
+
+// ---------- India map ----------
+const KD_SEQ = [5, 10, 15, 20];
+const KD_SEQ_LABELS = ['Under 5', '5–10', '10–15', '15–20', '20 or more'];
+const kdSeq = (v, cuts) => 'var(--kd-seq-' + (1 + d3.bisectRight(cuts || KD_SEQ, v)) + ')';
+function kdLegend(id, mode, cuts, labels, dotText) {
+  const ul = document.getElementById(id);
+  if (!ul) return;
+  ul.replaceChildren();
+  if (mode === 'rate') {
+    labels.forEach((lab, i) => {
+      const li = document.createElement('li');
+      const sw = Object.assign(document.createElement('span'), { className: 'kd-sw' });
+      sw.style.background = 'var(--kd-seq-' + (i + 1) + ')';
+      li.append(sw, lab); ul.append(li);
+    });
+  } else {
+    const li = document.createElement('li');
+    const dot = Object.assign(document.createElement('span'), { className: 'kd-dot' });
+    dot.style.background = window.kdSer(0); dot.style.opacity = '0.7';
+    li.append(dot, dotText); ul.append(li);
+  }
+}
+
+function kdGeoFit(W, fc, pad) {
+  const proj = d3.geoMercator().fitWidth(W - 2 * pad, fc);
+  const path = d3.geoPath(proj);
+  let b = path.bounds(fc);
+  const [tx, ty] = proj.translate();
+  proj.translate([tx + pad - b[0][0], ty + pad - b[0][1]]);
+  b = path.bounds(fc);
+  return { proj, path, H: Math.ceil(b[1][1] + pad) };
+}
+
+// Dots with a size key; returns {pts, rs}. pts: [{x, y, n, r}]
+function kdDots(svg, rows, proj, W, H, pad, maxR, keyVals, keyPos) {
+  const pts = rows.map((r) => { const [x, y] = proj([+r.lon, +r.lat]); return { x, y, n: r.n, r }; }).sort((a, c) => c.n - a.n);
+  const rs = d3.scaleSqrt().domain([0, d3.max(pts, (p) => p.n) || 1]).range([0, maxR]);
+  svg.append('g').selectAll('circle').data(pts).join('circle')
+    .attr('cx', (p) => p.x).attr('cy', (p) => p.y).attr('r', (p) => Math.max(1.1, rs(p.n)))
+    .style('fill', window.kdSer(0)).style('fill-opacity', 0.45).style('stroke', window.kdSer(0)).style('stroke-width', 0.5);
+  const key = keyVals.filter((v) => v <= rs.domain()[1]);
+  if (key.length) {
+    const kx = (keyPos === 'left' ? pad + rs(key[0]) + 4 : W - pad - rs(key[0]) - 40), ky = pad + 26 + 2 * rs(key[0]);
+    const g = svg.append('g');
+    g.append('text').attr('class', 'kd-cap').attr('x', keyPos === 'left' ? pad : W - pad).attr('y', pad + 10).attr('text-anchor', keyPos === 'left' ? 'start' : 'end').text('Doctors per PIN code');
+    for (const v of key) {
+      g.append('circle').attr('cx', kx).attr('cy', ky - rs(v)).attr('r', rs(v)).style('fill', 'none').style('stroke', 'var(--cds-chart-axis)');
+      g.append('line').attr('x1', kx).attr('x2', kx + rs(key[0]) + 6).attr('y1', ky - 2 * rs(v)).attr('y2', ky - 2 * rs(v))
+        .style('stroke', 'var(--cds-chart-axis)').style('stroke-dasharray', '2,2');
+      g.append('text').attr('class', 'kd-cap').attr('x', kx + rs(key[0]) + 9).attr('y', ky - 2 * rs(v)).attr('dy', '0.32em').text(window.kdFmt(v));
+    }
+  }
+  return { pts, rs, delaunay: pts.length ? d3.Delaunay.from(pts, (p) => p.x, (p) => p.y) : null };
+}
+
+function kdTipLines(tip) {
+  return (label, value, color) => {
+    const div = tip.append('div');
+    if (color) div.append('span').attr('class', 'kd-sw').style('background', color);
+    div.append('span').text(label + ' ');
+    div.append('b').attr('class', 'kd-tn').text(value);
+  };
+}
+
+kdDraw('india-map', (el) => {
+  if (kdHiddenEl(el)) return;
+  const pp = dash.data('pin_places'), st = dash.data('stats'), geo = dash.data('india_geo');
+  if (kdFail(el, pp) || kdFail(el, st) || kdFail(el, geo)) return;
+  const mode = window.kdMode['india-map'];
+  kdLegend('imap-legend', mode, KD_SEQ, KD_SEQ_LABELS.map((l) => l), 'Circle size = doctors whose home address has that PIN code');
+  const fc = geo.data;
+  const W = Math.max(280, el.clientWidth), pad = 6;
+  const { proj, path, H } = kdGeoFit(W, fc, pad);
+  el.classList.add('kd-drawn');
+  const byCode = new Map(st.data.map((r) => [r.code, r]));
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+    .attr('aria-label', mode === 'rate'
+      ? 'Map of India with states shaded by doctors under 65 per 10,000 people in 2026, estimated from each state council’s register.'
+      : 'Map of India with a circle for each PIN code area, sized by the number of doctors whose home address is there. Circles cluster in the big cities and in the south.');
+  const states = svg.append('g').selectAll('path').data(fc.features).join('path').attr('class', (f) => 'kd-dist' + (f.properties.code ? '' : ' kd-none')).attr('d', path);
+  if (mode === 'rate') {
+    states.style('fill', (f) => { const s = byCode.get(f.properties.code); return s && s.d26_u65 != null ? kdSeq(s.d26_u65) : 'var(--color-panel)'; });
+  }
+  let dots = { pts: [], rs: null, delaunay: null };
+  if (mode === 'pins') {
+    const rows = pp.data.filter((r) => r.doctors_all && r.lat).map((r) => ({ ...r, n: +r.doctors_all }));
+    dots = kdDots(svg, rows, proj, W, H, pad, Math.max(7, W * 0.022), [1000, 100], 'right');
+  }
+  const tip = d3.select(el).append('div').attr('class', 'kd-tip').attr('hidden', '');
+  const line = kdTipLines(tip);
+  let lastTouch = null;
+  const stateAt = (px, py) => { const ll = proj.invert([px, py]); return fc.features.find((ft) => d3.geoContains(ft, ll)); };
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', 'transparent').attr('class', 'kd-click')
+    .on('pointerenter pointermove', (ev) => {
+      const [px, py] = d3.pointer(ev, svg.node());
+      states.classed('kd-on', false);
+      tip.html('');
+      let best = null;
+      if (dots.delaunay) { const i = dots.delaunay.find(px, py); best = dots.pts[i]; if (best && Math.hypot(best.x - px, best.y - py) > Math.max(dots.rs(best.n) + 3, 8)) best = null; }
+      if (best) {
+        tip.append('div').attr('class', 'kd-tt').text(best.r.place);
+        line('PIN', best.r.pin); line('District', best.r.district + ', ' + best.r.state);
+        line('Doctors living here', window.kdFmt(best.n), window.kdSer(0));
+      } else {
+        const f = stateAt(px, py);
+        if (!f) { tip.attr('hidden', ''); return; }
+        states.filter((ft) => ft === f).classed('kd-on', true);
+        const s = byCode.get(f.properties.code);
+        tip.append('div').attr('class', 'kd-tt').text(f.properties.name);
+        if (s) {
+          line('Council register', window.kdFmt(s.records));
+          if (s.d26_u65 != null) line('Under 65 per 10,000 people (2026)', f1(s.d26_u65), mode === 'rate' ? kdSeq(s.d26_u65) : null);
+          tip.append('div').attr('class', 'kd-tm').text(ev.pointerType === 'touch' ? 'Tap again to open' : 'Click to open');
+        } else tip.append('div').attr('class', 'kd-tm').text('No council on the national register');
+      }
+      tip.attr('hidden', null);
+      kdTipAt(tip, el, ev, 70);
+    })
+    .on('click', (ev) => {
+      const [px, py] = d3.pointer(ev, svg.node());
+      const f = stateAt(px, py);
+      if (!f || !byCode.get(f.properties.code)) return;
+      if (ev.pointerType === 'touch' && lastTouch !== f.properties.code) { lastTouch = f.properties.code; return; }
+      kdSelect(f.properties.code);
+      document.getElementById('summary').scrollIntoView({ behavior: 'smooth' });
+    })
+    .on('pointerleave', (ev) => { if (ev.pointerType !== 'touch') { tip.attr('hidden', ''); states.classed('kd-on', false); } });
+});
+
+function kdRankList(el, title, items) {
+  const h = Object.assign(document.createElement('h3'), { className: 'kd-rank-h', textContent: title });
+  const ol = Object.assign(document.createElement('ol'), { className: 'kd-rank' });
+  items.forEach((it, i) => {
+    const li = document.createElement('li');
+    const a = Object.assign(document.createElement('span'), { className: 'kd-i', textContent: i + 1 });
+    const b = document.createElement('span');
+    if (it.code) {
+      const btn = Object.assign(document.createElement('button'), { type: 'button', textContent: it.main });
+      btn.addEventListener('click', () => { kdSelect(it.code); document.getElementById('summary').scrollIntoView({ behavior: 'smooth' }); });
+      b.append(btn);
+    } else b.append(it.main);
+    if (it.sub) b.append(Object.assign(document.createElement('span'), { className: 'kd-sub', textContent: ' · ' + it.sub }));
+    const c = Object.assign(document.createElement('span'), { className: 'kd-n', textContent: it.n });
+    li.append(a, b, c); ol.append(li);
+  });
+  el.append(h, ol);
+}
+
+kdDraw('india-rank', (el) => {
+  if (kdHiddenEl(el)) return;
+  const pp = dash.data('pin_places'), st = dash.data('stats');
+  if (kdFail(el, pp) || kdFail(el, st)) return;
+  if (window.kdMode['india-map'] === 'rate') {
+    const rows = st.data.filter((r) => r.code !== 'IN' && r.d26_u65 != null).sort((a, b) => b.d26_u65 - a.d26_u65);
+    kdRankList(el, 'Doctors under 65 per 10,000 people, 2026 estimate', rows.map((r) => ({ main: r.name, code: r.code, sub: window.kdFmt(r.records) + ' on the register', n: f1(r.d26_u65) })));
+  } else {
+    const rows = pp.data.filter((r) => r.doctors_all).sort((a, b) => +b.doctors_all - +a.doctors_all).slice(0, 12);
+    kdRankList(el, 'PIN code areas where most doctors live', rows.map((r) => ({ main: r.place, sub: r.district + ', ' + r.state, n: window.kdFmt(+r.doctors_all) })));
+  }
+});
+
+kdDraw('imap-say', (el) => {
+  const pp = dash.data('pin_places');
+  if (pp.status !== 'ok' || !pp.data) { el.textContent = '—'; return; }
+  const by = d3.rollup(pp.data.filter((r) => r.doctors_all), (v) => d3.sum(v, (r) => +r.doctors_all), (r) => r.state);
+  const top = [...by].sort((a, b) => b[1] - a[1]).slice(0, 3).map((x) => x[0]);
+  el.textContent = 'Each circle is a PIN code area, sized by how many doctors give it as their permanent address. ' +
+    (top.length ? 'Most live in ' + top.slice(0, -1).join(', ') + ' and ' + top[top.length - 1] + '. ' : '') +
+    'Switch to the rate view to compare each state council’s doctors with the state’s population.';
+});
+
+kdDraw('imap-note', (el) => {
+  const pp = dash.data('pin_places');
+  if (pp.status !== 'ok' || !pp.data) { el.textContent = ''; return; }
+  const rows = pp.data.filter((r) => r.doctors_all);
+  el.textContent = 'Circles: the ' + window.kdFmt(rows.length) + ' PIN code areas with at least five doctors, ' + window.kdFmt(d3.sum(rows, (r) => +r.doctors_all)) +
+    ' doctors in all. Many addresses on the register, especially older ones, have no PIN code, so the circles undercount; how many do varies a lot by council. They show where doctors come from (their permanent address at registration), not where they work. Point at or tap the map for details; choose a state to open it. Boundaries: DataMeet. PIN locations: India Post pincode directory.';
+});
+
+// ---------- councils ----------
+kdDraw('council-chart', (el) => {
+  if (kdHiddenEl(el)) return;
+  const d = dash.data('stats');
+  if (kdFail(el, d)) return;
+  const rows = d.data.filter((r) => r.code !== 'IN').sort((a, b) => b.records - a.records).map((r) => ({
+    code: r.code, label: r.code === 'MCI' ? 'Central register' : r.name, title: r.council, total: r.records,
+    parts: { Female: r.female, Male: r.male, Unknown: r.unknown },
+    tip: [
+      { text: 'Doctors', value: window.kdFmt(r.records) },
+      { text: 'Women, estimated', value: r.female_pct == null ? '—' : f1(r.female_pct) + '%', color: window.kdSer(0) },
+      { text: 'Last complete year', value: r.complete_to ? String(r.complete_to) : '—' },
+      ...(r.d26_u65 != null ? [{ text: 'Under 65 per 10,000 (2026)', value: f1(r.d26_u65) }] : []),
+    ] }));
+  window.kdHBars(el, rows, { series: GENDER, onPick: (code) => { kdSelect(code); document.getElementById('summary').scrollIntoView({ behavior: 'smooth' }); },
+    label: 'Bars of doctors on each council’s register, largest first, split by estimated gender. Maharashtra, Tamil Nadu and Karnataka have the most.' });
+});
+
+kdDraw('council-note', (el) => {
+  const d = dash.data('stats');
+  if (d.status !== 'ok' || !d.data) { el.textContent = ''; return; }
+  const stale = d.data.filter((r) => r.code !== 'IN' && r.complete_to && r.complete_to < 2024).sort((a, b) => a.complete_to - b.complete_to);
+  el.textContent = 'Point at or tap a bar for details. ' + (stale.length ? 'Several councils’ entries on the national register stop years ago: ' +
+    stale.map((r) => r.name + ' (' + r.complete_to + ')').join(', ') + '. ' : '') +
+    'Manipur, Mizoram and some other small councils have sent few or no records at all.';
+});
+
+// ---------- per year ----------
+kdDraw('gender-chart', (el) => {
   const d = dash.data('per_year');
   if (kdFail(el, d)) return;
-  const rows = d.data.map((r) => ({ year: +r.year, Female: +r.Female, Male: +r.Male, Unknown: +r.Unknown }))
-    .filter((r) => r.year >= 1945 && r.year <= 2023);
-  window.kdStacked(el, rows, { from: 1945, to: 2023, share: window.kdMode['gender-chart'] === 'share', series: GENDER,
-    label: 'Stacked bars of new registrations per year from 1945 to 2023, split into estimated women, men and unknown. Registrations rise from a few hundred a year to over 3,000 in the 2010s, with women the majority from 2015.',
+  const rows = kdRows(d.data, ['year'], ['Female', 'Male', 'Unknown']).map((r) => ({ year: +r.year, Female: +r.Female, Male: +r.Male, Unknown: +r.Unknown }));
+  const tot = (r) => r.Female + r.Male + r.Unknown;
+  const peak = d3.max(rows, tot) || 1;
+  const first = d3.min(rows.filter((r) => tot(r) >= peak * 0.01), (r) => r.year) || 1945;
+  const from = Math.max(1940, Math.min(1960, first)), to = 2026;
+  const s = kdStat();
+  window.kdStacked(el, rows.filter((r) => r.year >= from && r.year <= to), { from, to, share: window.kdMode['gender-chart'] === 'share', series: GENDER,
+    label: 'Stacked bars of new registrations per year from ' + from + ' to ' + to + ' for ' + (s ? kdName(s) : '') + ', split into estimated women, men and unknown.',
     tipTitle: (yv) => 'Registered in ' + yv });
 });
 
-dash.draw('study-chart', (el) => {
-  const d = dash.data('study_region');
-  if (kdFail(el, d)) return;
-  const series = [
-    { key: 'Kerala', label: 'Kerala', color: window.kdSer(0) },
-    { key: 'Karnataka', label: 'Karnataka', color: window.kdSer(1) },
-    { key: 'Tamil Nadu', label: 'Tamil Nadu', color: window.kdSer(2) },
-    { key: 'Other Indian states', label: 'Other Indian states', color: window.kdSer(3) },
-    { key: 'Abroad', label: 'Abroad', color: window.kdSer(4) },
-    { key: 'Not identified', label: 'Not identified', color: window.kdSer('muted') },
-  ];
-  const rows = d.data.map((r) => { const o = { year: +r.year }; for (const s of series) o[s.key] = +r[s.key]; return o; })
-    .filter((r) => r.year >= 1945 && r.year <= 2019);
-  window.kdStacked(el, rows, { from: 1945, to: 2019, share: window.kdMode['study-chart'] === 'share', series,
-    label: 'Stacked bars of new registrations per year from 1945 to 2019 by where the doctor studied: Kerala, Karnataka, Tamil Nadu, other Indian states or abroad. Kerala universities supply most doctors from the 1960s on.',
-    tipTitle: (yv) => 'Registered in ' + yv });
+kdDraw('gender-note', (el) => {
+  const s = kdStat();
+  if (!s) { el.textContent = ''; return; }
+  const parts = ['Year of registration with the council. '];
+  if (s.code !== 'IN' && s.complete_to === 2025) parts.push('2026 is only partly entered so far. ');
+  if (s.code !== 'IN' && s.complete_to && s.complete_to < 2025) parts.push(kdNameCap(s) + '’s entries on the national register stop after ', { f: 'complete_to' }, ': later years hold only a few late entries, or none. ');
+  if (s.code === 'IN') parts.push('Several councils stopped sending entries years ago (see the council chart), so recent years undercount. ');
+  parts.push('Gender is unknown for ', { f: 'unknown_pct', fmt: f1 }, '% of doctors.');
+  kdSay(el, parts);
 });
 
-dash.draw('abroad-chart', (el) => {
-  const d = dash.data('abroad_year');
-  if (kdFail(el, d)) return;
-  const named = ['China', 'Russia', 'Nepal', 'Ukraine'];
-  const by = new Map();
-  for (const r of d.data) {
-    const yv = +r.year; if (yv < 1990 || yv > 2019) continue;
-    const o = by.get(yv) || { year: yv, China: 0, Russia: 0, Nepal: 0, Ukraine: 0, Other: 0 };
-    o[named.includes(r.country) ? r.country : 'Other'] += +r.doctors;
-    by.set(yv, o);
-  }
-  const series = [
-    { key: 'China', label: 'China', color: window.kdSer(0) },
-    { key: 'Russia', label: 'Russia', color: window.kdSer(1) },
-    { key: 'Nepal', label: 'Nepal', color: window.kdSer(2) },
-    { key: 'Ukraine', label: 'Ukraine', color: window.kdSer(3) },
-    { key: 'Other', label: 'Other countries', color: window.kdSer('muted') },
-  ];
-  window.kdStacked(el, [...by.values()], { from: 1990, to: 2019, share: false, series,
-    label: 'Stacked bars of foreign-trained doctors registered each year from 1990 to 2019 by country. Russia leads in the mid-2000s; China dominates from 2011 to 2015.',
-    tipTitle: (yv) => 'Registered in ' + yv });
-});
-
-dash.draw('country-chart', (el) => {
-  const d = dash.data('abroad_countries');
-  if (kdFail(el, d)) return;
-  const rows = d.data.filter((r) => r.country !== 'Not identified').slice(0, 12)
-    .map((r) => ({ label: r.country, total: +r.doctors, parts: { n: +r.doctors }, tip: [{ text: 'Doctors', value: window.kdFmt(+r.doctors) }] }));
-  window.kdHBars(el, rows, { series: [{ key: 'n', color: window.kdSer(4) }],
-    label: 'Bars of the 12 countries with the most foreign-trained doctors on the register, led by China and Russia.' });
-});
-
-dash.draw('age-chart', (el) => {
+// ---------- working age ----------
+kdDraw('age-chart', (el) => {
   const d = dash.data('age_band');
   if (kdFail(el, d)) return;
-  const pct = d3.format('.0%');
-  const rows = d.data.map((r) => {
+  const order = ['Under 35', '35–44', '45–54', '55–64', '65–74', '75–84', '85 and over'];
+  const raw = kdRows(d.data, ['band', 'registered_from', 'registered_to', 'working_age'], ['Doctors', 'Female', 'Male', 'Unknown'])
+    .sort((a, b) => order.indexOf(a.band) - order.indexOf(b.band));
+  const rows = raw.map((r) => {
     const f = +r.Female, mm = +r.Male, u = +r.Unknown, t = +r.Doctors;
-    const span = r.registered_from && r.registered_to ? `${r.registered_from}–${r.registered_to}`
-      : r.registered_from ? `${r.registered_from} or later` : `${r.registered_to} or earlier`;
+    const span = r.registered_from && r.registered_to ? `${r.registered_from}–${r.registered_to}` : r.registered_from ? `${r.registered_from} or later` : `${r.registered_to} or earlier`;
     return { label: r.band, total: t, parts: { Female: f, Male: mm, Unknown: u },
-      tip: [
-        { text: 'Registered', value: span },
-        { text: 'Doctors', value: window.kdFmt(t) },
-        { text: 'Women, estimated', value: pct(f / (f + mm)), color: window.kdSer(0) },
-      ] };
+      tip: [{ text: 'Registered', value: span }, { text: 'Doctors', value: window.kdFmt(t) }, { text: 'Women, estimated', value: f + mm ? kdPctFmt(f / (f + mm)) : '—', color: window.kdSer(0) }] };
   });
-  const lastWorking = d.data.filter((r) => +r.working_age === 1).pop();
+  const lastWorking = raw.filter((r) => +r.working_age === 1).pop();
   window.kdHBars(el, rows, { series: GENDER,
-    divideAfter: lastWorking ? { row: lastWorking.band, above: 'Under 65 ↑', below: '65 and over ↓' } : null,
-    label: 'Bars of doctors by approximate age today, from under 35 to 85 and over, split by estimated gender. The 35–44 band is largest; about four in five doctors are under 65.' });
+    divideAfter: lastWorking ? { row: lastWorking.band, above: '↑ Under 65', below: '65+ ↓' } : null,
+    label: 'Bars of doctors by approximate age today, from under 35 to 85 and over, split by estimated gender.' });
 });
 
+kdDraw('age-say', (el) => {
+  kdSay(el, ['The register doesn’t say who is still practising: deaths and retirements go unrecorded. Judging by year of registration, about ',
+    { f: 'over', fmt: window.kdFmt, b: true }, ' doctors registered in ', { f: 'over_to' }, ' or earlier and are now likely 65 or older, leaving ',
+    { f: 'working', fmt: window.kdFmt, b: true }, ' of working age.']);
+});
+
+// ---------- density ----------
 document.querySelector('.kd').style.setProperty('--kd-proj', window.kdSer(0));
 const kdProjFill = 'color-mix(in srgb, ' + window.kdSer(0) + ' 35%, transparent)';
 
-dash.draw('proj-chart', (el) => {
+kdDraw('density-h', (el) => { const s = kdStat(); el.textContent = s && s.code !== 'IN' ? s.name + ' next to India and the world' : 'India next to the world'; });
+
+kdDraw('density-say', (el) => {
+  const s = kdStat(), w = dash.data('who_density');
+  if (!s || w.status !== 'ok' || !s.pop) { el.textContent = '—'; return; }
+  const who = (p) => w.data.find((r) => r.place === p) || {};
+  const world = who('World'), india = who('India');
+  el.replaceChildren();
+  const parts = [];
+  if (s.projected && s.code !== 'IN' && s.complete_to >= 2025) {
+    parts.push(kdNameCap(s) + '’s register is up to date to ', { f: 'complete_to' }, ', but 2026 is only partly entered, so the full year is projected from the previous ten years’ trend. That gives about ',
+      { f: 'd26_u65', fmt: f1, b: true }, ' doctors under 65 per 10,000 people in 2026 (', { f: 'd26_all', fmt: f1 }, ' counting all ages). ');
+  } else if (s.projected && s.code !== 'IN') {
+    parts.push(kdNameCap(s) + '’s entries on the national register stop after ', { f: 'complete_to' }, ', so the register alone shows ', { f: 'd_reg_u65', fmt: f1, b: true },
+      ' doctors under 65 per 10,000 people. Carrying the previous ten years’ trend forward adds an estimated ', { f: 'added', fmt: kdRound, b: true },
+      ' doctors registered since, for about ', { f: 'd26_u65', fmt: f1, b: true }, ' per 10,000 people in 2026 (', { f: 'd26_all', fmt: f1 }, ' counting all ages). ');
+  } else if (s.code === 'IN') {
+    parts.push('Adding up every council, with recent years projected where a council’s entries stop early, gives about ', { f: 'd26_u65', fmt: f1, b: true },
+      ' doctors under 65 per 10,000 people in 2026 (', { f: 'd26_all', fmt: f1 }, ' counting all ages). ');
+  } else {
+    parts.push(kdNameCap(s) + '’s register has ', { f: 'd26_u65', fmt: f1, b: true }, ' doctors under 65 per 10,000 people (', { f: 'd26_all', fmt: f1 }, ' counting all ages). ');
+  }
+  kdSay(el, parts);
+  el.append('The WHO figure is ' + f1(+world.per_10k) + ' for the world (' + world.year + ') and ' + f1(+india.per_10k) + ' for India (' + india.year + ')' +
+    (s.code === 'IN' && s.d26_all > +india.per_10k ? '; the register runs higher because it counts doctors registered with two councils twice and never removes those who have died or emigrated.' : '.'));
+});
+
+kdDraw('proj-chart', (el) => {
+  if (kdHiddenEl(el)) return;
   const d = dash.data('proj_years');
   if (kdFail(el, d)) return;
-  const rows = d.data.map((r) => ({ year: +r.year, n: +r.doctors, low: +r.low || 0, projected: +r.projected === 1 }));
+  const rows = d.data.filter((r) => r.code === window.kdSel).map((r) => ({ year: +r.year, n: +r.doctors, low: +r.low || 0, projected: +r.projected === 1 }));
   const W = Math.max(280, el.clientWidth), H = 220, m = { t: 10, r: 8, b: 26, l: 40 };
+  el.classList.add('kd-drawn');
   const x = d3.scaleBand().domain(rows.map((r) => r.year)).range([m.l, W - m.r]).paddingInner(0.2);
   const y = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.n) || 1]).nice(4).range([H - m.b, m.t]);
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-    .attr('aria-label', 'Bars of new registrations per year from 2000 to 2019, rising from about 1,000 to nearly 4,000, then outlined projected bars for 2020 to 2026 rising from about 3,800 to 4,800.');
+    .attr('aria-label', 'Bars of new registrations per year from 2000, with outlined projected bars for the years after the register stops.');
   svg.append('g').attr('transform', `translate(${m.l},0)`)
     .call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('~s')).tickSize(-(W - m.l - m.r)))
     .call((g) => g.select('.domain').remove()).call((g) => g.selectAll('.tick line').attr('stroke-dasharray', '2,3'));
@@ -801,197 +1121,357 @@ dash.draw('proj-chart', (el) => {
   }
   const tip = d3.select(el).append('div').attr('class', 'kd-tip').attr('hidden', '');
   svg.append('g').selectAll('rect').data(rows).join('rect')
-    .attr('x', (r) => x(r.year) - (x.step() - bw) / 2).attr('width', x.step()).attr('y', m.t).attr('height', H - m.t - m.b)
-    .attr('fill', 'transparent')
+    .attr('x', (r) => x(r.year) - (x.step() - bw) / 2).attr('width', x.step()).attr('y', m.t).attr('height', H - m.t - m.b).attr('fill', 'transparent')
     .on('pointerenter pointermove', (ev, r) => {
       tip.attr('hidden', null).html('');
-      tip.append('div').attr('class', 'kd-tt').text(r.projected ? r.year + ', projected' : 'Registered in ' + r.year);
+      tip.append('div').attr('class', 'kd-tt').text(r.projected ? r.year + (kdIsIndia() ? ', partly projected' : ', projected') : 'Registered in ' + r.year);
       const l1 = tip.append('div'); l1.append('span').text('Doctors '); l1.append('b').attr('class', 'kd-tn').text(window.kdFmt(r.n));
-      if (r.projected) { const l2 = tip.append('div').attr('class', 'kd-tm'); l2.text('Low case (flat): ' + window.kdFmt(r.low)); }
+      if (r.projected) tip.append('div').attr('class', 'kd-tm').text('Low case (flat): ' + window.kdFmt(r.low));
       kdTipAt(tip, el, ev, 60);
     })
     .on('pointerleave', (ev) => { if (ev.pointerType !== 'touch') tip.attr('hidden', ''); });
 });
 
-dash.draw('density-chart', (el) => {
-  const d = dash.data('density');
-  if (kdFail(el, d)) return;
-  const f1 = d3.format('.1f');
-  const rows = d.data.map((r) => {
-    const key = r.kind === 'kerala' ? 'kerala' : r.kind === 'kerala_reg' ? 'reg' : 'who';
-    const tip = [{ text: 'Doctors per 10,000 people', value: f1(r.value) }];
-    if (r.kind === 'kerala') tip.push({ text: 'Low case (registrations flat)', value: f1(r.low) },
-      { text: r.who === 'all' ? 'Everyone on the register + projected 2020–2026' : 'Under 65 on the register + projected 2020–2026', value: '' });
-    else if (r.kind === 'kerala_reg') tip.push({ text: 'Under 65 on the register; misses 2020–2026', value: '' });
-    else tip.push({ text: 'Source: WHO, ' + r.year, value: '' });
-    return { label: r.label, total: r.value, parts: { [key]: r.value }, tip };
-  });
-  window.kdHBars(el, rows, { fmt: f1,
-    series: [{ key: 'kerala', color: window.kdSer(0) }, { key: 'reg', color: kdProjFill }, { key: 'who', color: window.kdSer('muted') }],
-    label: 'Bars of doctors per 10,000 people, highest first: the Europe region, Saudi Arabia, the UK and China lead; Kerala in 2026, projected, is about 27 for all ages and 23 for doctors under 65, above the US and well above the world figure of 18.3 for 2024; Kerala from the register alone is 14.7; India and the South-East Asia region are about 9.5; the Africa region is lowest.' });
+kdDraw('proj-note', (el) => {
+  const s = kdStat();
+  if (!s || !s.projected) { el.textContent = ''; return; }
+  if (s.code === 'IN') {
+    kdSay(el, ['New registrations per year, all councils. Outlined bars include projected registrations for councils whose entries stop early, about ',
+      { f: 'added', fmt: kdRound }, ' in all (', { f: 'added_low', fmt: kdRound }, ' if each stayed flat at its last five years’ average, for ',
+      { f: 'd26_u65_low', fmt: f1 }, ' per 10,000 under 65).']);
+    return;
+  }
+  if (s.proj_from === 2026) {
+    kdSay(el, ['New registrations per year. The 2026 bar is the full year projected from a straight line fitted to the ten years before; the entries made so far are replaced by it. If registrations instead stayed at their last five years’ average, the 2026 figure would be ',
+      { f: 'd26_u65_low', fmt: f1 }, ' per 10,000.']);
+    return;
+  }
+  kdSay(el, ['New registrations per year. Projected years (', { f: 'proj_from' }, '–2026) follow a straight line fitted to the ten years before, changing by about ',
+    { f: 'slope', fmt: window.kdFmt }, ' a year. If registrations had instead stayed at their last five years’ average, the projected years would add ',
+    { f: 'added_low', fmt: kdRound }, ' and the 2026 figure would be ', { f: 'd26_u65_low', fmt: f1 }, ' per 10,000. The few real late entries are replaced by the projection.']);
 });
 
-const KD_GEO = JSON.parse(document.getElementById('kd-geo').textContent);
-const KD_SEQ = [10, 15, 20, 25];
-const KD_SEQ_LABELS = ['Under 10', '10–15', '15–20', '20–25', '25 or more'];
-const kdSeq = (v) => 'var(--kd-seq-' + (1 + d3.bisectRight(KD_SEQ, v)) + ')';
+kdDraw('density-legend', (el) => {
+  const s = kdStat();
+  el.replaceChildren();
+  if (!s) return;
+  const item = (cls, color, text) => { const li = document.createElement('li'); const sw = Object.assign(document.createElement('span'), { className: 'kd-sw' + cls }); if (color) sw.style.background = color; li.append(sw, text); el.append(li); };
+  item('', window.kdSer(0), kdNameCap(s) + (s.projected ? ', 2026 estimate' : ', register'));
+  if (s.projected) item(' kd-sw-proj', null, kdNameCap(s) + ', register only');
+  if (s.code !== 'IN') item('', window.kdSer(2), 'India, all councils (2026 estimate)');
+  item('', window.kdSer('muted'), 'WHO figure');
+});
 
-function kdMapLegend(mode) {
-  const ul = document.getElementById('map-legend');
-  if (!ul) return;
-  ul.replaceChildren();
-  if (mode === 'rate') {
-    KD_SEQ_LABELS.forEach((lab, i) => {
-      const li = document.createElement('li');
-      const sw = Object.assign(document.createElement('span'), { className: 'kd-sw' });
-      sw.style.background = 'var(--kd-seq-' + (i + 1) + ')';
-      li.append(sw, lab);
-      ul.append(li);
-    });
-  } else {
-    const li = document.createElement('li');
-    const dot = Object.assign(document.createElement('span'), { className: 'kd-dot' });
-    dot.style.background = window.kdSer(0); dot.style.opacity = '0.7';
-    li.append(dot, 'Circle size = doctors with that PIN code');
-    ul.append(li);
+kdDraw('density-chart', (el) => {
+  if (kdHiddenEl(el)) return;
+  const st = dash.data('stats'), w = dash.data('who_density');
+  if (kdFail(el, st) || kdFail(el, w)) return;
+  const s = kdStat(), ind = kdStat('IN');
+  if (!s || !s.pop) return;
+  const nm = kdNameCap(s);
+  const rows = [];
+  const yr = s.projected ? ' 2026' : '';
+  rows.push({ label: nm + yr + ', all ages', value: s.d26_all, low: s.d26_all_low, kind: 'sel', who: 'all' });
+  rows.push({ label: nm + yr + ', under 65', value: s.d26_u65, low: s.d26_u65_low, kind: 'sel', who: 'u65' });
+  if (s.projected) rows.push({ label: nm + ', under 65, register only', value: s.d_reg_u65, kind: 'reg' });
+  if (s.code !== 'IN' && ind) rows.push({ label: 'India 2026, all ages', value: ind.d26_all, kind: 'india' });
+  for (const r of w.data) rows.push({ label: r.place.replace(/^WHO /, '') + ' (' + r.year + ')', value: +r.per_10k, kind: 'who', year: r.year });
+  rows.sort((a, b) => b.value - a.value);
+  const out = rows.map((r) => {
+    const key = r.kind === 'sel' ? 'sel' : r.kind === 'reg' ? 'reg' : r.kind === 'india' ? 'india' : 'who';
+    const tip = [{ text: 'Doctors per 10,000 people', value: f1(r.value) }];
+    if (r.kind === 'sel' && s.projected) tip.push({ text: 'Low case (registrations flat)', value: f1(r.low) }, { text: (r.who === 'all' ? 'Everyone on the register' : 'Under 65 on the register') + ' + projected to 2026', value: '' });
+    else if (r.kind === 'reg') tip.push({ text: 'Under 65 on the register; misses recent years', value: '' });
+    else if (r.kind === 'india') tip.push({ text: 'Every council’s register, with recent years projected', value: '' });
+    else if (r.kind === 'who') tip.push({ text: 'Source: WHO, ' + r.year, value: '' });
+    return { label: r.label, total: r.value, parts: { [key]: r.value }, tip };
+  });
+  window.kdHBars(el, out, { fmt: f1, bold: (lab) => lab.startsWith(nm),
+    series: [{ key: 'sel', color: window.kdSer(0) }, { key: 'reg', color: kdProjFill }, { key: 'india', color: window.kdSer(2) }, { key: 'who', color: window.kdSer('muted') }],
+    label: 'Bars of doctors per 10,000 people, highest first, for ' + nm + ' and WHO figures for the world, India, selected countries and WHO regions.' });
+});
+
+kdDraw('sd-say', (el) => {
+  const d = dash.data('stats');
+  if (d.status !== 'ok' || !d.data) { el.textContent = '—'; return; }
+  const rows = d.data.filter((r) => r.code !== 'IN' && r.d26_u65 != null && r.records >= 1000).sort((a, b) => b.d26_u65 - a.d26_u65);
+  if (rows.length < 2) { el.textContent = ''; return; }
+  const hi = rows[0], lo = rows[rows.length - 1];
+  el.textContent = 'The gap between states is wide: ' + hi.name + '’s council has about ' + f1(hi.d26_u65) + ' doctors under 65 per 10,000 people, ' +
+    lo.name + '’s about ' + f1(lo.d26_u65) + '.';
+});
+
+kdDraw('state-density', (el) => {
+  if (kdHiddenEl(el)) return;
+  const st = dash.data('stats'), w = dash.data('who_density');
+  if (kdFail(el, st) || kdFail(el, w)) return;
+  const mode = window.kdMode['state-density'];
+  const fld = mode === 'all' ? 'd26_all' : 'd26_u65';
+  const rows = st.data.filter((r) => r.code !== 'IN' && r[fld] != null).map((r) => ({
+    code: r.code, label: r.name, title: r.council, total: r[fld], parts: { s: r[fld] },
+    tip: [{ text: 'Per 10,000 people, 2026', value: f1(r[fld]) }, { text: 'Register only', value: f1(mode === 'all' ? r.d_reg_all : r.d_reg_u65) },
+      { text: 'Last complete year', value: r.complete_to ? String(r.complete_to) : '—' }, { text: 'Population 2026', value: d3.format('.3s')(r.pop).replace('M', ' million').replace('G', ' billion') }] }));
+  const ind = kdStat('IN');
+  if (ind) rows.push({ label: 'India, all councils', total: ind[fld], parts: { s: ind[fld] }, tip: [{ text: 'Per 10,000 people, 2026', value: f1(ind[fld]) }] });
+  for (const p of ['India', 'World']) {
+    const r = w.data.find((x) => x.place === p);
+    if (r) rows.push({ label: 'WHO: ' + p + ' (' + r.year + ')', total: +r.per_10k, parts: { who: +r.per_10k }, tip: [{ text: 'Source: WHO, ' + r.year, value: f1(+r.per_10k) }] });
   }
+  rows.sort((a, b) => b.total - a.total);
+  window.kdHBars(el, rows, { fmt: f1, bold: (lab) => lab.startsWith('India') || lab.startsWith('WHO'),
+    series: [{ key: 's', color: window.kdSer(0) }, { key: 'who', color: window.kdSer('muted') }],
+    onPick: (code) => { kdSelect(code); document.getElementById('summary').scrollIntoView({ behavior: 'smooth' }); },
+    label: 'Bars of doctors per 10,000 people in 2026 by state council, highest first, with India and world figures from WHO for reference.' });
+});
+
+// ---------- where they studied ----------
+function kdStudySeries() {
+  const s = kdStat();
+  const same = kdIsIndia() ? 'In their council’s state' : s ? 'In ' + s.name : 'Same state';
+  return [
+    { key: 'Same state', label: same, color: window.kdSer(0) },
+    { key: 'Other Indian states', label: kdIsIndia() ? 'In another state' : 'Other Indian states', color: window.kdSer(1) },
+    { key: 'Abroad', label: 'Abroad', color: window.kdSer(2) },
+    { key: 'Not identified', label: 'Not identified', color: window.kdSer('muted') },
+  ];
 }
+kdDraw('study-h', (el) => { const s = kdStat(); el.textContent = s && s.code !== 'IN' && s.code !== 'MCI' ? 'Where ' + s.name + '’s doctors studied' : 'Where doctors studied'; });
+kdDraw('study-legend', (el) => {
+  el.replaceChildren();
+  for (const s of kdStudySeries()) { const li = document.createElement('li'); const sw = Object.assign(document.createElement('span'), { className: 'kd-sw' }); sw.style.background = s.color; li.append(sw, s.label); el.append(li); }
+});
+kdDraw('study-say', (el) => {
+  const s = kdStat();
+  if (!s) { el.textContent = '—'; return; }
+  if (s.univ_known_pct < 20) { kdSay(el, [kdNameCap(s) + '\u2019s council sends almost no university names to the national register (only ', { f: 'univ_known_pct', fmt: f1 }, '% of records have one), so where its doctors studied can\u2019t be shown.']); return; }
+  if (s.code === 'IN') kdSay(el, [{ f: 'same_pct', fmt: f1, b: true }, '% of doctors studied in the state whose council they registered with, ', { f: 'other_pct', fmt: f1, b: true },
+    '% in another Indian state and ', { f: 'abroad_pct', fmt: f1, b: true }, '% abroad (of those whose university could be placed).']);
+  else if (s.code === 'MCI') kdSay(el, ['Of doctors on the central register whose university could be placed, ', { f: 'abroad_pct', fmt: f1, b: true }, '% studied abroad.']);
+  else kdSay(el, ['Of doctors registered in ', { f: 'study_last_year' }, ', ', { f: 'study_last_outside_pct', fmt: f1, b: true }, '% studied outside ' + s.name +
+    ' (in another state or abroad); over all years it is ', { f: 'outside_pct', fmt: f1 }, '%.']);
+});
+kdDraw('study-chart', (el) => {
+  const d = dash.data('study');
+  if (kdFail(el, d)) return;
+  const s0 = kdStat();
+  el.closest('.kd-sec').querySelectorAll('.kd-row, [data-view="state"]').forEach((x) => { x.style.display = s0 && s0.univ_known_pct < 20 ? 'none' : ''; });
+  if (s0 && s0.univ_known_pct < 20) { el.classList.add('kd-drawn'); return; }
+  const series = kdStudySeries();
+  const rows = kdRows(d.data, ['year'], series.map((s) => s.key)).map((r) => { const o = { year: +r.year }; for (const s of series) o[s.key] = +r[s.key]; return o; });
+  const tot = (r) => series.reduce((a, s) => a + r[s.key], 0);
+  const peak = d3.max(rows, tot) || 1;
+  const from = Math.max(1940, Math.min(1960, d3.min(rows.filter((r) => tot(r) >= peak * 0.01), (r) => r.year) || 1945));
+  window.kdStacked(el, rows.filter((r) => r.year >= from && r.year <= 2026), { from, to: 2026, share: window.kdMode['study-chart'] === 'share', series,
+    label: 'Stacked bars of new registrations per year by where the doctor studied: the same state, another Indian state, or abroad.', tipTitle: (yv) => 'Registered in ' + yv });
+});
+kdDraw('study-states', (el) => {
+  if (kdHiddenEl(el)) return;
+  const d = dash.data('study_states');
+  if (kdFail(el, d)) return;
+  const rows = d.data.filter((r) => r.code === window.kdSel).map((r) => ({ label: r.state === 'Other' ? 'Other states' : r.state, total: +r.doctors, parts: { n: +r.doctors }, tip: [{ text: 'Doctors', value: window.kdFmt(+r.doctors) }] }));
+  if (!rows.length) { el.textContent = 'None identified.'; return; }
+  window.kdHBars(el, rows, { series: [{ key: 'n', color: window.kdSer(1) }], label: 'Bars of doctors who studied in another state, by that state.' });
+});
 
-dash.draw('map-chart', (el) => {
-  const pins = dash.data('pins'), rate = dash.data('district_rate');
-  if (kdFail(el, pins) || kdFail(el, rate)) return;
-  const mode = window.kdMode['map-chart'];
-  kdMapLegend(mode);
-  const W = Math.max(260, el.clientWidth), pad = 6;
-  const proj = d3.geoMercator().fitWidth(W - 2 * pad, KD_GEO);
-  const path = d3.geoPath(proj);
-  let b = path.bounds(KD_GEO);
-  const [tx, ty] = proj.translate();
-  proj.translate([tx + pad - b[0][0], ty + pad - b[0][1]]);
-  b = path.bounds(KD_GEO);
-  const H = Math.ceil(b[1][1] + pad);
-  el.classList.add('kd-drawn');
-  const byD = new Map(rate.data.map((r) => [r.district, r]));
-  const f1 = d3.format('.1f');
-  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-    .attr('aria-label', mode === 'rate'
-      ? 'Map of Kerala districts shaded by doctors per 10,000 residents: darkest in Thiruvananthapuram and Kottayam in the south, lightest in Wayanad, Kasaragod, Idukki and Palakkad.'
-      : 'Map of Kerala with a circle for each PIN code area sized by the number of doctors from it. The biggest clusters are in Thiruvananthapuram, Kollam, Kochi and Kozhikode cities.');
-  const dist = svg.append('g').selectAll('path').data(KD_GEO.features).join('path').attr('class', 'kd-dist').attr('d', path);
-  if (mode === 'rate') {
-    dist.style('fill', (f) => kdSeq((byD.get(f.properties.district) || {}).per10k || 0));
-    svg.append('g').selectAll('text').data(KD_GEO.features).join('text').attr('class', 'kd-lbl')
-      .attr('text-anchor', 'middle').attr('dy', '0.32em')
-      .attr('transform', (f) => `translate(${path.centroid(f)})`)
-      .text((f) => { const r = byD.get(f.properties.district); return r ? f1(r.per10k) : ''; });
+// ---------- abroad ----------
+function kdTopCountries() {
+  const d = dash.data('abroad_countries');
+  if (d.status !== 'ok' || !d.data) return [];
+  const t = d3.rollup(d.data.filter((r) => r.country !== 'Not identified'), (v) => d3.sum(v, (r) => +r.doctors), (r) => r.country);
+  return [...t].sort((a, b) => b[1] - a[1]).slice(0, 5).map((x) => x[0]);
+}
+kdDraw('abroad-legend', (el) => {
+  el.replaceChildren();
+  const s0 = kdStat();
+  if (s0 && s0.univ_known_pct < 20) return;
+  const top = kdTopCountries();
+  [...top.map((c, i) => [c, window.kdSer(i)]), ['Other countries', window.kdSer('muted')]].forEach(([c, col]) => {
+    const li = document.createElement('li'); const sw = Object.assign(document.createElement('span'), { className: 'kd-sw' }); sw.style.background = col; li.append(sw, c); el.append(li);
+  });
+});
+kdDraw('abroad-say', (el) => {
+  const s = kdStat(), d = dash.data('abroad_countries');
+  if (!s || d.status !== 'ok') { el.textContent = '—'; return; }
+  const rows = kdRows(d.data, ['country'], ['doctors']).filter((r) => r.country !== 'Not identified').sort((a, b) => b.doctors - a.doctors);
+  el.replaceChildren();
+  if (s.univ_known_pct < 20) { el.textContent = 'Not available: this council sends almost no university names to the national register.'; return; }
+  kdSay(el, [{ f: 'abroad', fmt: window.kdFmt, b: true }, ' doctors on ' + (s.code === 'IN' ? 'the national register' : kdName(s) + '’s register') + ' trained abroad'
+    + (rows.length ? ', most often in ' + rows.slice(0, 3).map((r) => r.country).join(', ').replace(/, ([^,]*)$/, ' and $1') + '.' : '.')]);
+});
+function kdNoUni(el) {
+  const s = kdStat();
+  if (!(s && s.univ_known_pct < 20)) return false;
+  el.replaceChildren(); el.classList.add('kd-drawn'); return true;
+}
+kdDraw('abroad-chart', (el) => {
+  const d = dash.data('abroad_year');
+  if (kdFail(el, d) || kdNoUni(el)) return;
+  const top = kdTopCountries();
+  const by = new Map();
+  for (const r of d.data) {
+    if (!kdIsIndia() && r.code !== window.kdSel) continue;
+    const yv = +r.year; if (yv < 1990 || yv > 2026) continue;
+    const o = by.get(yv) || Object.fromEntries([['year', yv], ...top.map((c) => [c, 0]), ['Other', 0]]);
+    o[top.includes(r.country) ? r.country : 'Other'] += +r.doctors;
+    by.set(yv, o);
   }
-  let pts = [], rs = null;
-  if (mode === 'pins') {
-    pts = pins.data.map((r) => { const [x, y] = proj([+r.lon, +r.lat]); return { x, y, n: +r.doctors, r }; })
-      .sort((a, c) => c.n - a.n);
-    rs = d3.scaleSqrt().domain([0, d3.max(pts, (p) => p.n) || 1]).range([0, Math.max(12, W * 0.05)]);
-    svg.append('g').selectAll('circle').data(pts).join('circle')
-      .attr('cx', (p) => p.x).attr('cy', (p) => p.y).attr('r', (p) => Math.max(1.5, rs(p.n)))
-      .style('fill', window.kdSer(0)).style('fill-opacity', 0.5).style('stroke', window.kdSer(0)).style('stroke-width', 0.75);
-    // size key in the empty north-east corner (Karnataka / Tamil Nadu side)
-    const key = [300, 50].filter((v) => v <= rs.domain()[1]);
-    const kx = W - pad - rs(key[0]) - 34, ky = pad + 26 + 2 * rs(key[0]);
-    const g = svg.append('g');
-    g.append('text').attr('class', 'kd-cap').attr('x', W - pad).attr('y', pad + 10).attr('text-anchor', 'end').text('Doctors per PIN code');
-    for (const v of key) {
-      g.append('circle').attr('cx', kx).attr('cy', ky - rs(v)).attr('r', rs(v))
-        .style('fill', 'none').style('stroke', 'var(--cds-chart-axis)');
-      g.append('line').attr('x1', kx).attr('x2', kx + rs(key[0]) + 6).attr('y1', ky - 2 * rs(v)).attr('y2', ky - 2 * rs(v))
-        .style('stroke', 'var(--cds-chart-axis)').style('stroke-dasharray', '2,2');
-      g.append('text').attr('class', 'kd-cap').attr('x', kx + rs(key[0]) + 9).attr('y', ky - 2 * rs(v)).attr('dy', '0.32em').text(v);
-    }
+  const series = [...top.map((c, i) => ({ key: c, label: c, color: window.kdSer(i) })), { key: 'Other', label: 'Other countries', color: window.kdSer('muted') }];
+  window.kdStacked(el, [...by.values()], { from: 1990, to: 2026, share: false, series, height: 260,
+    label: 'Stacked bars of foreign-trained doctors registered each year from 1990, by country.', tipTitle: (yv) => 'Registered in ' + yv });
+});
+kdDraw('country-chart', (el) => {
+  const d = dash.data('abroad_countries');
+  if (kdFail(el, d) || kdNoUni(el)) return;
+  const top = kdTopCountries();
+  const rows = kdRows(d.data, ['country'], ['doctors']).filter((r) => r.country !== 'Not identified').sort((a, b) => b.doctors - a.doctors).slice(0, 12)
+    .map((r) => { const i = top.indexOf(r.country); return { label: r.country, total: +r.doctors, parts: { [i >= 0 ? r.country : 'o']: +r.doctors }, tip: [{ text: 'Doctors', value: window.kdFmt(+r.doctors) }] }; });
+  window.kdHBars(el, rows, { series: [...top.map((c, i) => ({ key: c, color: window.kdSer(i) })), { key: 'o', color: window.kdSer('muted') }],
+    label: 'Bars of the 12 countries with the most foreign-trained doctors on the register.' });
+});
+
+// ---------- state map ----------
+const KD_KSEQ = [10, 15, 20, 25];
+const KD_KSEQ_LABELS = ['Under 10', '10–15', '15–20', '20–25', '25 or more'];
+function kdKeralaRates() {
+  const dd = dash.data('district'), dp = dash.data('district_pop');
+  if (dd.status !== 'ok' || dp.status !== 'ok' || !dd.data || !dp.data) return [];
+  const P = new Map(dp.data.map((r) => [r.district, +r.population_2011]));
+  return dd.data.filter((r) => r.code === 'TC' && P.has(r.district)).map((r) => ({ district: r.district, doctors: +r.Doctors, population: P.get(r.district),
+    per10k: Math.round(+r.Doctors / P.get(r.district) * 1e5) / 10 })).sort((a, b) => b.per10k - a.per10k);
+}
+kdDraw('smap-h', (el) => { const s = kdStat(); el.textContent = s && s.code !== 'IN' && s.code !== 'MCI' ? 'Where ' + s.name + '’s doctors come from' : 'Where the doctors come from'; });
+kdDraw('state-map', (el) => {
+  if (kdHiddenEl(el)) return;
+  const pins = dash.data('pins'), pp = dash.data('pin_places'), geo = dash.data('india_geo');
+  if (kdFail(el, pins) || kdFail(el, pp) || kdFail(el, geo)) return;
+  const s = kdStat();
+  if (!s) return;
+  const isK = s.code === 'TC';
+  const kg = isK ? dash.data('kerala_geo') : null;
+  if (isK && kdFail(el, kg)) return;
+  const mode = isK ? window.kdMode['state-map'] : 'pins';
+  kdLegend('smap-legend', mode, KD_KSEQ, KD_KSEQ_LABELS, 'Circle size = doctors with that PIN code');
+  let fc;
+  if (isK) fc = kg.data;
+  else {
+    const f = geo.data.features.filter((ft) => ft.properties.code === s.code);
+    fc = { type: 'FeatureCollection', features: f.length ? f : geo.data.features };
+  }
+  const W = Math.max(260, el.clientWidth), pad = 6;
+  const { proj, path, H: H0 } = kdGeoFit(W, fc, pad);
+  const H = Math.min(H0, Math.max(360, Math.round(W * 1.3)));
+  if (H < H0) { const p2 = d3.geoMercator().fitExtent([[pad, pad], [W - pad, H - pad]], fc); proj.scale(p2.scale()).translate(p2.translate()); }
+  el.classList.add('kd-drawn');
+  const P = new Map(pp.data.map((r) => [r.pin, r]));
+  const own = s.code === 'MCI' ? null : (isK ? 'Kerala' : s.name);
+  const rows = pins.data.filter((r) => r.code === s.code).map((r) => ({ ...P.get(r.pin), n: +r.doctors })).filter((r) => r.lat && (!own || r.state === own));
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+    .attr('aria-label', mode === 'rate' ? 'Map of Kerala districts shaded by doctors per 10,000 residents.' : 'Map of ' + kdName(s) + ' with a circle for each PIN code area sized by the number of doctors from it.');
+  const shapes = svg.append('g').selectAll('path').data(fc.features).join('path').attr('class', 'kd-dist').attr('d', path);
+  const rates = isK ? kdKeralaRates() : [];
+  const byD = new Map(rates.map((r) => [r.district, r]));
+  if (mode === 'rate') {
+    shapes.style('fill', (f) => kdSeq((byD.get(f.properties.district) || {}).per10k || 0, KD_KSEQ));
+    svg.append('g').selectAll('text').data(fc.features).join('text').attr('class', 'kd-lbl').attr('text-anchor', 'middle').attr('dy', '0.32em')
+      .attr('transform', (f) => `translate(${path.centroid(f)})`).text((f) => { const r = byD.get(f.properties.district); return r ? f1(r.per10k) : ''; });
+  }
+  let dots = { pts: [], rs: null, delaunay: null };
+  if (mode === 'pins' && rows.length) {
+    const big = d3.max(rows, (r) => r.n);
+    const keys = big >= 1000 ? [1000, 100] : big >= 300 ? [300, 50] : [50, 10];
+    dots = kdDots(svg, rows, proj, W, H, pad, Math.max(10, W * (fc.features.length > 30 ? 0.022 : 0.045)), keys, 'right');
   }
   const tip = d3.select(el).append('div').attr('class', 'kd-tip').attr('hidden', '');
-  const line = (label, value, color) => {
-    const div = tip.append('div');
-    if (color) div.append('span').attr('class', 'kd-sw').style('background', color);
-    div.append('span').text(label + ' ');
-    div.append('b').attr('class', 'kd-tn').text(value);
-  };
+  const line = kdTipLines(tip);
   svg.append('rect').attr('width', W).attr('height', H).attr('fill', 'transparent')
     .on('pointerenter pointermove', (ev) => {
       const [px, py] = d3.pointer(ev, svg.node());
-      dist.classed('kd-on', false);
-      let best = null, bd = Infinity;
-      for (const p of pts) { const d = Math.hypot(p.x - px, p.y - py); if (d < bd) { bd = d; best = p; } }
+      shapes.classed('kd-on', false);
       tip.html('');
-      if (best && bd <= Math.max(rs(best.n) + 3, 10)) {
+      let best = null;
+      if (dots.delaunay) { best = dots.pts[dots.delaunay.find(px, py)]; if (best && Math.hypot(best.x - px, best.y - py) > Math.max(dots.rs(best.n) + 3, 10)) best = null; }
+      if (best) {
         tip.append('div').attr('class', 'kd-tt').text(best.r.place);
-        line('PIN', best.r.pin);
-        line('District', best.r.district);
+        line('PIN', best.r.pin); line('District', best.r.district);
         line('Doctors', window.kdFmt(best.n), window.kdSer(0));
       } else {
         const ll = proj.invert([px, py]);
-        const f = KD_GEO.features.find((ft) => d3.geoContains(ft, ll));
+        const f = fc.features.find((ft) => d3.geoContains(ft, ll));
         if (!f) { tip.attr('hidden', ''); return; }
+        shapes.filter((ft) => ft === f).classed('kd-on', true);
+        tip.append('div').attr('class', 'kd-tt').text(f.properties.district || f.properties.name);
         const r = byD.get(f.properties.district);
-        dist.filter((ft) => ft === f).classed('kd-on', true);
-        tip.append('div').attr('class', 'kd-tt').text(f.properties.district);
-        if (r) {
-          line('Doctors from here', window.kdFmt(r.doctors));
-          line('Per 10,000 residents', f1(r.per10k), kdSeq(r.per10k));
-          line('Residents (2011)', window.kdFmt(r.population));
-        }
+        if (r) { line('Doctors from here', window.kdFmt(r.doctors)); line('Per 10,000 residents', f1(r.per10k), kdSeq(r.per10k, KD_KSEQ)); line('Residents (2011)', window.kdFmt(r.population)); }
       }
       tip.attr('hidden', null);
       kdTipAt(tip, el, ev, 70);
     })
-    .on('pointerleave', (ev) => { if (ev.pointerType !== 'touch') { tip.attr('hidden', ''); dist.classed('kd-on', false); } });
+    .on('pointerleave', (ev) => { if (ev.pointerType !== 'touch') { tip.attr('hidden', ''); shapes.classed('kd-on', false); } });
 });
-
-dash.draw('map-rank', (el) => {
-  const pins = dash.data('pins'), rate = dash.data('district_rate');
-  if (kdFail(el, pins) || kdFail(el, rate)) return;
-  const mode = window.kdMode['map-chart'];
-  const f1 = d3.format('.1f');
-  const h = Object.assign(document.createElement('h3'), { className: 'kd-rank-h' });
-  const ol = Object.assign(document.createElement('ol'), { className: 'kd-rank' });
-  const item = (i, main, sub, n) => {
-    const li = document.createElement('li');
-    const a = Object.assign(document.createElement('span'), { className: 'kd-i', textContent: i });
-    const b = document.createElement('span');
-    b.append(main);
-    if (sub) b.append(Object.assign(document.createElement('span'), { className: 'kd-sub', textContent: ' · ' + sub }));
-    const c = Object.assign(document.createElement('span'), { className: 'kd-n', textContent: n });
-    li.append(a, b, c);
-    ol.append(li);
-  };
-  if (mode === 'rate') {
-    h.textContent = 'Doctors per 10,000 residents, by home district';
-    rate.data.forEach((r, i) => item(i + 1, r.district, window.kdFmt(r.doctors) + ' doctors', f1(r.per10k)));
-  } else {
-    h.textContent = 'PIN code areas with the most doctors';
-    pins.data.slice().sort((a, b) => +b.doctors - +a.doctors).slice(0, 12)
-      .forEach((r, i) => item(i + 1, r.place, r.pin + ', ' + r.district, window.kdFmt(+r.doctors)));
+kdDraw('state-rank', (el) => {
+  if (kdHiddenEl(el)) return;
+  const pins = dash.data('pins'), pp = dash.data('pin_places');
+  if (kdFail(el, pins) || kdFail(el, pp)) return;
+  const s = kdStat();
+  if (!s) return;
+  if (s.code === 'TC' && window.kdMode['state-map'] === 'rate') {
+    kdRankList(el, 'Doctors per 10,000 residents, by home district', kdKeralaRates().map((r) => ({ main: r.district, sub: window.kdFmt(r.doctors) + ' doctors', n: f1(r.per10k) })));
+    return;
   }
-  el.append(h, ol);
+  const P = new Map(pp.data.map((r) => [r.pin, r]));
+  const rows = pins.data.filter((r) => r.code === s.code).sort((a, b) => +b.doctors - +a.doctors).slice(0, 12);
+  kdRankList(el, 'PIN code areas with the most doctors', rows.map((r) => { const i = P.get(r.pin) || {}; return { main: i.place || r.pin, sub: r.pin + ', ' + (i.district || '') + (i.state && i.state !== s.name ? ', ' + i.state : ''), n: window.kdFmt(+r.doctors) }; }));
+});
+kdDraw('smap-say', (el) => {
+  const s = kdStat(), hs = dash.data('home_state');
+  if (!s || hs.status !== 'ok' || !hs.data) { el.textContent = '—'; return; }
+  const rows = hs.data.filter((r) => r.code === s.code);
+  const tot = d3.sum(rows, (r) => +r.doctors);
+  const own = d3.sum(rows.filter((r) => r.state === s.name), (r) => +r.doctors);
+  kdSay(el, ['Only ', { f: 'with_pin_pct', fmt: f0, b: true }, '% of addresses on this register include a PIN code. ',
+    s.code === 'MCI' || !tot ? '' : 'Of those that do, ' + f0(100 * own / tot) + '% are in ' + s.name + '; the map shows those.']);
+});
+kdDraw('smap-note', (el) => {
+  const s = kdStat(), pins = dash.data('pins');
+  if (!s || pins.status !== 'ok') { el.textContent = ''; return; }
+  const rows = pins.data.filter((r) => r.code === s.code);
+  el.textContent = 'Circles: PIN code areas with at least five of the council’s doctors (' + window.kdFmt(rows.length) + ' areas, ' + window.kdFmt(d3.sum(rows, (r) => +r.doctors)) +
+    ' doctors, including any outside the state). Addresses without a PIN code, mostly older ones, are missing, so the circles undercount older doctors.' +
+    (s.code === 'TC' ? ' District rates use every doctor whose home district could be identified from the address (94%) and the 2011 census population.' : '') +
+    ' They show where doctors come from (their permanent address at registration), not where they work.';
 });
 
-dash.draw('district-chart', (el) => {
+kdDraw('district-chart', (el) => {
+  if (kdHiddenEl(el)) return;
   const d = dash.data('district');
   if (kdFail(el, d)) return;
-  const pct = d3.format('.0%');
-  const rows = d.data.map((r) => {
+  const rows = d.data.filter((r) => r.code === window.kdSel).slice(0, 40).map((r) => {
     const f = +r.Female, mm = +r.Male, u = +r.Unknown, t = +r.Doctors;
-    return { label: r.district, total: t, parts: { Female: f, Male: mm, Unknown: u },
-      tip: [
-        { text: 'Doctors', value: window.kdFmt(t) },
-        { text: 'Women, estimated', value: pct(f / (f + mm)), color: window.kdSer(0) },
-        { text: 'Registered 2010–2019', value: window.kdFmt(+r.Registered_2010_2019) },
-      ] };
-  }).sort((a, b) => (a.label === 'Outside Kerala') - (b.label === 'Outside Kerala') || b.total - a.total);
-  window.kdHBars(el, rows, { series: GENDER,
-    label: 'Bars of doctors by home district, split by estimated gender. Thiruvananthapuram has the most, Wayanad the fewest.' });
+    return { label: r.district, total: t, parts: { Female: f, Male: mm, Unknown: u }, tip: [{ text: 'Doctors', value: window.kdFmt(t) }, { text: 'Women, estimated', value: f + mm ? kdPctFmt(f / (f + mm)) : '—', color: window.kdSer(0) }] };
+  });
+  if (!rows.length) { el.textContent = 'Too few addresses with a PIN code to show.'; return; }
+  window.kdHBars(el, rows, { series: GENDER, label: 'Bars of doctors by home district, split by estimated gender.' });
+});
+kdDraw('district-note', (el) => {
+  const s = kdStat();
+  el.textContent = s && s.code === 'TC'
+    ? 'District taken from the permanent address given at registration, by place name or PIN code; about 6% of addresses could not be placed, and addresses outside Kerala are left out. Point at or tap a bar for the estimated share of women.'
+    : 'District of the PIN code in the permanent address (India Post’s district names), for addresses in the state that have a PIN code; the 40 districts with the most doctors are shown, and districts with fewer than five are left out. Point at or tap a bar for the estimated share of women.';
+});
+kdDraw('home-chart', (el) => {
+  if (kdHiddenEl(el)) return;
+  const d = dash.data('home_state');
+  if (kdFail(el, d)) return;
+  const rows = d.data.filter((r) => r.code === window.kdSel).slice(0, 10);
+  const tot = d3.sum(rows, (r) => +r.doctors);
+  if (!rows.length) { el.textContent = 'Too few addresses with a PIN code to show.'; return; }
+  window.kdHBars(el, rows.map((r) => ({ label: r.state, total: +r.doctors, parts: { n: +r.doctors }, tip: [{ text: 'Doctors', value: window.kdFmt(+r.doctors) }, { text: 'Share of those with a PIN', value: kdPctFmt(+r.doctors / tot) }] })),
+    { series: [{ key: 'n', color: window.kdSer(0) }], label: 'Bars of the council’s doctors by the state of their home PIN code.' });
 });
 </script>
 
 <footer class="site-foot">
-  <span>Source: <a href="https://nmc.org.in/information-desk/indian-medical-register/">NMC Indian Medical Register</a>, Travancore Cochin Medical Council (Kerala), downloaded November 2026; doctor density for other places from the <a href="https://data.who.int/indicators/i/CCCEBB2/217795A">WHO</a>.</span>
+  <span>Source: <a href="https://nmc.org.in/information-desk/indian-medical-register/">NMC Indian Medical Register</a>, all state councils and the central register, downloaded November 2026; doctor density for the world and other countries from the <a href="https://data.who.int/indicators/i/CCCEBB2/217795A">WHO</a>.</span>
   <span>Only aggregate counts are published here. The tables behind each chart are in the <a href="https://github.com/nethahussain/kerala-doctors-dashboard/tree/main/data">data folder</a> of this site's repository.</span>
 </footer>
 </main>

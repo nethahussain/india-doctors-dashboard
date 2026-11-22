@@ -1,0 +1,686 @@
+code,state,doctors
+AND,Telangana,12625
+AND,Andhra Pradesh,6880
+AND,Tamil Nadu,204
+AND,Karnataka,187
+AND,Maharashtra,137
+AND,Odisha,61
+AND,Kerala,54
+AND,Delhi,51
+AND,Uttar Pradesh,51
+AND,West Bengal,43
+AND,Haryana,26
+AND,Madhya Pradesh,24
+AND,Gujarat,21
+AND,Jharkhand,16
+AND,Punjab,15
+AND,Bihar,14
+AND,Puducherry,12
+AND,Nagaland,12
+AND,Assam,11
+AND,Jammu & Kashmir and Ladakh,11
+AND,Tripura,9
+AND,Chhattisgarh,9
+AND,Mizoram,8
+AND,Sikkim,8
+AND,Meghalaya,6
+AND,Rajasthan,6
+AND,Uttarakhand,5
+AND,Himachal Pradesh,5
+AND,Manipur,5
+ARU,Arunachal Pradesh,273
+ARU,Assam,56
+ARU,West Bengal,9
+ARU,Tamil Nadu,8
+ARU,Bihar,7
+ARU,Uttar Pradesh,6
+ARU,Delhi,6
+ARU,Manipur,5
+ARU,Tripura,5
+ARU,Rajasthan,5
+ASS,Assam,7460
+ASS,Meghalaya,531
+ASS,Manipur,379
+ASS,Tripura,287
+ASS,Uttar Pradesh,203
+ASS,Kerala,168
+ASS,Rajasthan,160
+ASS,Bihar,140
+ASS,Nagaland,133
+ASS,Karnataka,96
+ASS,Mizoram,95
+ASS,Tamil Nadu,82
+ASS,Arunachal Pradesh,80
+ASS,Delhi,75
+ASS,West Bengal,67
+ASS,Haryana,56
+ASS,Sikkim,44
+ASS,Maharashtra,38
+ASS,Odisha,36
+ASS,Jharkhand,33
+ASS,Punjab,28
+ASS,Madhya Pradesh,22
+ASS,Telangana,14
+ASS,Chhattisgarh,9
+ASS,Andhra Pradesh,9
+ASS,Himachal Pradesh,8
+ASS,Uttarakhand,8
+ASS,Gujarat,7
+BIH,Bihar,9284
+BIH,Jharkhand,1381
+BIH,West Bengal,432
+BIH,Uttar Pradesh,395
+BIH,Punjab,133
+BIH,Delhi,93
+BIH,Manipur,75
+BIH,Haryana,73
+BIH,Tripura,65
+BIH,Rajasthan,53
+BIH,Meghalaya,51
+BIH,Maharashtra,46
+BIH,Mizoram,44
+BIH,Nagaland,42
+BIH,Jammu & Kashmir and Ladakh,40
+BIH,Kerala,33
+BIH,Sikkim,27
+BIH,Andhra Pradesh,24
+BIH,Uttarakhand,22
+BIH,Tamil Nadu,21
+BIH,Madhya Pradesh,20
+BIH,Telangana,19
+BIH,Gujarat,18
+BIH,Chhattisgarh,18
+BIH,Karnataka,18
+BIH,Assam,18
+BIH,Odisha,14
+BIH,Arunachal Pradesh,14
+BIH,Himachal Pradesh,8
+CHA,Chhattisgarh,7036
+CHA,Madhya Pradesh,424
+CHA,Maharashtra,414
+CHA,Rajasthan,293
+CHA,Uttar Pradesh,277
+CHA,Kerala,257
+CHA,Odisha,226
+CHA,Bihar,169
+CHA,Andhra Pradesh,138
+CHA,Jharkhand,120
+CHA,Telangana,96
+CHA,West Bengal,88
+CHA,Haryana,86
+CHA,Delhi,78
+CHA,Tamil Nadu,62
+CHA,Karnataka,53
+CHA,Gujarat,35
+CHA,Meghalaya,25
+CHA,Punjab,22
+CHA,Tripura,15
+CHA,Jammu & Kashmir and Ladakh,13
+CHA,Manipur,12
+CHA,Uttarakhand,11
+CHA,Assam,9
+CHA,Puducherry,8
+CHA,Sikkim,7
+CHA,Dadra & Nagar Haveli and Daman & Diu,5
+CHA,Nagaland,5
+DEL,Delhi,16653
+DEL,Haryana,6065
+DEL,Uttar Pradesh,5671
+DEL,Rajasthan,2977
+DEL,Bihar,1727
+DEL,Maharashtra,1104
+DEL,Kerala,1094
+DEL,Punjab,1083
+DEL,Madhya Pradesh,681
+DEL,Jammu & Kashmir and Ladakh,632
+DEL,Gujarat,619
+DEL,Tamil Nadu,533
+DEL,West Bengal,454
+DEL,Uttarakhand,419
+DEL,Jharkhand,348
+DEL,Chhattisgarh,302
+DEL,Telangana,296
+DEL,Andhra Pradesh,286
+DEL,Karnataka,254
+DEL,Himachal Pradesh,226
+DEL,Manipur,187
+DEL,Chandigarh,179
+DEL,Assam,164
+DEL,Odisha,158
+DEL,Meghalaya,107
+DEL,Arunachal Pradesh,65
+DEL,Nagaland,58
+DEL,Dadra & Nagar Haveli and Daman & Diu,32
+DEL,Mizoram,31
+DEL,Sikkim,30
+DEL,Goa,29
+DEL,Andaman & Nicobar Islands,28
+DEL,Puducherry,27
+DEL,Tripura,18
+GOA,Goa,8
+GUJ,Gujarat,67790
+GUJ,Rajasthan,2414
+GUJ,Maharashtra,2207
+GUJ,Madhya Pradesh,939
+GUJ,Uttar Pradesh,880
+GUJ,Delhi,655
+GUJ,Bihar,640
+GUJ,Karnataka,551
+GUJ,Haryana,535
+GUJ,Kerala,492
+GUJ,Tamil Nadu,421
+GUJ,Punjab,339
+GUJ,Dadra & Nagar Haveli and Daman & Diu,240
+GUJ,Jharkhand,202
+GUJ,West Bengal,193
+GUJ,Andhra Pradesh,186
+GUJ,Chhattisgarh,160
+GUJ,Telangana,155
+GUJ,Odisha,128
+GUJ,Uttarakhand,104
+GUJ,Assam,58
+GUJ,Chandigarh,39
+GUJ,Himachal Pradesh,36
+GUJ,Tripura,33
+GUJ,Jammu & Kashmir and Ladakh,30
+GUJ,Goa,29
+GUJ,Puducherry,25
+GUJ,Manipur,19
+GUJ,Meghalaya,16
+GUJ,Nagaland,15
+GUJ,Sikkim,11
+GUJ,Arunachal Pradesh,9
+GUJ,Mizoram,8
+HAR,Haryana,3147
+HAR,Delhi,585
+HAR,Uttar Pradesh,307
+HAR,Punjab,188
+HAR,Rajasthan,153
+HAR,Chandigarh,105
+HAR,Bihar,83
+HAR,Jammu & Kashmir and Ladakh,80
+HAR,Maharashtra,77
+HAR,Madhya Pradesh,70
+HAR,Karnataka,32
+HAR,West Bengal,32
+HAR,Himachal Pradesh,31
+HAR,Assam,28
+HAR,Jharkhand,28
+HAR,Gujarat,26
+HAR,Tamil Nadu,24
+HAR,Odisha,22
+HAR,Uttarakhand,19
+HAR,Telangana,18
+HAR,Andhra Pradesh,13
+HAR,Kerala,11
+HAR,Chhattisgarh,10
+HIM,Himachal Pradesh,258
+HIM,Punjab,19
+HIM,Haryana,12
+HIM,Delhi,12
+JAM,Jammu & Kashmir and Ladakh,2958
+JAM,Delhi,50
+JAM,Punjab,22
+JAM,Uttar Pradesh,18
+JAM,Haryana,9
+JAM,Maharashtra,6
+JAM,Kerala,6
+JAM,Rajasthan,5
+JAM,Karnataka,5
+JAM,Tamil Nadu,5
+JAM,Gujarat,5
+JHA,Jharkhand,4237
+JHA,Bihar,1123
+JHA,Uttar Pradesh,130
+JHA,West Bengal,103
+JHA,Rajasthan,76
+JHA,Tamil Nadu,57
+JHA,Delhi,46
+JHA,Maharashtra,40
+JHA,Kerala,36
+JHA,Odisha,27
+JHA,Chhattisgarh,27
+JHA,Karnataka,26
+JHA,Telangana,24
+JHA,Nagaland,22
+JHA,Madhya Pradesh,19
+JHA,Haryana,19
+JHA,Andhra Pradesh,17
+JHA,Uttarakhand,11
+JHA,Manipur,10
+JHA,Gujarat,10
+JHA,Mizoram,8
+JHA,Dadra & Nagar Haveli and Daman & Diu,8
+JHA,Puducherry,8
+JHA,Assam,7
+JHA,Meghalaya,5
+JHA,Jammu & Kashmir and Ladakh,5
+JHA,Tripura,5
+JHA,Punjab,5
+KAR,Karnataka,115664
+KAR,Kerala,15856
+KAR,Andhra Pradesh,7403
+KAR,Tamil Nadu,7112
+KAR,Telangana,6568
+KAR,Uttar Pradesh,4290
+KAR,Maharashtra,3857
+KAR,Bihar,2895
+KAR,Delhi,2768
+KAR,Rajasthan,2678
+KAR,Haryana,2479
+KAR,West Bengal,1542
+KAR,Punjab,1138
+KAR,Jharkhand,1136
+KAR,Gujarat,1037
+KAR,Madhya Pradesh,969
+KAR,Odisha,729
+KAR,Jammu & Kashmir and Ladakh,650
+KAR,Chhattisgarh,524
+KAR,Assam,490
+KAR,Goa,344
+KAR,Manipur,302
+KAR,Puducherry,274
+KAR,Uttarakhand,247
+KAR,Meghalaya,176
+KAR,Chandigarh,166
+KAR,Himachal Pradesh,165
+KAR,Tripura,111
+KAR,Arunachal Pradesh,79
+KAR,Nagaland,76
+KAR,Andaman & Nicobar Islands,38
+KAR,Sikkim,37
+KAR,Mizoram,33
+KAR,Dadra & Nagar Haveli and Daman & Diu,22
+MAD,Madhya Pradesh,19192
+MAD,Chhattisgarh,1618
+MAD,Uttar Pradesh,1515
+MAD,Rajasthan,818
+MAD,Delhi,491
+MAD,Maharashtra,469
+MAD,Haryana,412
+MAD,Bihar,351
+MAD,Gujarat,303
+MAD,Kerala,225
+MAD,Punjab,181
+MAD,Jharkhand,137
+MAD,West Bengal,107
+MAD,Tamil Nadu,82
+MAD,Nagaland,80
+MAD,Karnataka,67
+MAD,Telangana,66
+MAD,Jammu & Kashmir and Ladakh,60
+MAD,Manipur,59
+MAD,Uttarakhand,59
+MAD,Andhra Pradesh,56
+MAD,Mizoram,54
+MAD,Tripura,49
+MAD,Odisha,49
+MAD,Arunachal Pradesh,46
+MAD,Meghalaya,40
+MAD,Dadra & Nagar Haveli and Daman & Diu,36
+MAD,Sikkim,33
+MAD,Himachal Pradesh,30
+MAD,Assam,22
+MAD,Chandigarh,16
+MAD,Andaman & Nicobar Islands,9
+MAD,Lakshadweep,9
+MAH,Maharashtra,15315
+MAH,Karnataka,1133
+MAH,Gujarat,1081
+MAH,Kerala,989
+MAH,Telangana,712
+MAH,Uttar Pradesh,697
+MAH,Tamil Nadu,624
+MAH,Rajasthan,563
+MAH,Andhra Pradesh,494
+MAH,Delhi,491
+MAH,Haryana,398
+MAH,West Bengal,384
+MAH,Madhya Pradesh,371
+MAH,Bihar,350
+MAH,Chhattisgarh,219
+MAH,Odisha,209
+MAH,Jharkhand,167
+MAH,Punjab,157
+MAH,Goa,111
+MAH,Assam,107
+MAH,Uttarakhand,95
+MAH,Puducherry,66
+MAH,Jammu & Kashmir and Ladakh,46
+MAH,Tripura,37
+MAH,Himachal Pradesh,33
+MAH,Manipur,28
+MAH,Meghalaya,26
+MAH,Dadra & Nagar Haveli and Daman & Diu,22
+MAH,Chandigarh,20
+MAH,Andaman & Nicobar Islands,13
+MAH,Nagaland,8
+MAH,Mizoram,8
+MAH,Arunachal Pradesh,6
+MAH,Sikkim,5
+MCI,Delhi,5652
+MCI,Maharashtra,3885
+MCI,Uttar Pradesh,3760
+MCI,Haryana,2824
+MCI,Kerala,1295
+MCI,Bihar,1280
+MCI,Tamil Nadu,1244
+MCI,Rajasthan,1101
+MCI,Telangana,1099
+MCI,Punjab,1091
+MCI,Andhra Pradesh,1070
+MCI,Gujarat,946
+MCI,West Bengal,923
+MCI,Jammu & Kashmir and Ladakh,791
+MCI,Madhya Pradesh,621
+MCI,Jharkhand,455
+MCI,Uttarakhand,281
+MCI,Himachal Pradesh,265
+MCI,Chhattisgarh,238
+MCI,Assam,196
+MCI,Odisha,191
+MCI,Manipur,183
+MCI,Karnataka,162
+MCI,Chandigarh,162
+MCI,Meghalaya,107
+MCI,Nagaland,47
+MCI,Sikkim,40
+MCI,Tripura,37
+MCI,Mizoram,31
+MCI,Goa,30
+MCI,Arunachal Pradesh,23
+MCI,Dadra & Nagar Haveli and Daman & Diu,22
+MCI,Puducherry,16
+MCI,Andaman & Nicobar Islands,12
+NAG,Nagaland,467
+NAG,Kerala,17
+NAG,Manipur,10
+NAG,Assam,9
+NAG,Maharashtra,8
+NAG,Telangana,7
+NAG,Uttar Pradesh,7
+NAG,West Bengal,7
+NAG,Andhra Pradesh,6
+NAG,Tamil Nadu,6
+ORI,Odisha,3045
+ORI,West Bengal,231
+ORI,Andhra Pradesh,168
+ORI,Kerala,152
+ORI,Maharashtra,137
+ORI,Rajasthan,136
+ORI,Bihar,116
+ORI,Uttar Pradesh,113
+ORI,Tamil Nadu,84
+ORI,Jharkhand,80
+ORI,Delhi,79
+ORI,Telangana,79
+ORI,Karnataka,55
+ORI,Haryana,50
+ORI,Chhattisgarh,39
+ORI,Punjab,26
+ORI,Madhya Pradesh,25
+ORI,Assam,24
+ORI,Gujarat,22
+ORI,Tripura,21
+ORI,Puducherry,19
+ORI,Uttarakhand,14
+ORI,Sikkim,7
+PUN,Punjab,1790
+PUN,Haryana,251
+PUN,Delhi,214
+PUN,Kerala,172
+PUN,Uttar Pradesh,128
+PUN,Himachal Pradesh,113
+PUN,Jammu & Kashmir and Ladakh,98
+PUN,Chandigarh,96
+PUN,Rajasthan,96
+PUN,Tamil Nadu,90
+PUN,Maharashtra,84
+PUN,Karnataka,53
+PUN,Uttarakhand,39
+PUN,Andhra Pradesh,37
+PUN,Bihar,34
+PUN,Telangana,31
+PUN,West Bengal,29
+PUN,Odisha,28
+PUN,Gujarat,28
+PUN,Madhya Pradesh,22
+PUN,Chhattisgarh,15
+PUN,Puducherry,8
+PUN,Jharkhand,7
+PUN,Mizoram,5
+PUN,Assam,5
+RAJ,Rajasthan,725
+RAJ,Delhi,40
+RAJ,Gujarat,27
+RAJ,Haryana,24
+RAJ,Karnataka,15
+RAJ,Uttar Pradesh,13
+RAJ,Maharashtra,11
+RAJ,Madhya Pradesh,11
+RAJ,West Bengal,10
+RAJ,Punjab,7
+SIK,Sikkim,603
+SIK,Assam,173
+SIK,Bihar,172
+SIK,Manipur,161
+SIK,West Bengal,143
+SIK,Uttar Pradesh,117
+SIK,Delhi,71
+SIK,Jharkhand,39
+SIK,Haryana,38
+SIK,Rajasthan,24
+SIK,Meghalaya,24
+SIK,Punjab,23
+SIK,Odisha,21
+SIK,Maharashtra,21
+SIK,Karnataka,16
+SIK,Andhra Pradesh,15
+SIK,Madhya Pradesh,14
+SIK,Tripura,14
+SIK,Kerala,13
+SIK,Telangana,11
+SIK,Uttarakhand,9
+SIK,Nagaland,7
+SIK,Gujarat,7
+SIK,Tamil Nadu,7
+TAM,Tamil Nadu,146911
+TAM,Kerala,12276
+TAM,Puducherry,7779
+TAM,Andhra Pradesh,5438
+TAM,Karnataka,3546
+TAM,Telangana,2826
+TAM,Maharashtra,1754
+TAM,Uttar Pradesh,1199
+TAM,West Bengal,922
+TAM,Delhi,903
+TAM,Rajasthan,885
+TAM,Bihar,723
+TAM,Odisha,651
+TAM,Gujarat,549
+TAM,Haryana,507
+TAM,Andaman & Nicobar Islands,476
+TAM,Madhya Pradesh,430
+TAM,Jharkhand,421
+TAM,Punjab,338
+TAM,Chhattisgarh,303
+TAM,Assam,250
+TAM,Meghalaya,179
+TAM,Manipur,175
+TAM,Uttarakhand,138
+TAM,Nagaland,134
+TAM,Tripura,117
+TAM,Arunachal Pradesh,103
+TAM,Jammu & Kashmir and Ladakh,100
+TAM,Mizoram,87
+TAM,Goa,86
+TAM,Himachal Pradesh,86
+TAM,Chandigarh,83
+TAM,Sikkim,52
+TAM,Lakshadweep,22
+TAM,Dadra & Nagar Haveli and Daman & Diu,12
+TC,Kerala,26966
+TC,Tamil Nadu,959
+TC,Karnataka,474
+TC,Maharashtra,149
+TC,Puducherry,112
+TC,Andhra Pradesh,104
+TC,Telangana,64
+TC,Delhi,63
+TC,Uttar Pradesh,53
+TC,Lakshadweep,52
+TC,Madhya Pradesh,34
+TC,Andaman & Nicobar Islands,30
+TC,Bihar,27
+TC,Haryana,25
+TC,Manipur,24
+TC,Punjab,24
+TC,Gujarat,22
+TC,Rajasthan,22
+TC,Chhattisgarh,16
+TC,Jharkhand,16
+TC,West Bengal,15
+TC,Odisha,12
+TC,Tripura,12
+TC,Arunachal Pradesh,11
+TC,Goa,10
+TC,Nagaland,10
+TC,Jammu & Kashmir and Ladakh,7
+TC,Mizoram,7
+TC,Meghalaya,7
+TC,Assam,5
+TC,Uttarakhand,5
+TEL,Telangana,12677
+TEL,Andhra Pradesh,1171
+TEL,Maharashtra,256
+TEL,Karnataka,226
+TEL,Kerala,181
+TEL,Tamil Nadu,175
+TEL,Rajasthan,95
+TEL,Uttar Pradesh,50
+TEL,Odisha,50
+TEL,West Bengal,36
+TEL,Delhi,36
+TEL,Bihar,34
+TEL,Madhya Pradesh,34
+TEL,Haryana,33
+TEL,Puducherry,28
+TEL,Gujarat,18
+TEL,Chhattisgarh,14
+TEL,Jharkhand,13
+TEL,Meghalaya,13
+TEL,Jammu & Kashmir and Ladakh,11
+TEL,Assam,10
+TEL,Punjab,8
+TEL,Uttarakhand,7
+TEL,Goa,5
+TRI,Tripura,2487
+TRI,West Bengal,94
+TRI,Manipur,74
+TRI,Rajasthan,52
+TRI,Assam,40
+TRI,Uttar Pradesh,34
+TRI,Bihar,32
+TRI,Meghalaya,31
+TRI,Haryana,29
+TRI,Kerala,27
+TRI,Tamil Nadu,16
+TRI,Delhi,16
+TRI,Karnataka,16
+TRI,Nagaland,15
+TRI,Telangana,14
+TRI,Odisha,13
+TRI,Jharkhand,11
+TRI,Maharashtra,11
+TRI,Arunachal Pradesh,9
+TRI,Andhra Pradesh,8
+TRI,Mizoram,5
+UP,Uttar Pradesh,45358
+UP,Delhi,3570
+UP,Bihar,2901
+UP,Haryana,2420
+UP,Rajasthan,1579
+UP,Uttarakhand,1141
+UP,Madhya Pradesh,949
+UP,Punjab,733
+UP,Maharashtra,581
+UP,Jharkhand,556
+UP,West Bengal,462
+UP,Tamil Nadu,336
+UP,Chhattisgarh,289
+UP,Jammu & Kashmir and Ladakh,266
+UP,Gujarat,215
+UP,Assam,202
+UP,Karnataka,188
+UP,Odisha,177
+UP,Andhra Pradesh,168
+UP,Kerala,163
+UP,Telangana,142
+UP,Manipur,125
+UP,Himachal Pradesh,107
+UP,Tripura,73
+UP,Meghalaya,71
+UP,Arunachal Pradesh,63
+UP,Chandigarh,55
+UP,Nagaland,52
+UP,Dadra & Nagar Haveli and Daman & Diu,45
+UP,Mizoram,34
+UP,Andaman & Nicobar Islands,18
+UP,Sikkim,16
+UP,Puducherry,16
+UP,Goa,8
+UTT,Uttarakhand,565
+UTT,Uttar Pradesh,494
+UTT,Delhi,279
+UTT,Haryana,123
+UTT,Bihar,94
+UTT,Punjab,74
+UTT,Rajasthan,51
+UTT,Maharashtra,47
+UTT,West Bengal,32
+UTT,Madhya Pradesh,24
+UTT,Karnataka,21
+UTT,Jharkhand,15
+UTT,Assam,12
+UTT,Jammu & Kashmir and Ladakh,11
+UTT,Gujarat,11
+UTT,Odisha,9
+UTT,Kerala,9
+UTT,Himachal Pradesh,8
+UTT,Tamil Nadu,8
+UTT,Chandigarh,7
+UTT,Chhattisgarh,5
+UTT,Telangana,5
+UTT,Andhra Pradesh,5
+WES,West Bengal,28333
+WES,Bihar,1235
+WES,Jharkhand,720
+WES,Uttar Pradesh,709
+WES,Rajasthan,366
+WES,Odisha,318
+WES,Tripura,277
+WES,Delhi,238
+WES,Maharashtra,211
+WES,Assam,202
+WES,Kerala,198
+WES,Haryana,155
+WES,Tamil Nadu,140
+WES,Karnataka,134
+WES,Manipur,100
+WES,Chhattisgarh,99
+WES,Madhya Pradesh,91
+WES,Telangana,74
+WES,Sikkim,70
+WES,Andhra Pradesh,64
+WES,Gujarat,57
+WES,Andaman & Nicobar Islands,56
+WES,Punjab,54
+WES,Meghalaya,49
+WES,Uttarakhand,48
+WES,Nagaland,40
+WES,Himachal Pradesh,31
+WES,Mizoram,30
+WES,Jammu & Kashmir and Ladakh,26
+WES,Arunachal Pradesh,25
+WES,Chandigarh,12
+WES,Puducherry,12

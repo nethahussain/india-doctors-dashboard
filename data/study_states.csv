@@ -1,0 +1,226 @@
+code,state,doctors
+AND,Telangana,12978
+AND,Karnataka,7380
+AND,Tamil Nadu,3009
+AND,Maharashtra,1530
+AND,Puducherry,735
+AND,Odisha,480
+AND,Kerala,303
+AND,Uttar Pradesh,216
+ARU,Manipur,279
+ARU,Assam,218
+ARU,Uttar Pradesh,134
+ARU,Madhya Pradesh,99
+ARU,Delhi,80
+ARU,Kerala,74
+ARU,Karnataka,71
+ARU,Maharashtra,60
+ASS,Manipur,2550
+ASS,West Bengal,1331
+ASS,Karnataka,467
+ASS,Meghalaya,282
+ASS,Tamil Nadu,199
+ASS,Tripura,149
+ASS,Maharashtra,126
+ASS,Sikkim,123
+BIH,Jharkhand,7920
+BIH,West Bengal,2049
+BIH,Karnataka,1094
+BIH,Uttar Pradesh,797
+BIH,Maharashtra,660
+BIH,Odisha,264
+BIH,Tamil Nadu,232
+BIH,Madhya Pradesh,154
+CHA,Madhya Pradesh,1831
+CHA,Maharashtra,1566
+CHA,Karnataka,508
+CHA,Odisha,260
+CHA,Uttar Pradesh,226
+CHA,Tamil Nadu,191
+CHA,Bihar,156
+CHA,Andhra Pradesh,138
+DEL,Maharashtra,3605
+DEL,Uttar Pradesh,2699
+DEL,Haryana,2166
+DEL,Karnataka,1258
+DEL,Uttarakhand,403
+DEL,Punjab,332
+DEL,Rajasthan,303
+DEL,Madhya Pradesh,201
+GOA,Maharashtra,897
+GOA,Karnataka,376
+GOA,Kerala,92
+GOA,Tamil Nadu,50
+GOA,Uttar Pradesh,22
+GOA,Gujarat,20
+GOA,Delhi,16
+GOA,Madhya Pradesh,15
+GUJ,Maharashtra,6892
+GUJ,Rajasthan,2333
+GUJ,Madhya Pradesh,2033
+GUJ,Karnataka,2015
+GUJ,Bihar,847
+GUJ,Uttar Pradesh,655
+GUJ,Tamil Nadu,592
+GUJ,Kerala,547
+HAR,Maharashtra,1475
+HAR,Uttar Pradesh,1136
+HAR,Karnataka,1079
+HAR,Rajasthan,885
+HAR,Chandigarh,846
+HAR,Delhi,808
+HAR,Punjab,616
+HAR,Madhya Pradesh,368
+HIM,Chandigarh,114
+HIM,Maharashtra,113
+HIM,Karnataka,102
+HIM,Punjab,66
+HIM,Uttar Pradesh,65
+HIM,Jammu & Kashmir and Ladakh,59
+HIM,Delhi,57
+HIM,Tamil Nadu,46
+JAM,Karnataka,678
+JAM,Maharashtra,292
+JAM,Uttar Pradesh,196
+JAM,Bihar,119
+JAM,Rajasthan,111
+JAM,Punjab,78
+JAM,Delhi,71
+JAM,Tamil Nadu,62
+JHA,Bihar,1723
+JHA,Karnataka,502
+JHA,Maharashtra,298
+JHA,West Bengal,286
+JHA,Uttar Pradesh,216
+JHA,Tamil Nadu,123
+JHA,Odisha,111
+JHA,Madhya Pradesh,54
+KAR,Andhra Pradesh,6496
+KAR,Tamil Nadu,6349
+KAR,Maharashtra,5137
+KAR,Kerala,4166
+KAR,Puducherry,1021
+KAR,Uttar Pradesh,723
+KAR,Gujarat,605
+KAR,West Bengal,520
+MAD,Chhattisgarh,2284
+MAD,Maharashtra,2060
+MAD,Uttar Pradesh,842
+MAD,Karnataka,746
+MAD,Rajasthan,480
+MAD,Tamil Nadu,259
+MAD,Gujarat,205
+MAD,Bihar,158
+MAH,Andhra Pradesh,1
+MCI,Delhi,9490
+MCI,Maharashtra,9267
+MCI,Uttar Pradesh,4482
+MCI,Haryana,3172
+MCI,Karnataka,1440
+MCI,Madhya Pradesh,543
+MCI,Rajasthan,501
+MCI,Chandigarh,406
+MIZ,Manipur,30
+MIZ,Maharashtra,23
+MIZ,Assam,14
+MIZ,Meghalaya,14
+MIZ,Tripura,7
+MIZ,West Bengal,6
+MIZ,Rajasthan,5
+MIZ,Bihar,5
+NAG,Manipur,359
+NAG,Assam,142
+NAG,Madhya Pradesh,100
+NAG,Uttar Pradesh,85
+NAG,Meghalaya,81
+NAG,Bihar,74
+NAG,Delhi,74
+NAG,Karnataka,70
+ORI,Karnataka,755
+ORI,West Bengal,751
+ORI,Tamil Nadu,570
+ORI,Maharashtra,469
+ORI,Andhra Pradesh,404
+ORI,Bihar,173
+ORI,Uttar Pradesh,154
+ORI,Kerala,120
+PUN,Chandigarh,9246
+PUN,Delhi,4500
+PUN,Maharashtra,2528
+PUN,Himachal Pradesh,2162
+PUN,Karnataka,1962
+PUN,Uttar Pradesh,1735
+PUN,Haryana,1350
+PUN,Rajasthan,1329
+RAJ,Maharashtra,3775
+RAJ,Karnataka,3218
+RAJ,Uttar Pradesh,2632
+RAJ,Gujarat,2163
+RAJ,Madhya Pradesh,2001
+RAJ,Delhi,976
+RAJ,Tamil Nadu,936
+RAJ,Haryana,863
+SIK,West Bengal,94
+SIK,Uttar Pradesh,87
+SIK,Assam,86
+SIK,Karnataka,73
+SIK,Manipur,65
+SIK,Bihar,58
+SIK,Delhi,52
+SIK,Maharashtra,46
+TAM,Puducherry,16897
+TAM,Karnataka,11595
+TAM,Andhra Pradesh,7648
+TAM,Kerala,5688
+TAM,Maharashtra,2994
+TAM,West Bengal,772
+TAM,Uttar Pradesh,735
+TAM,Punjab,537
+TC,Karnataka,6718
+TC,Tamil Nadu,5691
+TC,Maharashtra,970
+TC,Puducherry,639
+TC,West Bengal,546
+TC,Andhra Pradesh,324
+TC,Other,284
+TC,Chandigarh,179
+TEL,Andhra Pradesh,18571
+TEL,Karnataka,3109
+TEL,Maharashtra,1244
+TEL,Tamil Nadu,978
+TEL,Kerala,319
+TEL,Puducherry,316
+TEL,Odisha,112
+TEL,Gujarat,85
+TRI,Manipur,548
+TRI,West Bengal,127
+TRI,Assam,101
+TRI,Karnataka,63
+TRI,Bihar,58
+TRI,Kerala,56
+TRI,Odisha,55
+TRI,Tamil Nadu,40
+UP,Maharashtra,3973
+UP,Madhya Pradesh,3668
+UP,Karnataka,3339
+UP,Bihar,2620
+UP,Delhi,1742
+UP,West Bengal,1592
+UP,Rajasthan,1388
+UP,Uttarakhand,1324
+UTT,Uttar Pradesh,3107
+UTT,Maharashtra,405
+UTT,Karnataka,329
+UTT,Madhya Pradesh,234
+UTT,Delhi,234
+UTT,Bihar,211
+UTT,Rajasthan,138
+UTT,Punjab,93
+WES,Karnataka,1498
+WES,Bihar,1425
+WES,Odisha,1120
+WES,Maharashtra,1056
+WES,Assam,932
+WES,Uttar Pradesh,594
+WES,Tamil Nadu,589
+WES,Jharkhand,468

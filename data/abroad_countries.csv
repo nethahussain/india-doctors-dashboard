@@ -1,44 +1,802 @@
-country,doctors
-China,717
-Russia,579
-Nepal,237
-Italy,137
-Ukraine,137
-United Kingdom,44
-Germany,40
-UAE,39
-Kazakhstan,38
-Bulgaria,35
-Caribbean,35
-Philippines,32
-Not identified,26
-Belarus,24
-Georgia,20
-Armenia,16
-Austria,9
-Australia,8
-Romania,8
-Czech Republic,8
-Bangladesh,7
-Kyrgyzstan,7
-Nigeria,6
-Tajikistan,6
-Mauritius,5
-Seychelles,5
-France,3
-Hungary,3
-Netherlands,3
-Lithuania,3
-Canada,2
-Switzerland,2
-United States,2
-Zambia,2
-Yemen,2
-Iran,2
-Myanmar,1
-Sri Lanka,1
-Belgium,1
-Uzbekistan,1
-Tanzania,1
-Azerbaijan,1
-Moldova,1
+code,country,doctors
+AND,China,2650
+AND,Ukraine,1202
+AND,Philippines,1026
+AND,Kyrgyzstan,719
+AND,Russia,446
+AND,Nepal,283
+AND,Kazakhstan,156
+AND,Armenia,102
+AND,Not identified,93
+AND,Caribbean,76
+AND,Belize,73
+AND,Belarus,68
+AND,Georgia,64
+AND,United Kingdom,57
+AND,Bangladesh,25
+AND,Bulgaria,24
+AND,Tanzania,24
+AND,United States,15
+AND,Mauritius,14
+AND,Guyana,13
+AND,Italy,11
+AND,Uzbekistan,6
+AND,Saint Lucia,4
+AND,Germany,3
+AND,Canada,3
+AND,Tajikistan,3
+AND,Czech Republic,2
+AND,Romania,2
+AND,Australia,1
+AND,Austria,1
+AND,Myanmar,1
+AND,Netherlands,1
+AND,Iran,1
+AND,Nigeria,1
+AND,Azerbaijan,1
+AND,Poland,1
+AND,Pakistan,1
+AND,Uganda,1
+AND,UAE,1
+ARU,Ukraine,25
+ARU,Kyrgyzstan,10
+ARU,Russia,7
+ARU,China,7
+ARU,Bangladesh,4
+ARU,Seychelles,1
+ARU,Philippines,1
+ASS,Bangladesh,284
+ASS,China,178
+ASS,Ukraine,130
+ASS,Nepal,123
+ASS,United Kingdom,114
+ASS,Russia,62
+ASS,Kyrgyzstan,46
+ASS,Philippines,37
+ASS,Kazakhstan,22
+ASS,Pakistan,21
+ASS,Not identified,13
+ASS,Myanmar,10
+ASS,United States,7
+ASS,Ireland,6
+ASS,UK,5
+ASS,Armenia,5
+ASS,Mauritius,5
+ASS,Georgia,3
+ASS,Australia,2
+ASS,Belarus,2
+ASS,Caribbean,2
+ASS,France,1
+ASS,Italy,1
+ASS,Switzerland,1
+ASS,Spain,1
+ASS,Canada,1
+ASS,Germany,1
+ASS,Seychelles,1
+ASS,Tanzania,1
+ASS,Cuba,1
+BIH,Nepal,432
+BIH,Russia,182
+BIH,Ukraine,171
+BIH,China,105
+BIH,Bangladesh,77
+BIH,Kazakhstan,61
+BIH,United Kingdom,42
+BIH,Tajikistan,35
+BIH,Armenia,26
+BIH,Not identified,25
+BIH,Kyrgyzstan,14
+BIH,Belarus,13
+BIH,Myanmar,10
+BIH,Caribbean,6
+BIH,Philippines,6
+BIH,Pakistan,5
+BIH,Romania,4
+BIH,Czech Republic,3
+BIH,Uzbekistan,3
+BIH,Ireland,2
+BIH,Austria,2
+BIH,Italy,2
+BIH,Canada,2
+BIH,Mauritius,2
+BIH,Australia,1
+BIH,UK,1
+BIH,United States,1
+BIH,Germany,1
+BIH,Bulgaria,1
+BIH,Belgium,1
+BIH,Georgia,1
+BIH,Azerbaijan,1
+BIH,Nigeria,1
+CHA,Kyrgyzstan,297
+CHA,Ukraine,255
+CHA,Russia,131
+CHA,China,100
+CHA,Nepal,54
+CHA,Kazakhstan,30
+CHA,Philippines,25
+CHA,Tajikistan,10
+CHA,Belarus,10
+CHA,Pakistan,9
+CHA,Caribbean,6
+CHA,Italy,4
+CHA,Bangladesh,4
+CHA,Armenia,3
+CHA,Czech Republic,2
+CHA,Romania,2
+CHA,Not identified,2
+CHA,Uzbekistan,1
+CHA,Azerbaijan,1
+CHA,Kenya,1
+CHA,Tanzania,1
+CHA,Mauritius,1
+CHA,Uganda,1
+CHA,United States,1
+DEL,China,3304
+DEL,Nepal,2297
+DEL,Russia,2100
+DEL,Ukraine,1417
+DEL,Kyrgyzstan,1092
+DEL,Kazakhstan,681
+DEL,Bangladesh,453
+DEL,Philippines,329
+DEL,Tajikistan,319
+DEL,Armenia,311
+DEL,Georgia,220
+DEL,Mauritius,200
+DEL,Belarus,77
+DEL,Caribbean,67
+DEL,Belize,33
+DEL,Romania,18
+DEL,Bulgaria,17
+DEL,Azerbaijan,16
+DEL,Iran,13
+DEL,UAE,13
+DEL,Guyana,10
+DEL,Seychelles,9
+DEL,Not identified,8
+DEL,Czech Republic,5
+DEL,United Kingdom,4
+DEL,Tanzania,4
+DEL,Moldova,4
+DEL,Nigeria,3
+DEL,Hungary,2
+DEL,Uzbekistan,2
+DEL,United States,2
+DEL,Italy,2
+DEL,Saudi Arabia,2
+DEL,Afghanistan,1
+DEL,Lithuania,1
+DEL,Uganda,1
+DEL,Kenya,1
+DEL,Pakistan,1
+DEL,France,1
+DEL,Yemen,1
+DEL,Cuba,1
+DEL,Australia,1
+DEL,Egypt,1
+GOA,Russia,64
+GOA,Ukraine,19
+GOA,China,14
+GOA,Georgia,11
+GOA,Philippines,10
+GOA,Kyrgyzstan,7
+GOA,Nepal,5
+GOA,Kazakhstan,4
+GOA,Mauritius,4
+GOA,Bulgaria,2
+GOA,Armenia,2
+GOA,United Kingdom,1
+GOA,France,1
+GOA,Romania,1
+GOA,Caribbean,1
+GOA,United States,1
+GOA,UAE,1
+GOA,Malaysia,1
+GOA,Bangladesh,1
+GOA,Belarus,1
+GUJ,Russia,1591
+GUJ,Philippines,1434
+GUJ,China,1130
+GUJ,Ukraine,852
+GUJ,Nepal,165
+GUJ,Belarus,163
+GUJ,Kyrgyzstan,160
+GUJ,Pakistan,140
+GUJ,Georgia,127
+GUJ,Kazakhstan,77
+GUJ,Mauritius,35
+GUJ,United Kingdom,26
+GUJ,Armenia,19
+GUJ,Bangladesh,16
+GUJ,Romania,15
+GUJ,Caribbean,15
+GUJ,Seychelles,11
+GUJ,Belize,8
+GUJ,Tanzania,6
+GUJ,United States,5
+GUJ,Not identified,5
+GUJ,Myanmar,4
+GUJ,Czech Republic,3
+GUJ,Canada,2
+GUJ,Zambia,2
+GUJ,Uganda,2
+GUJ,Guyana,2
+GUJ,Italy,1
+GUJ,Switzerland,1
+GUJ,Bulgaria,1
+GUJ,Nigeria,1
+GUJ,Latvia,1
+GUJ,Poland,1
+GUJ,Azerbaijan,1
+HAR,Russia,232
+HAR,Nepal,175
+HAR,Ukraine,147
+HAR,China,136
+HAR,Kazakhstan,61
+HAR,Armenia,43
+HAR,Kyrgyzstan,36
+HAR,Mauritius,27
+HAR,Not identified,26
+HAR,Tajikistan,16
+HAR,Belarus,14
+HAR,Bangladesh,10
+HAR,Bulgaria,9
+HAR,Philippines,9
+HAR,Romania,8
+HAR,United Kingdom,7
+HAR,Uzbekistan,6
+HAR,Iran,5
+HAR,Tanzania,3
+HAR,Italy,2
+HAR,Seychelles,2
+HAR,Georgia,2
+HAR,United States,2
+HAR,Nigeria,1
+HAR,Hungary,1
+HAR,Caribbean,1
+HAR,Belize,1
+HIM,Ukraine,88
+HIM,China,34
+HIM,Russia,32
+HIM,Nepal,22
+HIM,Armenia,12
+HIM,Kyrgyzstan,12
+HIM,Belarus,7
+HIM,Kazakhstan,6
+HIM,Not identified,4
+HIM,Philippines,3
+HIM,Mauritius,3
+HIM,Bulgaria,1
+HIM,Belgium,1
+HIM,Lithuania,1
+HIM,Tajikistan,1
+HIM,Moldova,1
+HIM,United Kingdom,1
+HIM,Romania,1
+HIM,Uzbekistan,1
+JAM,Bangladesh,2491
+JAM,Not identified,958
+JAM,Kyrgyzstan,286
+JAM,China,234
+JAM,Iran,151
+JAM,Nepal,117
+JAM,Kazakhstan,102
+JAM,Russia,44
+JAM,Ukraine,36
+JAM,Philippines,30
+JAM,Pakistan,29
+JAM,Mauritius,13
+JAM,United Kingdom,8
+JAM,Romania,8
+JAM,Tajikistan,7
+JAM,Georgia,4
+JAM,Tanzania,3
+JAM,Armenia,3
+JAM,Bulgaria,2
+JAM,UAE,2
+JAM,Moldova,2
+JAM,United States,2
+JAM,Myanmar,1
+JAM,Australia,1
+JAM,Italy,1
+JAM,Belarus,1
+JAM,Lithuania,1
+JAM,Czech Republic,1
+JAM,Turkey,1
+JAM,Caribbean,1
+JHA,Nepal,138
+JHA,China,116
+JHA,Russia,113
+JHA,Kyrgyzstan,88
+JHA,Ukraine,77
+JHA,Philippines,47
+JHA,Kazakhstan,24
+JHA,Bangladesh,14
+JHA,Mauritius,12
+JHA,Georgia,12
+JHA,Not identified,8
+JHA,Tajikistan,6
+JHA,Armenia,6
+JHA,Belarus,4
+JHA,Caribbean,4
+JHA,Italy,1
+JHA,Seychelles,1
+JHA,Germany,1
+JHA,Romania,1
+JHA,United Kingdom,1
+JHA,United States,1
+KAR,China,1218
+KAR,Philippines,560
+KAR,Russia,493
+KAR,Ukraine,455
+KAR,Nepal,305
+KAR,Georgia,189
+KAR,Not identified,174
+KAR,Kyrgyzstan,169
+KAR,Mauritius,73
+KAR,Armenia,62
+KAR,Bangladesh,54
+KAR,Kazakhstan,49
+KAR,Caribbean,49
+KAR,United Kingdom,46
+KAR,Uzbekistan,26
+KAR,Belarus,17
+KAR,UAE,17
+KAR,Bulgaria,16
+KAR,United States,15
+KAR,Tajikistan,11
+KAR,Italy,10
+KAR,Belize,10
+KAR,Guyana,9
+KAR,Romania,6
+KAR,Saint Lucia,6
+KAR,Malaysia,6
+KAR,Myanmar,4
+KAR,Germany,4
+KAR,Seychelles,3
+KAR,Moldova,3
+KAR,Sri Lanka,2
+KAR,UK,2
+KAR,Australia,2
+KAR,Uganda,2
+KAR,Austria,2
+KAR,Iraq,2
+KAR,Ireland,2
+KAR,Iran,2
+KAR,Nigeria,1
+KAR,Netherlands,1
+KAR,Zambia,1
+KAR,Poland,1
+KAR,France,1
+KAR,Czech Republic,1
+KAR,Hungary,1
+MAD,Russia,204
+MAD,China,161
+MAD,Ukraine,126
+MAD,Nepal,110
+MAD,Kazakhstan,44
+MAD,Pakistan,43
+MAD,Belarus,33
+MAD,Kyrgyzstan,33
+MAD,Armenia,14
+MAD,Tajikistan,9
+MAD,Italy,8
+MAD,Mauritius,8
+MAD,Bangladesh,7
+MAD,Romania,7
+MAD,Philippines,6
+MAD,Not identified,5
+MAD,Uzbekistan,4
+MAD,Germany,2
+MAD,Belgium,2
+MAD,Austria,1
+MAD,United Kingdom,1
+MAD,Georgia,1
+MAD,Caribbean,1
+MAD,Azerbaijan,1
+MAD,Tanzania,1
+MAD,Seychelles,1
+MAD,Iran,1
+MAH,Not identified,352
+MAH,Georgia,1
+MCI,Russia,4810
+MCI,China,3656
+MCI,Nepal,2905
+MCI,Ukraine,2647
+MCI,Not identified,1418
+MCI,Kazakhstan,765
+MCI,Bangladesh,572
+MCI,Armenia,535
+MCI,Tajikistan,321
+MCI,Belarus,294
+MCI,Mauritius,236
+MCI,Bulgaria,164
+MCI,Romania,151
+MCI,Pakistan,120
+MCI,Philippines,116
+MCI,Kyrgyzstan,113
+MCI,Uzbekistan,95
+MCI,Caribbean,82
+MCI,UAE,49
+MCI,Iran,45
+MCI,Seychelles,34
+MCI,Czech Republic,27
+MCI,Italy,24
+MCI,Azerbaijan,23
+MCI,Georgia,21
+MCI,United Kingdom,16
+MCI,Germany,14
+MCI,Austria,9
+MCI,Zambia,9
+MCI,Nigeria,9
+MCI,Australia,7
+MCI,Hungary,6
+MCI,Yemen,5
+MCI,Uganda,4
+MCI,Tanzania,4
+MCI,Moldova,4
+MCI,Egypt,3
+MCI,Myanmar,3
+MCI,Poland,3
+MCI,Lithuania,3
+MCI,Ireland,2
+MCI,Slovakia,2
+MCI,United States,2
+MCI,Belgium,1
+MCI,Sri Lanka,1
+MCI,Iraq,1
+MCI,Sudan,1
+MCI,France,1
+MCI,Canada,1
+MCI,Cuba,1
+MIZ,Russia,4
+MIZ,Philippines,2
+MIZ,Ukraine,2
+MIZ,Mauritius,1
+NAG,China,41
+NAG,Philippines,23
+NAG,Russia,9
+NAG,Nepal,7
+NAG,Armenia,6
+NAG,Bulgaria,4
+NAG,Ukraine,4
+NAG,United Kingdom,1
+NAG,Kyrgyzstan,1
+ORI,Ukraine,197
+ORI,Russia,119
+ORI,China,106
+ORI,Kyrgyzstan,62
+ORI,Nepal,47
+ORI,Philippines,27
+ORI,Kazakhstan,15
+ORI,Bangladesh,14
+ORI,Georgia,13
+ORI,United Kingdom,10
+ORI,Tajikistan,9
+ORI,Armenia,9
+ORI,Mauritius,8
+ORI,Canada,5
+ORI,Germany,5
+ORI,Not identified,5
+ORI,United States,4
+ORI,Ireland,3
+ORI,Belarus,3
+ORI,Myanmar,2
+ORI,UK,1
+ORI,Spain,1
+ORI,Australia,1
+ORI,Caribbean,1
+ORI,Czech Republic,1
+ORI,Yemen,1
+PUN,Ukraine,686
+PUN,China,369
+PUN,Russia,360
+PUN,Pakistan,332
+PUN,Nepal,241
+PUN,Kyrgyzstan,79
+PUN,United Kingdom,78
+PUN,Myanmar,76
+PUN,Mauritius,69
+PUN,Philippines,59
+PUN,Kazakhstan,46
+PUN,Armenia,43
+PUN,Georgia,30
+PUN,Belarus,26
+PUN,Not identified,24
+PUN,Bangladesh,22
+PUN,Tajikistan,20
+PUN,Bulgaria,15
+PUN,Germany,14
+PUN,United States,8
+PUN,Italy,6
+PUN,Caribbean,6
+PUN,Uzbekistan,5
+PUN,Romania,5
+PUN,Ireland,4
+PUN,Australia,3
+PUN,Canada,2
+PUN,France,2
+PUN,Austria,2
+PUN,Hungary,2
+PUN,UAE,2
+PUN,UK,1
+PUN,Lithuania,1
+PUN,Moldova,1
+PUN,Tanzania,1
+PUN,Czech Republic,1
+PUN,Guyana,1
+RAJ,Kazakhstan,1832
+RAJ,China,1149
+RAJ,Kyrgyzstan,1105
+RAJ,Russia,596
+RAJ,Tajikistan,580
+RAJ,Nepal,514
+RAJ,Ukraine,447
+RAJ,Georgia,310
+RAJ,Philippines,266
+RAJ,Mauritius,64
+RAJ,Ireland,61
+RAJ,Belarus,44
+RAJ,Armenia,42
+RAJ,Pakistan,38
+RAJ,Bangladesh,36
+RAJ,Myanmar,34
+RAJ,United Kingdom,14
+RAJ,Romania,13
+RAJ,Uzbekistan,11
+RAJ,Not identified,8
+RAJ,Bulgaria,4
+RAJ,UAE,4
+RAJ,Belize,4
+RAJ,Guyana,4
+RAJ,Tanzania,2
+RAJ,Azerbaijan,2
+RAJ,Caribbean,2
+RAJ,Seychelles,2
+RAJ,Netherlands,2
+RAJ,United States,2
+RAJ,Austria,1
+RAJ,Italy,1
+RAJ,Sri Lanka,1
+RAJ,Iran,1
+RAJ,Australia,1
+SIK,Nepal,43
+SIK,China,33
+SIK,Ukraine,11
+SIK,Russia,6
+SIK,Philippines,6
+SIK,Kazakhstan,3
+SIK,Bangladesh,2
+SIK,Iran,1
+SIK,Belarus,1
+SIK,United States,1
+SIK,United Kingdom,1
+TAM,Philippines,2787
+TAM,Russia,2753
+TAM,China,2288
+TAM,Ukraine,895
+TAM,Georgia,737
+TAM,Armenia,577
+TAM,Kyrgyzstan,469
+TAM,United Kingdom,373
+TAM,Nepal,252
+TAM,Mauritius,134
+TAM,Caribbean,98
+TAM,Kazakhstan,64
+TAM,Belarus,59
+TAM,Guyana,57
+TAM,Myanmar,56
+TAM,Bangladesh,51
+TAM,Malaysia,46
+TAM,Sri Lanka,38
+TAM,Not identified,36
+TAM,Italy,33
+TAM,Moldova,32
+TAM,UK,28
+TAM,Bulgaria,26
+TAM,Azerbaijan,22
+TAM,Belize,22
+TAM,Australia,19
+TAM,Ireland,16
+TAM,United States,15
+TAM,UAE,15
+TAM,Tajikistan,11
+TAM,Germany,9
+TAM,Romania,8
+TAM,Uzbekistan,7
+TAM,Pakistan,6
+TAM,Czech Republic,5
+TAM,France,4
+TAM,Latvia,4
+TAM,Tanzania,3
+TAM,Switzerland,2
+TAM,Canada,2
+TAM,Seychelles,2
+TAM,Oman,2
+TAM,Belgium,1
+TAM,Hungary,1
+TAM,Austria,1
+TAM,Saint Lucia,1
+TAM,Kenya,1
+TAM,Netherlands,1
+TAM,Lithuania,1
+TC,China,720
+TC,Russia,579
+TC,Nepal,237
+TC,Italy,140
+TC,Ukraine,137
+TC,United Kingdom,44
+TC,Germany,40
+TC,UAE,39
+TC,Kazakhstan,38
+TC,Caribbean,38
+TC,Bulgaria,35
+TC,Philippines,32
+TC,Not identified,28
+TC,Belarus,24
+TC,Georgia,20
+TC,Armenia,16
+TC,Czech Republic,10
+TC,Austria,9
+TC,Australia,8
+TC,Romania,8
+TC,Bangladesh,7
+TC,Kyrgyzstan,7
+TC,Nigeria,6
+TC,Tajikistan,6
+TC,Mauritius,5
+TC,Seychelles,5
+TC,France,3
+TC,Hungary,3
+TC,Netherlands,3
+TC,Lithuania,3
+TC,Canada,2
+TC,Switzerland,2
+TC,United States,2
+TC,Zambia,2
+TC,Yemen,2
+TC,Iran,2
+TC,Myanmar,1
+TC,Sri Lanka,1
+TC,Belgium,1
+TC,Uzbekistan,1
+TC,Tanzania,1
+TC,Azerbaijan,1
+TC,Moldova,1
+TEL,China,902
+TEL,Ukraine,632
+TEL,Kyrgyzstan,616
+TEL,Philippines,613
+TEL,Russia,141
+TEL,Kazakhstan,128
+TEL,Georgia,87
+TEL,Nepal,75
+TEL,Caribbean,59
+TEL,Belize,40
+TEL,Mauritius,38
+TEL,United States,37
+TEL,Belarus,34
+TEL,Not identified,22
+TEL,UAE,11
+TEL,Bangladesh,8
+TEL,Armenia,7
+TEL,United Kingdom,4
+TEL,Guyana,4
+TEL,Saint Lucia,4
+TEL,Uganda,3
+TEL,Malaysia,3
+TEL,Tajikistan,3
+TEL,Bulgaria,2
+TEL,Poland,2
+TEL,Tanzania,2
+TEL,Iran,2
+TEL,Pakistan,1
+TEL,Uzbekistan,1
+TEL,Saudi Arabia,1
+TRI,Bangladesh,14
+TRI,Ukraine,8
+TRI,Russia,6
+TRI,China,6
+TRI,Nepal,5
+TRI,Philippines,3
+TRI,Kyrgyzstan,2
+TRI,United States,1
+TRI,United Kingdom,1
+TRI,Armenia,1
+UP,Russia,1342
+UP,Nepal,1055
+UP,China,905
+UP,Ukraine,534
+UP,Kyrgyzstan,364
+UP,Pakistan,215
+UP,Kazakhstan,211
+UP,United Kingdom,203
+UP,Philippines,143
+UP,Armenia,137
+UP,Tajikistan,106
+UP,Belarus,45
+UP,Bangladesh,39
+UP,Georgia,38
+UP,Mauritius,33
+UP,Myanmar,31
+UP,UK,24
+UP,Not identified,20
+UP,Romania,20
+UP,Uzbekistan,17
+UP,United States,16
+UP,Italy,16
+UP,Caribbean,15
+UP,Bulgaria,11
+UP,Austria,9
+UP,Azerbaijan,9
+UP,Germany,8
+UP,Australia,5
+UP,Tanzania,5
+UP,Nigeria,4
+UP,UAE,4
+UP,Hungary,2
+UP,Czech Republic,2
+UP,Seychelles,2
+UP,Iran,2
+UP,Belgium,1
+UP,France,1
+UP,Netherlands,1
+UP,Sweden,1
+UP,Switzerland,1
+UP,Japan,1
+UP,Serbia,1
+UP,Lithuania,1
+UP,Sri Lanka,1
+UP,Belize,1
+UP,Bahrain,1
+UP,Egypt,1
+UP,Moldova,1
+UP,Poland,1
+UTT,Russia,142
+UTT,Ukraine,75
+UTT,Nepal,71
+UTT,China,37
+UTT,Kazakhstan,25
+UTT,Tajikistan,16
+UTT,Kyrgyzstan,14
+UTT,Belarus,12
+UTT,Armenia,10
+UTT,Mauritius,7
+UTT,Philippines,6
+UTT,Bulgaria,4
+UTT,Bangladesh,4
+UTT,Romania,4
+UTT,United Kingdom,3
+UTT,Uzbekistan,2
+UTT,Not identified,2
+UTT,Lithuania,2
+UTT,Nigeria,1
+UTT,Poland,1
+UTT,Uganda,1
+UTT,Pakistan,1
+WES,Bangladesh,1248
+WES,China,616
+WES,Nepal,471
+WES,Russia,356
+WES,Ukraine,159
+WES,Philippines,113
+WES,Kyrgyzstan,112
+WES,United Kingdom,75
+WES,Myanmar,48
+WES,Kazakhstan,18
+WES,Not identified,12
+WES,Georgia,12
+WES,Belarus,10
+WES,Armenia,8
+WES,Caribbean,8
+WES,Seychelles,4
+WES,Tajikistan,3
+WES,Mauritius,3
+WES,Bulgaria,2
+WES,Germany,1
+WES,Italy,1
+WES,Czech Republic,1
+WES,Romania,1
+WES,Guyana,1
+WES,Tanzania,1
