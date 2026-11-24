@@ -264,7 +264,7 @@ window.dash = (() => {
       </div>
     </div>
     <div class="kd-hbar" id="state-density" data-draw="state-density" data-source="stats who_density"></div>
-    <p class="kd-note">Doctors on each council's register divided by the state's projected 2026 population. Where a council's entries on the national register stop early, registrations since then are projected from its last ten years, as for the totals above. A council's register shows where doctors registered, which is usually but not always where they work: doctors move, and Delhi in particular registers many who work elsewhere. Councils with no population figure (the central register) are left out.</p>
+    <p class="kd-note">Doctors on each council's register divided by the state's projected 2026 population. Where a council's entries on the national register stop early, registrations since then are projected from its last ten years, as for the totals above. A council's register shows where doctors registered, which is usually but not always where they work: doctors move, and Delhi in particular registers many who work elsewhere. Andhra Pradesh’s council registered doctors from all of undivided Andhra Pradesh until Telangana was formed in 2014, so Andhra Pradesh’s figure is too high and Telangana’s too low. Councils with no population figure (the central register) are left out.</p>
   </section>
 
   <section class="kd-sec" id="studied">
@@ -1090,7 +1090,8 @@ kdDraw('density-say', (el) => {
   }
   kdSay(el, parts);
   el.append('The WHO figure is ' + f1(+world.per_10k) + ' for the world (' + world.year + ') and ' + f1(+india.per_10k) + ' for India (' + india.year + ')' +
-    (s.code === 'IN' && s.d26_all > +india.per_10k ? '; the register runs higher because it counts doctors registered with two councils twice and never removes those who have died or emigrated.' : '.'));
+    (s.code === 'IN' && s.d26_all > +india.per_10k ? '; the register runs higher because it counts doctors registered with two councils twice and never removes those who have died or emigrated.' : '.') +
+    (kdSplitNote(s) ? ' ' + kdSplitNote(s) : ''));
 });
 
 kdDraw('proj-chart', (el) => {
@@ -1418,9 +1419,22 @@ kdDraw('state-rank', (el) => {
     return;
   }
   const P = new Map(pp.data.map((r) => [r.pin, r]));
-  const rows = pins.data.filter((r) => r.code === s.code).sort((a, b) => +b.doctors - +a.doctors).slice(0, 12);
-  kdRankList(el, 'PIN code areas with the most doctors', rows.map((r) => { const i = P.get(r.pin) || {}; return { main: i.place || r.pin, sub: r.pin + ', ' + (i.district || '') + (i.state && i.state !== s.name ? ', ' + i.state : ''), n: window.kdFmt(+r.doctors) }; }));
+  const own = s.code === 'MCI' ? null : s.name;  // same areas as the map: the council's own state only
+  const rows = pins.data.filter((r) => r.code === s.code && (!own || (P.get(r.pin) || {}).state === own)).sort((a, b) => +b.doctors - +a.doctors).slice(0, 12);
+  kdRankList(el, 'PIN code areas in ' + kdName(s) + ' with the most doctors', rows.map((r) => { const i = P.get(r.pin) || {}; return { main: i.place || r.pin, sub: r.pin + ', ' + (i.district || '') + (i.state && i.state !== s.name ? ', ' + i.state : ''), n: window.kdFmt(+r.doctors) }; }));
 });
+// Until Telangana was formed in June 2014, the Andhra Pradesh Medical Council registered doctors from the whole of
+// undivided Andhra Pradesh, Hyderabad included; Telangana's own council's entries on the register begin in 2016.
+const kdSplitNote = (s, what) => {
+  if (!s || (s.code !== 'AND' && s.code !== 'TEL')) return '';
+  const head = 'Until Telangana was formed in 2014, the Andhra Pradesh Medical Council registered doctors across undivided Andhra Pradesh, Hyderabad included, and Telangana’s own council’s entries begin in 2016. ';
+  if (what === 'pins') return head + (s.code === 'AND'
+    ? 'So most of this council’s doctors with a PIN code, mainly older registrations, live in Telangana; the map and the list show only those in Andhra Pradesh.'
+    : 'So many older Telangana doctors are on the Andhra Pradesh council’s register instead.');
+  const a = kdStat('AND'), b = kdStat('TEL');
+  const both = a && b && a.pop && b.pop ? f1((a.d26_u65 * a.pop + b.d26_u65 * b.pop) / (a.pop + b.pop)) : null;
+  return head + 'This figure therefore overstates Andhra Pradesh and understates Telangana' + (both ? '; the two states together have about ' + both + ' doctors under 65 per 10,000 people.' : '.');
+};
 kdDraw('smap-say', (el) => {
   const s = kdStat(), hs = dash.data('home_state');
   if (!s || hs.status !== 'ok' || !hs.data) { el.textContent = '—'; return; }
@@ -1428,7 +1442,7 @@ kdDraw('smap-say', (el) => {
   const tot = d3.sum(rows, (r) => +r.doctors);
   const own = d3.sum(rows.filter((r) => r.state === s.name), (r) => +r.doctors);
   kdSay(el, ['Only ', { f: 'with_pin_pct', fmt: f0, b: true }, '% of addresses on this register include a PIN code. ',
-    s.code === 'MCI' || !tot ? '' : 'Of those that do, ' + f0(100 * own / tot) + '% are in ' + s.name + '; the map shows those.']);
+    s.code === 'MCI' || !tot ? '' : 'Of those that do, ' + f0(100 * own / tot) + '% are in ' + s.name + '; the map shows those. ', kdSplitNote(s, 'pins')]);
 });
 kdDraw('smap-note', (el) => {
   const s = kdStat(), pins = dash.data('pins');
